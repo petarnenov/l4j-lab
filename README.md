@@ -19,7 +19,48 @@ The point is that you can read the whole thing.
 Nodes one through three never touch a model. Three tests assert that by counting calls on a fake,
 because it is the claim the whole exercise rests on.
 
-## Run it
+## Run the packaged system
+
+You need Docker and nothing else: no JDK, no Node.js. One command builds the images and starts the whole
+application: PostgreSQL, two backend instances, two frontend instances, and an nginx load balancer in front
+of both halves.
+
+```bash
+# Cloud mode: put these in your shell or in a .env file at the repository root (git-ignored).
+export L4J_PROVIDER=cloud L4J_MODEL_BASE_URL=https://ollama.com L4J_MODEL_ID=gpt-oss:120b OLLAMA_API_KEY=...
+docker compose -f compose.stack.yaml up -d --build --wait
+
+# Local mode is the stack's default provider. Start the model runtime too, and pull a model once.
+docker compose -f compose.stack.yaml --profile local up -d --build --wait
+docker compose -f compose.stack.yaml --profile local exec ollama ollama pull llama3.2
+```
+
+Open **http://localhost:8000**. That is the only port the stack publishes. The backend, frontend, database,
+and model runtime are reachable only on the stack's private network. If 8000 is taken, set another port
+without editing anything: `L4J_HTTP_PORT=9000 docker compose -f compose.stack.yaml up -d`.
+
+The stack reads the same variables as development (table below), with two differences: in local mode the
+model runtime is reached as `http://ollama:11434`, which is the default, and the database credentials come
+from `DATASOURCE_USER` and `DATASOURCE_PASSWORD`. Their `l4j` defaults are for local use only.
+
+Scale either half, with no file edited; the load balancer picks up the change within five seconds:
+
+```bash
+docker compose -f compose.stack.yaml up -d --scale backend=3       # or BACKEND_REPLICAS=3
+docker compose -f compose.stack.yaml up -d --scale frontend=1      # or FRONTEND_REPLICAS=1
+docker compose -f compose.stack.yaml logs --no-log-prefix load-balancer   # one JSON line per request, "upstream" names the instance
+```
+
+Stop it with `docker compose -f compose.stack.yaml down`. Stored runs survive and are there on the next
+start. `down -v` deletes them.
+
+Every instance of a half is interchangeable: runs live in PostgreSQL, so any backend answers for any run.
+One limitation: if a backend instance stops while it is executing a run, that run stays in its last state.
+Nothing reclaims it yet.
+
+The load balancer's routing, timeouts, and failure responses are all in `deploy/load-balancer/nginx.conf`.
+
+## Run it for development
 
 You need Docker, and Node.js at the major version in `frontend/.nvmrc` (24; `nvm install` in
 `frontend/` picks it up). The JDK is provisioned by the Gradle wrapper.
@@ -62,7 +103,7 @@ line in `frontend/build.gradle.kts`.
 Each half on its own:
 
 ```bash
-./gradlew :backend:test       # 120 tests, no credential, no network
+./gradlew :backend:test       # 121 tests, no credential, no network
 cd frontend && npm test       # 126 tests, including the contrast gate
 ./gradlew :backend:liveTest   # reaches a real provider, its own task, never part of check
 ```

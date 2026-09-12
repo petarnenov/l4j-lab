@@ -1,0 +1,112 @@
+# The packaged system (feature 004): the whole application behind one load balancer, with one published port.
+#
+#   docker compose -f compose.stack.yaml up -d --build                  # cloud mode: set the L4J_* variables first
+#   docker compose -f compose.stack.yaml --profile local up -d --build  # local mode, with the model runtime
+#
+# This file is deliberately separate from compose.yaml (R-001). That file is the development setup and
+# publishes the database and model runtime ports so the backend can run from Gradle. Here nothing but the
+# load balancer is reachable from the host (FR-010), and the two setups can run at the same time.
+# Ports, variables, and defaults: specs/004-containerized-deployment/contracts/stack-topology.md.
+
+name: financial-agent-chain-stack
+
+services:
+  # Written out again rather than extended from compose.yaml, so everything this stack runs is in this file.
+  # No ports: reachable only on the internal network.
+  postgres:
+    image: pgvector/pgvector:pg17
+    environment:
+      POSTGRES_DB: l4j
+      POSTGRES_USER: ${DATASOURCE_USER:-l4j}
+      POSTGRES_PASSWORD: ${DATASOURCE_PASSWORD:-l4j}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d l4j"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks: [internal]
+    restart: unless-stopped
+
+  # Local provider mode only: started with --profile local. Cloud mode never pulls it.
+  ollama:
+    image: ollama/ollama:latest
+    profiles: [local]
+    volumes:
+      - ollamadata:/root/.ollama
+    networks: [internal]
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    deploy:
+      replicas: ${BACKEND_REPLICAS:-2}
+    environment:
+      DATASOURCE_URL: jdbc:postgresql://postgres:5432/l4j
+      DATASOURCE_USER: ${DATASOURCE_USER:-l4j}
+      DATASOURCE_PASSWORD: ${DATASOURCE_PASSWORD:-l4j}
+      # Same names and defaults as application.yml, except that local mode reaches the model runtime by its
+      # service name. Credentials come from the shell or a git-ignored .env, never from an image (FR-020).
+      L4J_PROVIDER: ${L4J_PROVIDER:-local}
+      L4J_MODEL_BASE_URL: ${L4J_MODEL_BASE_URL:-http://ollama:11434}
+      L4J_MODEL_ID: ${L4J_MODEL_ID:-llama3.2}
+      L4J_MODEL_TIMEOUT_SECONDS: ${L4J_MODEL_TIMEOUT_SECONDS:-45}
+      OLLAMA_API_KEY: ${OLLAMA_API_KEY:-}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    # FR-019: an instance receives traffic only once it reports ready, database included.
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8080/health/readiness"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 60s
+    # FR-004: an instance that exits because the database went away is started again.
+    restart: unless-stopped
+    networks: [internal]
+
+  frontend:
+    build:
+      context: frontend
+    deploy:
+      replicas: ${FRONTEND_REPLICAS:-2}
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8080/healthz"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+    networks: [internal]
+
+  load-balancer:
+    image: nginx:1.28-alpine
+    user: nginx
+    volumes:
+      - ./deploy/load-balancer/nginx.conf:/etc/nginx/nginx.conf:ro
+    # FR-010, FR-011: the one published port, changeable without editing this file.
+    ports:
+      - "${L4J_HTTP_PORT:-8000}:8080"
+    depends_on:
+      backend:
+        condition: service_healthy
+      frontend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8080/lb-health"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+    networks: [internal]
+
+networks:
+  internal:
+
+volumes:
+  pgdata:
+  ollamadata:

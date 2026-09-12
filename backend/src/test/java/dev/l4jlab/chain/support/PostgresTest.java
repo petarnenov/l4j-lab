@@ -26,7 +26,11 @@ public abstract class PostgresTest {
                 .withUsername("l4j")
                 .withPassword("l4j");
         postgres.start();
+        context = ApplicationContext.builder().properties(databaseProperties()).start();
+    }
 
+    /** The properties that point a context at this class's database. For a test that starts its own. */
+    protected static Map<String, Object> databaseProperties() {
         Map<String, Object> properties = new HashMap<>();
         properties.put("datasources.default.enabled", true);
         properties.put("datasources.default.url", postgres.getJdbcUrl());
@@ -40,8 +44,7 @@ public abstract class PostgresTest {
         properties.put("l4j.model.provider", "local");
         properties.put("l4j.model.base-url", "http://localhost:11434");
         properties.put("l4j.model.model-id", "test-model");
-
-        context = ApplicationContext.builder().properties(properties).start();
+        return properties;
     }
 
     @AfterAll

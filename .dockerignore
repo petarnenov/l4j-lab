@@ -1,0 +1,19 @@
+# Build context for backend/Dockerfile, which is sent from the repository root because the Gradle
+# wrapper and settings.gradle.kts live here. Keeping this list tight keeps the context small, and
+# excluding every .env file keeps credentials out of images (constitution, Principle II).
+.git
+.gradle
+**/.gradle
+**/build
+**/node_modules
+frontend/dist
+.env
+.env.*
+**/.env
+**/.env.*
+.idea
+.vscode
+.playwright-mcp
+.claude
+.specify
+specs

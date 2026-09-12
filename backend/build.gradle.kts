@@ -49,6 +49,10 @@ dependencies {
     implementation("io.micronaut.sql:micronaut-jdbc-hikari")
     implementation("io.micronaut.flyway:micronaut-flyway")
     implementation("io.micronaut.openapi:micronaut-openapi-annotations")
+    // Feature 004, R-006 and FR-019: /health/readiness, which the container health check and the load
+    // balancer's startup order rely on. micronaut-flyway already brings this module in transitively;
+    // it is declared here so readiness does not silently depend on another module's choices.
+    implementation("io.micronaut:micronaut-management")
     implementation("jakarta.validation:jakarta.validation-api")
 
     runtimeOnly("org.postgresql:postgresql")
@@ -62,6 +66,9 @@ dependencies {
     implementation("dev.langchain4j:langchain4j-ollama")
 
     testImplementation("io.micronaut.test:micronaut-test-junit5")
+    // Feature 004, R-006: test-only. The readiness test calls /health/readiness over HTTP, which is how
+    // the container health check reaches it; a bean-level call would pass even if it were not exposed.
+    testImplementation("io.micronaut:micronaut-http-client")
     testImplementation("org.assertj:assertj-core")
     testImplementation(platform("org.testcontainers:testcontainers-bom:2.0.5"))
     // Testcontainers 2.x renamed its modules: postgresql -> testcontainers-postgresql.

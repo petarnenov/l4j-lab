@@ -1,0 +1,10 @@
+# Build context for frontend/Dockerfile. The image runs its own `npm ci`, so local installs and build
+# output never enter it, and neither does any .env file.
+node_modules
+dist
+build
+.gradle
+coverage
+*.tsbuildinfo
+.env
+.env.*

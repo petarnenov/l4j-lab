@@ -1,0 +1,73 @@
+# The packaged system (feature 004): builds both images, starts the stack, and checks packaging only.
+# It runs on the stack's default local provider without the model runtime, so it needs no credential and
+# makes no model call. See specs/004-containerized-deployment/research.md, R-012.
+name: stack
+
+on:
+  push:
+    paths:
+      - compose.stack.yaml
+      - deploy/**
+      - backend/Dockerfile
+      - frontend/Dockerfile
+      - frontend/nginx.conf
+      - .dockerignore
+      - frontend/.dockerignore
+      - .github/workflows/stack.yml
+  pull_request:
+    paths:
+      - compose.stack.yaml
+      - deploy/**
+      - backend/Dockerfile
+      - frontend/Dockerfile
+      - frontend/nginx.conf
+      - .dockerignore
+      - frontend/.dockerignore
+      - .github/workflows/stack.yml
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    env:
+      COMPOSE: docker compose -f compose.stack.yaml
+    steps:
+      - uses: actions/checkout@v7
+      - uses: docker/setup-buildx-action@v4
+
+      - name: Start the stack
+        run: $COMPOSE up -d --build --wait --wait-timeout 300
+
+      - name: The application and the API answer through the load balancer
+        run: |
+          curl -fsS http://localhost:8000/ | grep -q '<div id="root"'
+          curl -fsS http://localhost:8000/api/catalog | grep -q '"companies"'
+
+      - name: Exactly one port is published, on the load balancer
+        run: |
+          $COMPOSE ps --format json | python3 -c '
+          import json, sys
+          rows = [json.loads(line) for line in sys.stdin if line.strip()]
+          published = {r["Service"] for r in rows for p in (r.get("Publishers") or []) if p.get("PublishedPort")}
+          print("services with a published port:", sorted(published))
+          assert published == {"load-balancer"}, published
+          '
+
+      - name: Both backend instances serve API requests
+        run: |
+          for i in $(seq 20); do curl -fsS -o /dev/null http://localhost:8000/api/catalog; done
+          count=$($COMPOSE logs --no-log-prefix load-balancer \
+            | grep '"uri":"/api/catalog"' \
+            | grep -oE '"upstream":"[^"]*"' | grep -oE '[0-9.]+:8080' | sort -u | wc -l)
+          echo "distinct backend upstreams: $count"
+          test "$count" -ge 2
+
+      - name: Logs
+        if: always()
+        run: $COMPOSE logs --no-color
+
+      - name: Stop
+        if: always()
+        run: $COMPOSE down -v
