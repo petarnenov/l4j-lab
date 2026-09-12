@@ -1,6 +1,7 @@
 import { screen, waitFor } from '@testing-library/react'
 import { http, HttpResponse } from 'msw'
 import { describe, expect, it } from 'vitest'
+import { POLL_INTERVAL_MS } from '../hooks/useRun'
 import { nodes, runDetail, server } from '../test/handlers'
 import { renderWithQuery } from '../test/render'
 import { ThemeProvider } from '../theme/ThemeProvider'
@@ -130,14 +131,21 @@ describe('RunDetailPage', () => {
     )
 
     await waitFor(() => expect(screen.getByText(/This is the slow step/)).toBeInTheDocument())
+    const heading = screen.getByRole('heading', { level: 1, name: /Northwind Lighting/ })
     const before = requests
+    const startedAt = performance.now()
 
     await user.click(screen.getByRole('radio', { name: 'Dark' }).closest('label') as HTMLElement)
 
     expect(screen.getByText(/This is the slow step/)).toBeInTheDocument()
-    expect(screen.getByRole('heading', { level: 1, name: /Northwind Lighting/ })).toBeInTheDocument()
-    // A theme change re-renders; it must not remount the query and fire a fresh request.
-    expect(requests).toBe(before)
+    // A theme change re-renders; it must not remount. A remount replaces every DOM node, so the heading
+    // being the very same element is the direct evidence.
+    expect(screen.getByRole('heading', { level: 1, name: /Northwind Lighting/ })).toBe(heading)
+    // A running run is polled every POLL_INTERVAL_MS, and on a loaded machine the click alone can outlast
+    // one interval, so "no request at all" failed on a legitimate poll. What must not appear is a request
+    // beyond the polls that fit in the time that passed.
+    const pollsThatFit = Math.floor((performance.now() - startedAt) / POLL_INTERVAL_MS) + 1
+    expect(requests - before).toBeLessThanOrEqual(pollsThatFit)
   })
 
   it('stacks summary and indicators below 768 pixels and sets them side by side from it (FR-020)', async () => {

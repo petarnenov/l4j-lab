@@ -1,7 +1,12 @@
 import '@testing-library/jest-dom/vitest'
-import { cleanup } from '@testing-library/react'
+import { cleanup, configure } from '@testing-library/react'
 import { afterAll, afterEach, beforeAll, beforeEach } from 'vitest'
 import { server } from './handlers'
+
+// findBy and waitFor give up after 1 s by default. A cold first render passed that while the element was
+// still on its way (see testTimeout in vite.config.ts). Waiting longer changes nothing for a passing
+// assertion and only delays a failing one.
+configure({ asyncUtilTimeout: 5_000 })
 
 /**
  * jsdom implements none of matchMedia, ResizeObserver, or a failing localStorage, and all three are
