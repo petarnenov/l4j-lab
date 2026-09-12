@@ -1,0 +1,17 @@
+<configuration>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <!-- Structured enough to correlate a run without ever carrying a payload or a
+                 credential. Principle V forbids both in logs. -->
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%X{runId:-}/%X{node:-}] %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+    </root>
+
+    <!-- Never turn these up in cloud mode: the Ollama client logs request headers, which carry
+         the bearer token. -->
+    <logger name="dev.langchain4j" level="WARN"/>
+</configuration>

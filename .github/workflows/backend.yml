@@ -1,0 +1,37 @@
+# The backend suite. See specs/003-monorepo-integration/contracts/ci-workflows.md for the path sets.
+# No model credential is given to this workflow, and :backend:liveTest is not part of :backend:check.
+name: backend
+
+on:
+  push:
+    paths:
+      - backend/**
+      - settings.gradle.kts
+      - gradle/**
+      - gradlew
+      - gradlew.bat
+      - .github/workflows/**
+  pull_request:
+    paths:
+      - backend/**
+      - settings.gradle.kts
+      - gradle/**
+      - gradlew
+      - gradlew.bat
+      - .github/workflows/**
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 25
+      - uses: gradle/actions/setup-gradle@v6
+      # Hosted Ubuntu runners have Docker, so the Testcontainers database tests run rather than skip.
+      - run: ./gradlew :backend:check

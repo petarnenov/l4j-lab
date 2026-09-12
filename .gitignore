@@ -1,0 +1,31 @@
+# Java / Gradle
+build/
+.gradle/
+*.class
+*.jar
+!gradle/wrapper/gradle-wrapper.jar
+out/
+
+# Node
+node_modules/
+dist/
+*.log
+*.tsbuildinfo
+
+# Secrets and local config
+.env
+.env.*
+!.env.example
+
+# Editors and OS
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
+*.tmp
+*.swp
+
+# Local tool state
+.playwright-mcp/
+.claude/settings.local.json

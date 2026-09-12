@@ -1,0 +1,16 @@
+# T027: the default test suite must run with no credential, no network, and no database that
+# someone started by hand (Principle IV). Tests that genuinely need PostgreSQL start their own
+# container and skip when Docker is unavailable; everything else runs with the datasource off.
+datasources:
+  default:
+    enabled: false
+
+flyway:
+  enabled: false
+
+l4j:
+  model:
+    provider: local
+    base-url: http://localhost:11434
+    model-id: test-model
+    timeout-seconds: 45
