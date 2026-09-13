@@ -1,11 +1,13 @@
 package dev.l4jlab.chain.node;
 
+import dev.l4jlab.chain.core.BoundaryValidation;
 import dev.l4jlab.chain.core.ChainFailure;
-import dev.l4jlab.chain.core.ChainNode;
 import dev.l4jlab.chain.domain.FinancialRecord;
 import dev.l4jlab.chain.domain.Indicator;
 import dev.l4jlab.chain.domain.IndicatorSet;
 import dev.l4jlab.chain.domain.RetrievedRecords;
+import dev.langchain4j.agentic.Agent;
+import dev.langchain4j.service.V;
 import jakarta.inject.Singleton;
 
 import java.math.BigDecimal;
@@ -25,20 +27,28 @@ import java.util.List;
  * <p>No model call. This node is the reason the chain is testable at all.
  */
 @Singleton
-public class ComputeIndicatorsNode implements ChainNode<RetrievedRecords, IndicatorSet> {
+public class ComputeIndicatorsNode {
 
     /** Declared once. Changing either changes every stored value, so SC-005 would need a re-baseline. */
     public static final int SCALE = 4;
 
     public static final RoundingMode ROUNDING = RoundingMode.HALF_UP;
 
-    @Override
+    private final BoundaryValidation validation;
+
+    public ComputeIndicatorsNode(BoundaryValidation validation) {
+        this.validation = validation;
+    }
+
+    /** The step name stored with every record of this step, and used in its boundary messages. */
     public String name() {
         return "ComputeIndicators";
     }
 
-    @Override
-    public IndicatorSet run(RetrievedRecords input) throws ChainFailure {
+    /** Step 3 of the agentic sequence: reads {@code records}, writes {@code indicators} (feature 005). */
+    @Agent(name = "ComputeIndicators", outputKey = "indicators",
+            description = "Computes the five financial indicators from the retrieved records")
+    public IndicatorSet run(@V("records") RetrievedRecords input) throws ChainFailure {
         FinancialRecord now = input.current();
         FinancialRecord prior = input.prior();
 
@@ -66,7 +76,7 @@ public class ComputeIndicatorsNode implements ChainNode<RetrievedRecords, Indica
                                 "Equity is zero, so debt to equity has no defined value",
                                 List.of("totalDebt", "equity")));
 
-        return new IndicatorSet(input.companyName(), input.period(), indicators);
+        return validation.requireValid(name(), new IndicatorSet(input.companyName(), input.period(), indicators));
     }
 
     private Indicator revenueGrowth(FinancialRecord now, FinancialRecord prior) {

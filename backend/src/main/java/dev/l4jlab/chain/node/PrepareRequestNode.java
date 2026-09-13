@@ -1,9 +1,11 @@
 package dev.l4jlab.chain.node;
 
+import dev.l4jlab.chain.core.BoundaryValidation;
 import dev.l4jlab.chain.core.ChainFailure;
-import dev.l4jlab.chain.core.ChainNode;
 import dev.l4jlab.chain.domain.ChainRequest;
 import dev.l4jlab.chain.domain.Selection;
+import dev.langchain4j.agentic.Agent;
+import dev.langchain4j.service.V;
 import jakarta.inject.Singleton;
 
 import java.time.Clock;
@@ -16,24 +18,28 @@ import java.util.regex.Pattern;
  * <p>No model call. This node is pure arithmetic on strings.
  */
 @Singleton
-public class PrepareRequestNode implements ChainNode<Selection, ChainRequest> {
+public class PrepareRequestNode {
 
     private static final Pattern COMPANY_ID = Pattern.compile("[a-z0-9-]{3,64}");
     private static final Pattern PERIOD = Pattern.compile("\\d{4}-Q[1-4]");
 
     private final Clock clock;
+    private final BoundaryValidation validation;
 
-    public PrepareRequestNode(Clock clock) {
+    public PrepareRequestNode(Clock clock, BoundaryValidation validation) {
         this.clock = clock;
+        this.validation = validation;
     }
 
-    @Override
+    /** The step name stored with every record of this step, and used in its boundary messages. */
     public String name() {
         return "PrepareRequest";
     }
 
-    @Override
-    public ChainRequest run(Selection selection) throws ChainFailure {
+    /** Step 1 of the agentic sequence: reads {@code selection}, writes {@code request} (feature 005). */
+    @Agent(name = "PrepareRequest", outputKey = "request",
+            description = "Turns the learner's selection into a structured request")
+    public ChainRequest run(@V("selection") Selection selection) throws ChainFailure {
         if (selection == null) {
             throw new ChainFailure(name(), "No selection was supplied. Pick a company and a period.");
         }
@@ -58,6 +64,6 @@ public class PrepareRequestNode implements ChainNode<Selection, ChainRequest> {
                     "The reporting period '" + period + "' is malformed. It must look like 2025-Q3.");
         }
 
-        return new ChainRequest(companyId, period, clock.instant());
+        return validation.requireValid(name(), new ChainRequest(companyId, period, clock.instant()));
     }
 }

@@ -1,5 +1,6 @@
 package dev.l4jlab.chain.node;
 
+import dev.l4jlab.chain.support.Validations;
 import dev.l4jlab.chain.core.ChainFailure;
 import dev.l4jlab.chain.domain.ChainRequest;
 import dev.l4jlab.chain.domain.Selection;
@@ -19,7 +20,7 @@ class PrepareRequestNodeTest {
 
     private final FakeChatModel model = new FakeChatModel();
     private final PrepareRequestNode node =
-            new PrepareRequestNode(Clock.fixed(FIXED, ZoneOffset.UTC));
+            new PrepareRequestNode(Clock.fixed(FIXED, ZoneOffset.UTC), Validations.boundary());
 
     @Test
     void namesItselfAsTheContractSpellsIt() {

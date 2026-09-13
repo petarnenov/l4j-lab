@@ -79,6 +79,8 @@ choice decides this.
 
 ## R-003: Keeping the agent loop visible
 
+> Superseded by constitution v3.0.0 and feature 005 (research R-002, R-003).
+
 **Decision**: Define `ChainNode<I, O>` with a single `O run(I input)` method, and a
 `ChainRunner` that walks an ordered `List<ChainNode<?, ?>>`, timing each node and writing one
 `NodeExecution` record per step. The summarizing node calls `ChatModel.chat(ChatRequest)`
@@ -205,6 +207,8 @@ carries a standing note that the content is a teaching exercise and not investme
 financial figures will otherwise drift toward advice, which would misteach the audience.
 
 ## R-010: Whether to use the Micronaut LangChain4j integration
+
+> Superseded by constitution v3.0.0 and feature 005 (research R-002, R-003).
 
 **Decision**: Do not use it. Keep `langchain4j-ollama` as a plain dependency and build the
 `ChatModel` in the project's own `ChatModelFactory`. The `io.micronaut.langchain4j` modules are

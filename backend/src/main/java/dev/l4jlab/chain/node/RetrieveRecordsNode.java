@@ -1,11 +1,13 @@
 package dev.l4jlab.chain.node;
 
+import dev.l4jlab.chain.core.BoundaryValidation;
 import dev.l4jlab.chain.core.ChainFailure;
-import dev.l4jlab.chain.core.ChainNode;
 import dev.l4jlab.chain.dataset.SampleDatasetLoader;
 import dev.l4jlab.chain.domain.ChainRequest;
 import dev.l4jlab.chain.domain.FinancialRecord;
 import dev.l4jlab.chain.domain.RetrievedRecords;
+import dev.langchain4j.agentic.Agent;
+import dev.langchain4j.service.V;
 import jakarta.inject.Singleton;
 
 import java.util.Optional;
@@ -20,21 +22,25 @@ import java.util.Optional;
  * <p>No model call.
  */
 @Singleton
-public class RetrieveRecordsNode implements ChainNode<ChainRequest, RetrievedRecords> {
+public class RetrieveRecordsNode {
 
     private final SampleDatasetLoader dataset;
+    private final BoundaryValidation validation;
 
-    public RetrieveRecordsNode(SampleDatasetLoader dataset) {
+    public RetrieveRecordsNode(SampleDatasetLoader dataset, BoundaryValidation validation) {
         this.dataset = dataset;
+        this.validation = validation;
     }
 
-    @Override
+    /** The step name stored with every record of this step, and used in its boundary messages. */
     public String name() {
         return "RetrieveRecords";
     }
 
-    @Override
-    public RetrievedRecords run(ChainRequest request) throws ChainFailure {
+    /** Step 2 of the agentic sequence: reads {@code request}, writes {@code records} (feature 005). */
+    @Agent(name = "RetrieveRecords", outputKey = "records",
+            description = "Retrieves the financial records for the requested company and period")
+    public RetrievedRecords run(@V("request") ChainRequest request) throws ChainFailure {
         if (!dataset.hasCompany(request.companyId())) {
             throw new ChainFailure(
                     name(),
@@ -56,7 +62,8 @@ public class RetrieveRecordsNode implements ChainNode<ChainRequest, RetrievedRec
         // defined answer. The computing node reports that as not applicable rather than inventing.
         FinancialRecord prior = dataset.findPrior(request.companyId(), request.period());
 
-        return new RetrievedRecords(
-                record.companyId(), record.companyName(), record.period(), record, prior);
+        return validation.requireValid(
+                name(),
+                new RetrievedRecords(record.companyId(), record.companyName(), record.period(), record, prior));
     }
 }

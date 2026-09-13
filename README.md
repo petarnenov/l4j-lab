@@ -1,23 +1,30 @@
 # Financial Agent Chain
 
-A teaching project. Four nodes run in a fixed order over fictional financial data. Three are
+A teaching project. Four steps run in a fixed order over fictional financial data. Three are
 deterministic. The fourth asks a language model to summarise what the third computed.
 
-The point is that you can read the whole thing.
+The chain is declared with LangChain4j: the steps form an agentic sequence, and the summarizer is an AI
+agent whose instructions are written on its interface. The declarations are short enough to read in one
+sitting, and every run records what each step received and produced, including the exact text exchanged
+with the model.
 
 ## Where to look, in order
 
 | What | Where |
 |------|-------|
-| The agent loop | `backend/src/main/java/dev/l4jlab/chain/core/ChainRunner.java` |
-| The four nodes, one file each | `backend/src/main/java/dev/l4jlab/chain/node/` |
-| **The only model call in the project** | `SummarizeNode.java`, the single `chatModel.chat(request)` |
+| The chain, as an agentic sequence | `backend/src/main/java/dev/l4jlab/chain/agent/FinancialChain.java` |
+| **The one AI agent**, its instructions declared | `agent/Summarizer.java` |
+| How the sequence and the agent are assembled | `agent/FinancialChainFactory.java` |
+| The three deterministic steps, one file each | `backend/src/main/java/dev/l4jlab/chain/node/` |
+| How each step becomes a stored record, from LangChain4j's `AgentMonitor` | `agent/RunTraceAssembler.java` |
+| What a learner reads when a run fails | `agent/FailureClassifier.java` |
 | The provider seam, local against cloud | `model/ChatModelFactory.java` |
-| The node boundaries | `domain/`, and `specs/001-financial-agent-chain/contracts/node-boundaries.md` |
+| The step boundaries | `domain/`, and `specs/001-financial-agent-chain/contracts/node-boundaries.md` |
 | The seeded data | `backend/src/main/resources/data/companies.json` |
 
-Nodes one through three never touch a model. Three tests assert that by counting calls on a fake,
-because it is the claim the whole exercise rests on.
+Steps one through three never touch a model. `ModelCallBudgetTest` asserts that by counting calls on a
+fake model, because it is the claim the whole exercise rests on. The design decisions behind the
+declarative chain are in `specs/005-langchain4j-declarative-migration/`.
 
 ## Run the packaged system
 
@@ -103,7 +110,7 @@ line in `frontend/build.gradle.kts`.
 Each half on its own:
 
 ```bash
-./gradlew :backend:test       # 121 tests, no credential, no network
+./gradlew :backend:test       # 145 tests, no credential, no network
 cd frontend && npm test       # 126 tests, including the contrast gate
 ./gradlew :backend:liveTest   # reaches a real provider, its own task, never part of check
 ```

@@ -1,5 +1,6 @@
 package dev.l4jlab.chain.node;
 
+import dev.l4jlab.chain.support.Validations;
 import dev.l4jlab.chain.domain.FinancialRecord;
 import dev.l4jlab.chain.domain.Indicator;
 import dev.l4jlab.chain.domain.IndicatorSet;
@@ -16,7 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ComputeIndicatorsNodeTest {
 
     private final FakeChatModel model = new FakeChatModel();
-    private final ComputeIndicatorsNode node = new ComputeIndicatorsNode();
+    private final ComputeIndicatorsNode node = new ComputeIndicatorsNode(Validations.boundary());
 
     private static FinancialRecord record(
             String period, String revenue, String cogs, String netIncome,

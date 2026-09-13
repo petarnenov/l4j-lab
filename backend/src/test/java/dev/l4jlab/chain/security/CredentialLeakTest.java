@@ -1,7 +1,14 @@
 package dev.l4jlab.chain.security;
 
+import dev.l4jlab.chain.agent.FailureClassifier;
+import dev.l4jlab.chain.agent.FinancialChain;
+import dev.l4jlab.chain.agent.FinancialChainFactory;
+import dev.l4jlab.chain.agent.RunProgressListener;
+import dev.l4jlab.chain.agent.RunTraceAssembler;
+import dev.l4jlab.chain.agent.Summarizer;
+import dev.l4jlab.chain.core.BoundaryValidation;
 import dev.l4jlab.chain.core.ChainResult;
-import dev.l4jlab.chain.core.ChainRunner;
+import dev.l4jlab.chain.core.ChainRunService;
 import dev.l4jlab.chain.core.NodeRecord;
 import dev.l4jlab.chain.domain.Selection;
 import dev.l4jlab.chain.model.ChatModelFactory;
@@ -9,21 +16,17 @@ import dev.l4jlab.chain.model.ModelProperties;
 import dev.l4jlab.chain.node.ComputeIndicatorsNode;
 import dev.l4jlab.chain.node.PrepareRequestNode;
 import dev.l4jlab.chain.node.RetrieveRecordsNode;
-import dev.l4jlab.chain.node.SummarizeNode;
+import dev.l4jlab.chain.support.ChainRuns;
 import dev.l4jlab.chain.support.Datasets;
 import dev.l4jlab.chain.support.FakeChatModel;
-import io.micronaut.context.ApplicationContext;
+import dev.l4jlab.chain.support.Validations;
 import io.micronaut.serde.ObjectMapper;
-import jakarta.validation.Validator;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneOffset;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -36,29 +39,6 @@ class CredentialLeakTest {
 
     private static final String CREDENTIAL = "sk-live-abcdef0123456789-do-not-leak";
 
-    private static ApplicationContext context;
-
-    @BeforeAll
-    static void start() {
-        context = ApplicationContext.builder()
-                .eagerInitSingletons(false)
-                .properties(Map.of(
-                        "datasources.default.enabled", "false",
-                        "flyway.enabled", "false",
-                        "l4j.model.provider", "cloud",
-                        "l4j.model.base-url", "https://ollama.com",
-                        "l4j.model.model-id", "gpt-oss:120b",
-                        "l4j.model.api-key", "context-only-not-the-credential-under-test"))
-                .start();
-    }
-
-    @AfterAll
-    static void stop() {
-        if (context != null) {
-            context.close();
-        }
-    }
-
     private static ModelProperties cloudProperties() {
         ModelProperties p = new ModelProperties();
         p.setProvider("cloud");
@@ -69,15 +49,30 @@ class CredentialLeakTest {
         return p;
     }
 
+    /**
+     * The whole chain, assembled exactly as FinancialChainFactory assembles it, with the credential under test in the
+     * properties every component reads. Feature 005 replaced the hand-written runner with this sequence; the
+     * guarantees checked below did not change.
+     */
     private ChainResult runWith(FakeChatModel model) {
-        ChainRunner runner =
-                new ChainRunner(
-                        new PrepareRequestNode(Clock.fixed(Instant.parse("2026-09-12T10:15:30Z"), ZoneOffset.UTC)),
-                        new RetrieveRecordsNode(Datasets.committed()),
-                        new ComputeIndicatorsNode(),
-                        new SummarizeNode(model, cloudProperties()),
-                        context.getBean(Validator.class));
-        return runner.run(new Selection("northwind-lighting", "2025-Q2"), name -> {});
+        ModelProperties properties = cloudProperties();
+        BoundaryValidation validation = Validations.boundary();
+        FailureClassifier classifier = new FailureClassifier(properties);
+        RunProgressListener progress = new RunProgressListener();
+        RunTraceAssembler assembler = new RunTraceAssembler(properties, classifier);
+        FinancialChainFactory factory = new FinancialChainFactory();
+        Summarizer summarizer = factory.summarizer(model);
+        FinancialChain chain = factory.financialChain(
+                new PrepareRequestNode(Clock.fixed(Instant.parse("2026-09-12T10:15:30Z"), ZoneOffset.UTC), validation),
+                new RetrieveRecordsNode(Datasets.committed(), validation),
+                new ComputeIndicatorsNode(validation),
+                summarizer,
+                progress);
+        ChainRunService service = new ChainRunService(
+                chain, summarizer, progress, assembler, classifier, validation, null, null, properties, null, null);
+
+        ChainRuns.Run run = ChainRuns.run(chain, summarizer, progress, assembler, new Selection("northwind-lighting", "2025-Q2"));
+        return service.toResult(run.trace(), run.indicators(), run.thrown());
     }
 
     @Test

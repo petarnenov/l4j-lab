@@ -64,6 +64,11 @@ dependencies {
     // restates that choice so the pinned version is visible in this file; it does not override
     // the BOM, so there is still exactly one decision.
     implementation("dev.langchain4j:langchain4j-ollama")
+    // Feature 005, research R-001: LangChain4j's agentic orchestration and AI Services (constitution
+    // v3.0.0, Principle I). No version here: langchain4j-bom 1.18.0, imported by the platform BOM,
+    // manages it as 1.18.0-beta28, the agentic release of the same train. The module is labeled beta;
+    // its API may change on the next upgrade, and the agent tests are the guard.
+    implementation("dev.langchain4j:langchain4j-agentic")
 
     testImplementation("io.micronaut.test:micronaut-test-junit5")
     // Feature 004, R-006: test-only. The readiness test calls /health/readiness over HTTP, which is how

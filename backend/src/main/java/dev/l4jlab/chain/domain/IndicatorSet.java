@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 
 import java.util.List;
+import java.util.StringJoiner;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -38,5 +39,30 @@ public record IndicatorSet(
                     "IndicatorSet must hold " + REQUIRED_NAMES + ", got " + names);
         }
         indicators = List.copyOf(indicators);
+    }
+
+    /**
+     * The prompt form of this set: exactly the table the summarizer's user message template
+     * {@code {{indicators}}} renders, because LangChain4j fills a template variable with
+     * {@code toString()} (feature 005, research R-003). Deterministic, so the prompt is too.
+     *
+     * <p>Changing this changes what the model is sent. It is pinned by IndicatorSetPromptTest and by the
+     * golden run snapshots.
+     */
+    @Override
+    public String toString() {
+        StringJoiner lines = new StringJoiner("\n");
+        lines.add("Company: " + companyName);
+        lines.add("Reporting period: " + period);
+        lines.add("");
+        lines.add("Indicators:");
+        for (Indicator indicator : indicators) {
+            if (indicator.isApplicable()) {
+                lines.add("- " + indicator.name() + " = " + indicator.value());
+            } else {
+                lines.add("- " + indicator.name() + " = not applicable (" + indicator.notApplicableReason() + ")");
+            }
+        }
+        return lines.toString();
     }
 }

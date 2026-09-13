@@ -1,11 +1,13 @@
 package dev.l4jlab.chain.live;
 
+import dev.l4jlab.chain.agent.NonBlankSummaryGuardrail;
+import dev.l4jlab.chain.agent.Summarizer;
 import dev.l4jlab.chain.domain.Indicator;
 import dev.l4jlab.chain.domain.IndicatorSet;
 import dev.l4jlab.chain.domain.RunSummary;
 import dev.l4jlab.chain.model.ChatModelFactory;
 import dev.l4jlab.chain.model.ModelProperties;
-import dev.l4jlab.chain.node.SummarizeNode;
+import dev.langchain4j.agentic.AgenticServices;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,7 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * backend is configured. It never asserts the model's exact words, only structure and the invariants
  * that must hold whatever the model says.
  */
-class SummarizeNodeLiveTest {
+class SummarizerLiveTest {
 
     private ModelProperties properties;
 
@@ -81,9 +83,13 @@ class SummarizeNodeLiveTest {
 
     @Test
     void aRealProviderReturnsAUsableSummary() throws Exception {
-        SummarizeNode node = new SummarizeNode(new ChatModelFactory(properties).chatModel(), properties);
+        // Feature 005: the summarizer is a declared AI agent, built the way FinancialChainFactory builds it.
+        Summarizer summarizer = AgenticServices.agentBuilder(Summarizer.class)
+                .chatModel(new ChatModelFactory(properties).chatModel())
+                .outputGuardrails(new NonBlankSummaryGuardrail())
+                .build();
 
-        RunSummary summary = node.run(indicators());
+        RunSummary summary = RunSummary.from(summarizer.summarize(indicators()), null, properties);
 
         // Structure and invariants only. Never the model's exact words (Principle IV).
         assertThat(summary.text()).isNotBlank();
@@ -97,6 +103,6 @@ class SummarizeNodeLiveTest {
 
         System.out.println(
                 "Live run against " + summary.providerMode() + " using " + summary.modelId()
-                        + ", tokens in/out: " + summary.inputTokens() + "/" + summary.outputTokens());
+                        + " (token counts are recorded by the run trace, not by this direct call)");
     }
 }

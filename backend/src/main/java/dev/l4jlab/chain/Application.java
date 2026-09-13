@@ -7,9 +7,10 @@ import io.swagger.v3.oas.annotations.info.Info;
 /**
  * Entry point.
  *
- * <p>Where to look: {@code node/} holds exactly four files, one per step of the chain.
- * {@code core/ChainRunner} is the loop that walks them. The model is called in exactly one place,
- * {@code node/SummarizeNode}, and reached through exactly one place, {@code model/ChatModelFactory}.
+ * <p>Where to look: {@code agent/FinancialChain} is the chain, a LangChain4j agentic sequence of four steps.
+ * {@code node/} holds the three deterministic steps. {@code agent/Summarizer} is the one AI agent, with its
+ * instructions declared, and the only step that reaches a model, through {@code model/ChatModelFactory}.
+ * {@code agent/FinancialChainFactory} assembles them, and {@code agent/RunTraceAssembler} turns what LangChain4j recorded into each step's stored record.
  */
 @OpenAPIDefinition(
         info =

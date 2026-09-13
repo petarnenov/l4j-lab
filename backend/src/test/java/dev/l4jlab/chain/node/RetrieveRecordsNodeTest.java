@@ -1,5 +1,6 @@
 package dev.l4jlab.chain.node;
 
+import dev.l4jlab.chain.support.Validations;
 import dev.l4jlab.chain.core.ChainFailure;
 import dev.l4jlab.chain.dataset.SampleDatasetLoader;
 import dev.l4jlab.chain.domain.ChainRequest;
@@ -19,7 +20,7 @@ class RetrieveRecordsNodeTest {
     private final FakeChatModel model = new FakeChatModel();
 
     private RetrieveRecordsNode node() {
-        return new RetrieveRecordsNode(dataset);
+        return new RetrieveRecordsNode(dataset, Validations.boundary());
     }
 
     private static ChainRequest request(String companyId, String period) {
