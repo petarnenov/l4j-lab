@@ -1,63 +1,121 @@
 <!--
 SYNC IMPACT REPORT
-Version change: 2.1.0 → 2.2.0
-Bump rationale: MINOR. No principle is removed or redefined, and no locked stack entry is
-replaced. The stack named no backend application framework at all, so locking Micronaut adds
-a constraint rather than overturning one. Spring Boot appeared only in a feature plan, never
-in this document, so the MAJOR trigger for replacing a locked entry is not met. The versioning
-policy classifies this as materially expanded guidance.
+Version change: 2.2.0 → 3.0.0
+Bump rationale: MAJOR. Principle I is redefined in a backward-incompatible way. Version 2.2.0
+required LangChain4j at the lowest abstraction level, required the agent loop to stay visible in
+hand-written project code, and forbade declarative AI service generation. Version 3.0.0 reverses
+all three: the declarative approach is the first design, LangChain4j's own solutions (AI Services,
+agentic orchestration, tools, memory, retrieval, MCP, guardrails, listeners) MUST be used wherever
+the library provides them, and a hand-written replacement MUST NOT be written. The versioning
+policy names a redefined principle as MAJOR.
 
-Modified principles: none. All five principles are unchanged.
+Modified principles:
+  I. Learning-First Transparency (NON-NEGOTIABLE)
+    → I. Declarative-First, Library-First (NON-NEGOTIABLE)
+  V. Observable Agent Runs: traces MUST now be captured through LangChain4j's observation hooks
+    where the library provides them, rather than by hand instrumentation of a custom loop.
+  II, III, IV: unchanged in obligation. IV gains one bullet stating that deterministic tests of
+    declarative services run against a fake model implementing the LangChain4j model interface.
 
-Added sections:
-  Technology Stack Constraints > Application framework
+Added sections: none. Agent framework guidance is rewritten in place (see below).
 
 Modified entries:
-  Technology Stack Constraints, backend line now names Micronaut.
-  Technology Stack Constraints > Agent framework, new bullet bounding the Micronaut
-  LangChain4j integration against Principle I.
+  Technology Stack Constraints > Application framework: new bullet stating that proxies created
+    by LangChain4j AI Services and agentic services are library implementations of declared
+    interfaces, not a competing wiring mechanism, and that their instances are exposed as
+    Micronaut beans.
+  Technology Stack Constraints > Agent framework: rewritten. The "declarative vs explicit, justify
+    against Principle I" rule is inverted (the explicit API now needs the justification). The ban
+    on Micronaut LangChain4j declarative AI service generation is lifted; it MAY be used, and one
+    wiring style per service is required.
+  Additional constraints: dependency additions are justified against the new Principle I.
+  Development Workflow and Quality Gates: "a change touching the agent loop" becomes "a change
+    touching an agent declaration or orchestration".
 
-Removed sections: none
+Removed rules:
+  "The agent loop … MUST remain visible in project code; it MUST NOT be hidden behind a wrapper."
+  "LangChain4j MUST be used at the lowest abstraction level that still expresses the task."
+  "A dependency MUST NOT be added solely to save a few lines when it obscures the mechanism."
+  "[Micronaut LangChain4j] declarative AI service generation MUST NOT be used."
 
 Artifacts this amendment renders non-compliant, with the plan for each:
-  specs/001-financial-agent-chain/plan.md names Spring Boot 4.1.1, springdoc-openapi, and
-  Spring Data JPA. Regenerate with /speckit-plan against this version.
-  specs/001-financial-agent-chain/tasks.md carries Spring-specific tasks for the build file,
-  configuration binding, entry point, persistence, error handling, logging, and the OpenAPI
-  generator. Regenerate with /speckit-tasks after the plan.
-  specs/001-financial-agent-chain/research.md R-006 fixes springdoc-openapi as the OpenAPI
-  source. Revisit during the regenerated Phase 0.
-  specs/001-financial-agent-chain/quickstart.md documents Maven commands and a Spring Boot
-  run target. Both are superseded.
-  No application source exists yet, so nothing written is invalidated.
+  backend/src/main/java/dev/l4jlab/chain/core/ChainRunner.java, ChainNode.java, and the
+    sequencing in ChainRunService.java are a hand-written orchestration loop. Replace with a
+    LangChain4j agentic workflow (a sequence of the four steps), keeping run state, per-step
+    persistence, and asynchronous execution.
+  backend/src/main/java/dev/l4jlab/chain/node/SummarizeNode.java assembles the prompt by hand and
+    calls ChatModel.chat directly. Replace with an AI Service interface whose system and user
+    messages are declared, returning the summary.
+  backend/src/main/java/dev/l4jlab/chain/node/PrepareRequestNode.java, RetrieveRecordsNode.java,
+    ComputeIndicatorsNode.java: deterministic steps. They stay deterministic code (Principle I) and
+    are re-expressed as steps the orchestrator runs, without changing their arithmetic.
+  backend/src/main/java/dev/l4jlab/chain/model/ChatModelFactory.java: review whether the Micronaut
+    LangChain4j integration's configuration-driven model beans replace it while still meeting
+    Principle II (startup failure naming the absent setting, credential never logged).
+  Tracing in ChainRunner (NodeRecord, ModelExchangeHolder): move capture to LangChain4j listeners
+    and orchestration hooks (Principle V), keeping the persisted node_execution records and the
+    UI unchanged.
+  Tests that assert the hand-written structure (ChainRunnerTest, DeterministicNodeBudgetTest,
+    SummarizeNodeTest's inspection of the exact messages sent): rewrite against the declared
+    services and the workflow, still with a fake model and still asserting structure, not text.
+  specs/001-financial-agent-chain/research.md R-003 and R-010, and the Principle I rows of
+    specs/001-financial-agent-chain/plan.md, record decisions this version reverses. Superseded
+    by the migration feature's plan; left in place as history.
+  README.md presents the hand-written loop and "the only model call in the project" as the
+    reading path. Update with the migration feature.
+  Plan: a new feature, "migrate the chain to LangChain4j declarative AI services and agentic
+    orchestration", specified and planned against this version before any code changes. Until it
+    merges, the code above is a recorded, known non-compliance, not a precedent.
+  Features 003 (monorepo integration) and 004 (containerized deployment) are unaffected.
 
-Deferred TODOs: none
+Deferred TODOs:
+  TODO(AGENTIC_MODULE_AVAILABILITY): not verified whether langchain4j-agentic and its non-AI step
+    support are managed by the Micronaut Platform BOM 5.1.5 (LangChain4j 1.18.0). The migration
+    feature's research MUST confirm it before planning depends on it.
 -->
 
 # l4j AI Agent Lab Constitution
 
 ## Core Principles
 
-### I. Learning-First Transparency (NON-NEGOTIABLE)
+### I. Declarative-First, Library-First (NON-NEGOTIABLE)
 
-This project exists to teach how AI agents, the Model Context Protocol (MCP), and
-agent-to-agent (A2A) communication actually work. Clarity outranks cleverness in every
-trade-off.
+This project builds AI agents, Model Context Protocol (MCP) integrations, and agent-to-agent (A2A)
+communication with LangChain4j, and it uses the library the way the library is designed to be
+used: declaratively, and for everything it provides.
 
-- Every module MUST be readable end-to-end without stepping through a framework's internals.
-- The agent loop (prompt assembly, model call, tool selection, tool execution, result
-  folding) MUST remain visible in project code; it MUST NOT be hidden behind a wrapper that
-  a reader cannot follow.
-- Every non-obvious design decision MUST carry a short rationale comment or a note in the
-  feature spec explaining why it was chosen.
-- A dependency MUST NOT be added solely to save a few lines when it obscures the mechanism
-  being taught.
-- LangChain4j MUST be used at the lowest abstraction level that still expresses the task. A
-  higher-level LangChain4j construct MUST NOT be used where it collapses prompt assembly,
-  tool selection, or tool execution into a single opaque call.
+- The declarative approach is the first design. An agent MUST be declared as a LangChain4j AI
+  Service interface, with its system and user messages, template variables, and return type
+  declared on the interface or in committed prompt templates.
+- A multi-step or multi-agent flow MUST be declared with LangChain4j's agentic orchestration
+  (sequential, parallel, conditional, loop, or supervisor workflows, as the flow requires). A
+  hand-written loop, runner, or scheduler that sequences agents MUST NOT be written.
+- Every capability LangChain4j provides MUST be taken from LangChain4j rather than reimplemented:
+  AI Services, agentic orchestration, tools, chat memory, structured outputs, retrieval
+  augmentation, embedding stores, document loading and splitting, MCP clients and tool providers,
+  A2A integration, guardrails, and model and service listeners.
+- The explicit, programmatic API (for example, calling a chat model directly with hand-assembled
+  messages) MAY be used only where LangChain4j offers no declarative equivalent for the need. Each
+  such use MUST be recorded as a justified exception in the feature plan, naming the missing
+  declarative capability.
+- Declarative-first does not mean model-first. Arithmetic, data retrieval, validation, and any
+  step whose result must be exact and repeatable MUST remain deterministic code. Such steps MUST be
+  expressed as steps the LangChain4j orchestrator runs, or as tools an agent calls, never delegated
+  to a model.
+- Every non-obvious design decision MUST carry a short rationale comment or a note in the feature
+  spec. Where a declaration hides behavior a reader needs to know (a retry, a memory window, a
+  guardrail), the declaration MUST carry a comment saying what it does.
+- Where a needed LangChain4j capability is missing, experimental, or unavailable at the pinned
+  version, the feature plan MUST say so and choose between a version change under the
+  single-version rule and a justified exception. It MUST NOT silently fall back to a hand-written
+  replacement.
 
-Rationale: the deliverable of a learning project is understanding, not the smallest diff.
-Abstractions that save typing but hide the lesson destroy the project's only real output.
+Rationale: the library already encodes how prompts, tools, memory, retrieval, and orchestration fit
+together, and it will keep improving them. Declaring agents and flows states intent in a form the
+library can validate, observe, and evolve, while hand-written machinery around a model is code this
+project would have to own, test, and keep in step with the library by hand. Understanding is kept
+through declarations a reader can scan and through the traces required by Principle V, not
+through reimplementation.
 
 ### II. Provider-Agnostic Inference
 
@@ -68,7 +126,7 @@ is privileged in code.
 - The provider endpoint, the model identifier, and the credential MUST all be configuration.
   None of them MUST be hardcoded at a call site.
 - Switching between a local instance and a hosted one MUST require only a configuration
-  change, never an edit to agent or node code.
+  change, never an edit to agent or orchestration code.
 - Credentials MUST be read from the environment. A credential MUST NOT be committed, written
   into a log line, persisted into a run record, or shown on screen.
 - Missing or malformed configuration MUST fail at startup with a message naming the absent
@@ -109,8 +167,11 @@ accidental contracts that teach the wrong habits and break across agent boundari
 
 Tests are written before the implementation for every deterministic unit of behavior.
 
-- Backend logic (tool handlers, retrieval, schema validation, persistence) MUST have failing
-  tests written first, then made to pass.
+- Backend logic (tool handlers, deterministic workflow steps, retrieval, schema validation,
+  persistence) MUST have failing tests written first, then made to pass.
+- Declared AI Services and agentic workflows MUST be tested with a fake model that implements
+  the LangChain4j model interface, asserting on the messages the declaration produces, the tools
+  selected, the structured result, the order of workflow steps, and error handling.
 - Frontend logic MUST be tested with Vitest under the same order: test, red, implement,
   green.
 - Model output MUST NOT be asserted against exact text. Tests covering model interaction
@@ -136,15 +197,20 @@ software and MUST be held to ordinary standards, or agent bugs become unattribut
 An agent run that cannot be inspected after the fact is not finished work.
 
 - Every agent run MUST emit a structured trace recording the resolved prompt, each tool call
-  with its arguments and result, model identifier, token counts where available, and
-  per-step latency.
+  with its arguments and result, each workflow step with its input and output, model
+  identifier, token counts where available, and per-step latency.
+- Trace data MUST be captured through LangChain4j's observation mechanisms (model listeners,
+  AI Service and agent listeners, orchestration scope or monitoring hooks) wherever the library
+  provides them. Hand instrumentation MAY fill only what those mechanisms do not expose, and the
+  feature plan MUST name what it fills.
 - Traces MUST be persisted and MUST be retrievable in the user interface for any completed
   run.
 - Errors MUST record which step failed and the input that reached it.
 - Logs MUST be structured, and secrets or full document bodies MUST NOT be written into
   them.
 
-Rationale: the failure modes worth learning from live between the steps. Without a trace,
+Rationale: a declarative agent hides its mechanics by design, so the trace is where they become
+visible. The failure modes worth learning from live between the steps. Without a trace,
 debugging an agent degrades into guessing at the prompt.
 
 ## Technology Stack Constraints
@@ -178,8 +244,8 @@ Language and build:
 - The separately selectable live model tests required by Principle IV MUST be expressed as a
   distinct Gradle task or test suite, never as a flag a developer has to remember to pass.
 
-Rationale for pinning both: a learning project is read far more often than it is configured.
-One language, one release, and one build tool mean a learner never has to work out which of
+Rationale for pinning both: a project is read far more often than it is configured.
+One language, one release, and one build tool mean a reader never has to work out which of
 two toolchains produced the artifact in front of them.
 
 Application framework:
@@ -196,16 +262,19 @@ Application framework:
   level.
 - Dependency injection MUST use Micronaut's compile-time processing. A runtime
   reflection-based or classpath-scanning wiring mechanism MUST NOT be added on top of it.
+- Proxies that LangChain4j creates for declared AI Service interfaces and agentic workflows are
+  library implementations of those interfaces, not a wiring mechanism, and are permitted. Their
+  instances MUST be exposed to the application as Micronaut beans, through a Micronaut factory or
+  the Micronaut LangChain4j integration, so injection itself stays compile-time.
 - Configuration MUST be bound through Micronaut configuration properties reading environment
   variables, which is what makes the provider seam in Principle II a configuration change.
 - The OpenAPI description required by Principle III MUST be generated by Micronaut OpenAPI
   from the Java types. A second, hand-maintained description MUST NOT exist.
 - Database migrations remain Flyway, ordered and committed, per Additional constraints below.
 
-Rationale: compile-time dependency injection suits a project whose stated output is
-understanding. What is wired, and to what, is decided by a processor the learner can read the
-output of, rather than by reflection at startup. Naming one framework also ends the recurring
-question of which one a given feature plan happened to pick.
+Rationale: compile-time dependency injection keeps what is wired, and to what, decided by a
+processor whose output can be read, rather than by reflection at startup. Naming one framework
+also ends the recurring question of which one a given feature plan happened to pick.
 
 Inference providers:
 
@@ -219,24 +288,26 @@ Inference providers:
 
 Agent framework:
 
-- LangChain4j is the sole agent framework for this project. Every agent, tool binding,
-  chat memory, embedding store integration, and retrieval pipeline MUST be built on its
-  abstractions.
+- LangChain4j is the sole agent framework for this project. Every agent, workflow, tool
+  binding, chat memory, embedding store integration, retrieval pipeline, MCP integration, and
+  A2A integration MUST be built on its abstractions.
 - A competing agent framework MUST NOT be introduced, and a bespoke in-house replacement for
   what LangChain4j already provides MUST NOT be written.
+- Where LangChain4j offers both a declarative and an explicit API for the same capability, the
+  declarative API MUST be used. Choosing the explicit API requires a justified exception in the
+  feature plan under Principle I.
 - Model access MUST go through a LangChain4j model interface rather than a hand-rolled HTTP
   client against Ollama.
 - Vector storage MUST go through the LangChain4j pgvector embedding store rather than direct
   ad hoc SQL against the embedding tables.
-- Where LangChain4j offers both a declarative and an explicit API for the same capability,
-  the choice MUST be justified against Principle I in the feature plan.
 - LangChain4j MUST be pinned to a single version declared in the build file, and that version
-  MUST be recorded in the feature plan whenever an upgrade changes agent behavior.
-- The Micronaut LangChain4j integration MAY be used to build and inject model beans from
-  configuration, and MUST be pinned to a single declared version. Its declarative AI service
-  generation MUST NOT be used, because it collapses prompt assembly, tool selection, and tool
-  execution into one opaque call, which Principle I forbids. The convenience it offers is
-  exactly the lesson this project exists to show.
+  MUST be recorded in the feature plan whenever an upgrade changes agent behavior. Every
+  LangChain4j module MUST resolve to that one version.
+- The Micronaut LangChain4j integration MAY be used to build model beans from configuration and
+  to generate AI Service implementations at compile time, and MUST be pinned to a single declared
+  version. Each AI Service MUST be created in exactly one way, either through that integration or
+  through LangChain4j's own AI Services builder in a Micronaut factory, never both, and the
+  feature plan MUST state which.
 
 Additional constraints:
 
@@ -244,7 +315,9 @@ Additional constraints:
   endpoints, and model names MUST NOT be committed.
 - Database schema changes MUST ship as ordered, committed migrations. Schema MUST NOT be
   mutated by hand or auto-generated at startup in a way that diverges from the migrations.
-- Dependency additions MUST be justified in the pull request against Principle I.
+- Dependency additions MUST be justified in the pull request against Principle I: a LangChain4j
+  module that provides the capability MUST be preferred over any third-party or hand-written
+  alternative.
 
 ## Development Workflow and Quality Gates
 
@@ -253,9 +326,9 @@ Additional constraints:
 - Every feature MUST declare which principles it touches and how it satisfies them.
 - A change MUST NOT merge while any test fails, while a new deterministic behavior lacks a
   test, or while a new MCP tool or A2A message lacks a committed schema.
-- A change touching the agent loop MUST include at least one recorded example run in the
-  pull request description showing the resulting trace, and that trace MUST name the provider
-  mode it ran against.
+- A change touching an agent declaration or orchestration MUST include at least one recorded
+  example run in the pull request description showing the resulting trace, and that trace MUST
+  name the provider mode it ran against.
 - A change that alters model configuration, provider selection, or credential handling MUST
   state which provider modes it was verified against before it merges.
 - Review MUST verify constitutional compliance explicitly, not only correctness.
@@ -291,4 +364,4 @@ Compliance review:
   stated principles and actual practice MUST be resolved by amending the document or fixing
   the code, never by ignoring the gap.
 
-**Version**: 2.2.0 | **Ratified**: 2026-09-12 | **Last Amended**: 2026-09-12
+**Version**: 3.0.0 | **Ratified**: 2026-09-12 | **Last Amended**: 2026-09-13
