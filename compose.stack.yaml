@@ -7,6 +7,7 @@
 # publishes the database and model runtime ports so the backend can run from Gradle. Here nothing but the
 # load balancer is reachable from the host (FR-010), and the two setups can run at the same time.
 # Ports, variables, and defaults: specs/004-containerized-deployment/contracts/stack-topology.md.
+# The application is served at http://localhost:8866 unless L4J_HTTP_PORT says otherwise (006 FR-011a).
 
 name: financial-agent-chain-stack
 
@@ -88,9 +89,9 @@ services:
     user: nginx
     volumes:
       - ./deploy/load-balancer/nginx.conf:/etc/nginx/nginx.conf:ro
-    # FR-010, FR-011: the one published port, changeable without editing this file.
+    # FR-010, FR-011: the one published port, changeable without editing this file. 006 FR-011a: default 8866.
     ports:
-      - "${L4J_HTTP_PORT:-8000}:8080"
+      - "${L4J_HTTP_PORT:-8866}:8080"
     depends_on:
       backend:
         condition: service_healthy

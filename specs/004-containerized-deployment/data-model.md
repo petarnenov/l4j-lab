@@ -10,7 +10,7 @@ rules hold.
 
 | Component | Compose service | Image | Replicas | Internal port | Published to host | Health signal |
 |-----------|-----------------|-------|----------|---------------|-------------------|---------------|
-| Load balancer | `load-balancer` | `nginx:1.28-alpine` + `deploy/load-balancer/nginx.conf` | 1 | 8080 | `${L4J_HTTP_PORT:-8000}` | `GET /lb-health` → 200 |
+| Load balancer | `load-balancer` | `nginx:1.28-alpine` + `deploy/load-balancer/nginx.conf` | 1 | 8080 | `${L4J_HTTP_PORT:-8866}` | `GET /lb-health` → 200 |
 | Frontend instance | `frontend` | built from `frontend/Dockerfile` | `${FRONTEND_REPLICAS:-2}` | 8080 | no | `GET /healthz` → 200 |
 | Backend instance | `backend` | built from `backend/Dockerfile` | `${BACKEND_REPLICAS:-2}` | 8080 | no | `GET /health/readiness` → 200 |
 | Database | `postgres` | `pgvector/pgvector:pg17` | 1 | 5432 | no | `pg_isready` |
@@ -19,7 +19,7 @@ rules hold.
 ## Relationships and startup order
 
 ```text
-                     host :${L4J_HTTP_PORT:-8000}
+                     host :${L4J_HTTP_PORT:-8866}
                                  │
                         ┌────────▼────────┐
                         │  load-balancer  │  the only published port

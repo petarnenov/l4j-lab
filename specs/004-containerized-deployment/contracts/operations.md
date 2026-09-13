@@ -7,7 +7,7 @@ The commands the README documents. All run from the repository root. `S` below a
 
 | Task | Command | Result |
 |------|---------|--------|
-| Start, cloud mode | set `L4J_PROVIDER=cloud`, `L4J_MODEL_BASE_URL=https://ollama.com`, `L4J_MODEL_ID`, `OLLAMA_API_KEY` (shell or `.env`), then `S up -d --build` | 2 frontend, 2 backend, balancer, database; open `http://localhost:8000` |
+| Start, cloud mode | set `L4J_PROVIDER=cloud`, `L4J_MODEL_BASE_URL=https://ollama.com`, `L4J_MODEL_ID`, `OLLAMA_API_KEY` (shell or `.env`), then `S up -d --build` | 2 frontend, 2 backend, balancer, database; open `http://localhost:8866` |
 | Start, local mode | `S --profile local up -d --build` (the stack's default provider is `local`) | as above plus `ollama`; pull a model before the first run |
 | Pull a local model (once) | `S --profile local exec ollama ollama pull llama3.2` | model stored in `ollamadata` |
 | Status | `S ps` | every service healthy; one published port |
@@ -26,5 +26,5 @@ The commands the README documents. All run from the repository root. `S` below a
 | Frontend dev server | `cd frontend && npm run dev` |
 | Verify everything | `./gradlew check` (does not build images) |
 
-The stack and the development workflow can run at the same time: the stack publishes only 8000, the
+The stack and the development workflow can run at the same time: the stack publishes only 8866, the
 development workflow uses 5432, 11434, 8080, and 5173.

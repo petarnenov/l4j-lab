@@ -26,11 +26,34 @@ Steps one through three never touch a model. `ModelCallBudgetTest` asserts that 
 fake model, because it is the claim the whole exercise rests on. The design decisions behind the
 declarative chain are in `specs/005-langchain4j-declarative-migration/`.
 
+## Run it with make
+
+On macOS, Linux, and WSL, one Makefile at the root starts everything. Run `make` on its own for the full list
+of targets, grouped by purpose. Every target runs one of the commands documented below, which stay the path
+on native Windows. `./gradlew` is still the build.
+
+```bash
+make up                        # the packaged system on http://localhost:8866 (cloud or local, from your settings)
+make up-local && make pull-model   # the same, with the local model runtime and its model
+make dev                       # development: containers, backend, and frontend together; Ctrl+C stops both
+make check                     # verify everything, the same as ./gradlew check
+```
+
+Settings still come from your shell or a `.env` file, and the Makefile defines none of them. Pass one for a
+single command, for example `make scale BACKEND_REPLICAS=3`. The two targets that delete or overwrite data,
+`make reset` (stored runs) and `make golden` (the committed snapshots), ask first. Without a terminal they
+refuse unless you add `CONFIRM=yes`.
+
+The self-test for the Makefile, with every tool stubbed, is `bash scripts/make/selftest.sh`.
+
 ## Run the packaged system
 
 You need Docker and nothing else: no JDK, no Node.js. One command builds the images and starts the whole
 application: PostgreSQL, two backend instances, two frontend instances, and an nginx load balancer in front
 of both halves.
+
+`make up` and `make up-local` run these. `make pull-model` pulls the model `L4J_MODEL_ID` names, `llama3.2`
+by default, so unset any cloud settings before using local mode.
 
 ```bash
 # Cloud mode: put these in your shell or in a .env file at the repository root (git-ignored).
@@ -42,15 +65,16 @@ docker compose -f compose.stack.yaml --profile local up -d --build --wait
 docker compose -f compose.stack.yaml --profile local exec ollama ollama pull llama3.2
 ```
 
-Open **http://localhost:8000**. That is the only port the stack publishes. The backend, frontend, database,
-and model runtime are reachable only on the stack's private network. If 8000 is taken, set another port
+Open **http://localhost:8866**. That is the only port the stack publishes. The backend, frontend, database,
+and model runtime are reachable only on the stack's private network. If 8866 is taken, set another port
 without editing anything: `L4J_HTTP_PORT=9000 docker compose -f compose.stack.yaml up -d`.
 
 The stack reads the same variables as development (table below), with two differences: in local mode the
 model runtime is reached as `http://ollama:11434`, which is the default, and the database credentials come
 from `DATASOURCE_USER` and `DATASOURCE_PASSWORD`. Their `l4j` defaults are for local use only.
 
-Scale either half, with no file edited; the load balancer picks up the change within five seconds:
+Scale either half, with no file edited; the load balancer picks up the change within five seconds
+(`make scale BACKEND_REPLICAS=3`, `make logs-lb`):
 
 ```bash
 docker compose -f compose.stack.yaml up -d --scale backend=3       # or BACKEND_REPLICAS=3
@@ -58,8 +82,9 @@ docker compose -f compose.stack.yaml up -d --scale frontend=1      # or FRONTEND
 docker compose -f compose.stack.yaml logs --no-log-prefix load-balancer   # one JSON line per request, "upstream" names the instance
 ```
 
-Stop it with `docker compose -f compose.stack.yaml down`. Stored runs survive and are there on the next
-start. `down -v` deletes them.
+Stop it with `docker compose -f compose.stack.yaml down` (`make down`). Stored runs survive and are there on
+the next start. `down -v` deletes them (`make reset`, which asks first). If you started the model runtime
+with `--profile local`, add the same flag to `down`; `make down` and `make reset` always do.
 
 Every instance of a half is interchangeable: runs live in PostgreSQL, so any backend answers for any run.
 One limitation: if a backend instance stops while it is executing a run, that run stays in its last state.
@@ -71,6 +96,9 @@ The load balancer's routing, timeouts, and failure responses are all in `deploy/
 
 You need Docker, and Node.js at the major version in `frontend/.nvmrc` (24; `nvm install` in
 `frontend/` picks it up). The JDK is provisioned by the Gradle wrapper.
+
+`make dev` runs all three at once with labeled output; `make deps-up`, `make dev-backend`, and
+`make dev-frontend` run them one at a time.
 
 ```bash
 docker compose up -d          # PostgreSQL with pgvector
@@ -99,7 +127,7 @@ forty-five seconds into the first run.
 ## Test it
 
 ```bash
-./gradlew check               # everything: both suites and the contract check, no credential
+./gradlew check               # everything: both suites and the contract check, no credential (make check)
 ```
 
 That one command runs the backend suite, installs the frontend's dependencies from the lock file,
@@ -110,9 +138,9 @@ line in `frontend/build.gradle.kts`.
 Each half on its own:
 
 ```bash
-./gradlew :backend:test       # 145 tests, no credential, no network
-cd frontend && npm test       # 126 tests, including the contrast gate
-./gradlew :backend:liveTest   # reaches a real provider, its own task, never part of check
+./gradlew :backend:test       # 145 tests, no credential, no network        (make test-backend)
+cd frontend && npm test       # 126 tests, including the contrast gate       (make test-frontend)
+./gradlew :backend:liveTest   # reaches a real provider, never part of check (make test-live)
 ```
 
 The default backend suite needs Docker for the database tests, which skip with a named message when
@@ -140,7 +168,7 @@ The Java records are the single source. Micronaut OpenAPI emits the description 
 `openapi-typescript` generates the frontend types from it. The frontend declares no shape by hand.
 
 ```bash
-./gradlew :frontend:checkApi  # also part of ./gradlew check
+./gradlew :frontend:checkApi  # also part of ./gradlew check (make check-api)
 ```
 
 The check compiles the backend first, so the description is always current. It is written to
@@ -150,15 +178,17 @@ A failure there means a Java record changed without the frontend types being reg
 and commit the result; never edit `schema.d.ts`:
 
 ```bash
-cd frontend && npm run generate:api
+cd frontend && npm run generate:api   # make generate-api compiles the backend first, then runs this
 ```
 
 The application version is declared once, in `backend/build.gradle.kts`. The API description reads it
 from there, and `./gradlew check` fails if `frontend/package.json` carries a different one.
 
-Continuous integration runs the same commands on GitHub Actions, in three workflows under
-`.github/workflows/`: the backend suite when `backend/` changes, the frontend suite when `frontend/`
-changes, and the contract check when either does. A change to documentation or specifications alone
+Continuous integration runs the same commands on GitHub Actions, in workflows under `.github/workflows/`:
+the backend suite when `backend/` changes, the frontend suite when `frontend/` changes, and the contract
+check when either does. `stack` builds and smoke-tests the packaged system when its files change, and
+`make` runs the Makefile's self-test on macOS and Linux when the Makefile or `scripts/make/` changes. No
+workflow goes through make. A change to documentation or specifications alone
 runs neither suite. No workflow is given a model credential.
 
 ## What this is not

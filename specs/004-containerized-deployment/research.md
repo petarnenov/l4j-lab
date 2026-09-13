@@ -220,12 +220,15 @@ default. No credential enters an image or a committed file (FR-020).
 
 ## R-011: Published port
 
-**Decision**: `"${L4J_HTTP_PORT:-8000}:8080"` on the load balancer, which listens on 8080 inside the
+**Decision**: `"${L4J_HTTP_PORT:-8866}:8080"` on the load balancer, which listens on 8080 inside the
 container as an unprivileged user.
 
 **Rationale**: 8080 on the host is where the development backend runs, which caused a port conflict
-earlier in this project, and 5173 is Vite's. 8000 collides with neither, so the stack and the
+earlier in this project, and 5173 is Vite's. 8866 collides with neither, so the stack and the
 development workflow can run at the same time.
+
+Changed from 8000 in feature 006 at the maintainer's request (006 FR-011a). 8866 collides with none of 5432,
+8080, 5173, and 11434, so the rationale stands.
 
 ## R-012: Continuous integration for the stack
 

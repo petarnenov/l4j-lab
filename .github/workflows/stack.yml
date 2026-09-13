@@ -42,8 +42,8 @@ jobs:
 
       - name: The application and the API answer through the load balancer
         run: |
-          curl -fsS http://localhost:8000/ | grep -q '<div id="root"'
-          curl -fsS http://localhost:8000/api/catalog | grep -q '"companies"'
+          curl -fsS http://localhost:8866/ | grep -q '<div id="root"'
+          curl -fsS http://localhost:8866/api/catalog | grep -q '"companies"'
 
       - name: Exactly one port is published, on the load balancer
         run: |
@@ -57,7 +57,7 @@ jobs:
 
       - name: Both backend instances serve API requests
         run: |
-          for i in $(seq 20); do curl -fsS -o /dev/null http://localhost:8000/api/catalog; done
+          for i in $(seq 20); do curl -fsS -o /dev/null http://localhost:8866/api/catalog; done
           count=$($COMPOSE logs --no-log-prefix load-balancer \
             | grep '"uri":"/api/catalog"' \
             | grep -oE '"upstream":"[^"]*"' | grep -oE '[0-9.]+:8080' | sort -u | wc -l)

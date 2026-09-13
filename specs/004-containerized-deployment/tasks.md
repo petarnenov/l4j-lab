@@ -5,6 +5,8 @@ description: "Task list for Containerized Deployment"
 
 # Tasks: Containerized Deployment
 
+> Note (feature 006): the published default is now 8866. Results below record checks run on 8000 at the time.
+
 **Input**: Design documents from `/specs/004-containerized-deployment/`
 
 **Prerequisites**: plan.md, spec.md, research.md, data-model.md, contracts/stack-topology.md,

@@ -1,0 +1,35 @@
+# The Makefile's self-test (feature 006, research R-010). Everything it runs is a stub, so it needs no
+# Docker, JDK, Node.js, or credential. macOS runners ship GNU Make 3.81, the oldest version the Makefile
+# supports (SC-005); Ubuntu runners have Make 4.x. CI itself never goes through make.
+name: make
+
+on:
+  push:
+    paths:
+      - Makefile
+      - scripts/make/**
+      - .github/workflows/make.yml
+  pull_request:
+    paths:
+      - Makefile
+      - scripts/make/**
+      - .github/workflows/make.yml
+
+permissions:
+  contents: read
+
+jobs:
+  selftest:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Make version
+        run: make --version | head -1
+
+      - name: Self-test
+        run: bash scripts/make/selftest.sh

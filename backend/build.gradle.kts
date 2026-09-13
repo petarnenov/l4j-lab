@@ -129,6 +129,9 @@ val liveTestTask = tasks.register<Test>("liveTest") {
     useJUnitPlatform()
     // Never part of `check`: selecting these is a deliberate act.
     systemProperty("micronaut.environments", "live")
+    // The outcome depends on the provider and credential in the environment, which Gradle does not track, so
+    // a cached result could report a pass or skip from another configuration (found in 006, T027).
+    outputs.upToDateWhen { false }
 }
 
 tasks.named<Test>("test") {

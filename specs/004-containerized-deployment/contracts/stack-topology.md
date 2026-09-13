@@ -17,7 +17,7 @@ What `compose.stack.yaml` promises. Changing a row is a change to this contract.
 
 | Host | Container | Service |
 |------|-----------|---------|
-| `${L4J_HTTP_PORT:-8000}` | 8080 | `load-balancer` |
+| `${L4J_HTTP_PORT:-8866}` | 8080 | `load-balancer` |
 
 No other service publishes a port. `docker compose -f compose.stack.yaml ps --format '{{.Publishers}}'`
 lists exactly one published port across all services.
@@ -28,7 +28,7 @@ Variables are read from the shell or from a `.env` file at the repository root (
 
 | Variable | Used by | Default in the stack | Notes |
 |----------|---------|----------------------|-------|
-| `L4J_HTTP_PORT` | `load-balancer` | `8000` | The one published port |
+| `L4J_HTTP_PORT` | `load-balancer` | `8866` | The one published port |
 | `FRONTEND_REPLICAS` | `frontend` | `2` | |
 | `BACKEND_REPLICAS` | `backend` | `2` | |
 | `L4J_PROVIDER` | `backend` | `local` | `local` or `cloud`, as in development |

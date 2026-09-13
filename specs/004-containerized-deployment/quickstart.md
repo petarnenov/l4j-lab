@@ -21,9 +21,9 @@ S up -d --build            # add --profile local for local mode
 S ps                       # wait until every service is healthy
 ```
 
-Open `http://localhost:8000`, pick a company and period, start a run, and follow it to the summary. Open
+Open `http://localhost:8866`, pick a company and period, start a run, and follow it to the summary. Open
 Previous runs and open the run. Then request a path the application does not define:
-`curl -s http://localhost:8000/any/path/at/all | grep -c '<div id="root"'`.
+`curl -s http://localhost:8866/any/path/at/all | grep -c '<div id="root"'`.
 
 **Expect**: the start screen loads with populated lists; the run completes with four node records and opens
 from Previous runs; the arbitrary path returns the application's HTML (count 1), not a "not found" page.
@@ -35,10 +35,10 @@ unchanged behavior.
 ```bash
 S ps --format '{{.Service}} {{.Publishers}}'
 for port in 5432 8080 11434 5173; do nc -z -w 2 localhost $port && echo "OPEN $port" || echo "closed $port"; done
-curl -fsS http://localhost:8000/api/catalog >/dev/null && echo "api via balancer ok"
+curl -fsS http://localhost:8866/api/catalog >/dev/null && echo "api via balancer ok"
 ```
 
-**Expect**: only `load-balancer` lists a publisher, on 8000. Every other probe prints `closed` (run with the
+**Expect**: only `load-balancer` lists a publisher, on 8866. Every other probe prints `closed` (run with the
 development workflow stopped, since it legitimately uses those ports). The catalog is served through the
 balancer.
 
@@ -55,7 +55,7 @@ curl -fsS http://localhost:9000/ >/dev/null && echo ok
 
 ```bash
 S ps --format '{{.Service}}' | sort | uniq -c
-for i in $(seq 20); do curl -fsS http://localhost:8000/api/catalog >/dev/null; curl -fsS http://localhost:8000/ >/dev/null; done
+for i in $(seq 20); do curl -fsS http://localhost:8866/api/catalog >/dev/null; curl -fsS http://localhost:8866/ >/dev/null; done
 S logs --no-log-prefix load-balancer | grep -oE '"upstream":"[^"]*"' | grep -oE '[0-9.]+:8080' | sort | uniq -c
 S logs backend | grep -oE '^backend-[0-9]+' | sort -u
 ```
@@ -90,13 +90,13 @@ backend instances.
 
 ```bash
 S up -d --scale backend=3
-sleep 6; for i in $(seq 30); do curl -fsS http://localhost:8000/api/catalog >/dev/null; done
+sleep 6; for i in $(seq 30); do curl -fsS http://localhost:8866/api/catalog >/dev/null; done
 S logs --since 1m --no-log-prefix load-balancer | grep '"uri":"/api/' | grep -oE '"upstream":"[^"]*"' | grep -oE '[0-9.]+:8080' | sort -u   # three backend addresses
 S up -d --scale backend=1
-curl -fsS http://localhost:8000/api/catalog >/dev/null && echo "works at 1"
+curl -fsS http://localhost:8866/api/catalog >/dev/null && echo "works at 1"
 S up -d --scale backend=2
 docker stop $(S ps -q backend | head -1)   # stop one of the two
-for i in $(seq 20); do curl -s -o /dev/null -w '%{http_code}\n' http://localhost:8000/api/catalog; sleep 0.5; done
+for i in $(seq 20); do curl -s -o /dev/null -w '%{http_code}\n' http://localhost:8866/api/catalog; sleep 0.5; done
 ```
 
 **Expect**: three distinct backend upstreams after scaling to 3; the application still works at 1. After
@@ -106,7 +106,7 @@ stopping one of two instances, every response is `200` within 10 seconds of the 
 
 ```bash
 S up -d --scale backend=0
-curl -s -w '\n%{http_code} %{time_total}s\n' http://localhost:8000/api/catalog
+curl -s -w '\n%{http_code} %{time_total}s\n' http://localhost:8866/api/catalog
 ```
 
 **Expect**: `502` within about 2 seconds, with the JSON body from the load balancer contract. Restore with
@@ -116,7 +116,7 @@ curl -s -w '\n%{http_code} %{time_total}s\n' http://localhost:8000/api/catalog
 
 ```bash
 S up -d --scale frontend=0
-curl -s -w '\n%{http_code} %{time_total}s\n' http://localhost:8000/
+curl -s -w '\n%{http_code} %{time_total}s\n' http://localhost:8866/
 ```
 
 **Expect**: `502` within 5 seconds with the load balancer's short HTML page; `/api/catalog` still answers.
@@ -127,7 +127,7 @@ Restore with `S up -d`.
 ```bash
 L4J_PROVIDER=cloud L4J_MODEL_BASE_URL=https://ollama.com OLLAMA_API_KEY= S up -d backend
 S logs backend | grep -m1 OLLAMA_API_KEY
-curl -s -o /dev/null -w '%{http_code}\n' http://localhost:8000/api/catalog
+curl -s -o /dev/null -w '%{http_code}\n' http://localhost:8866/api/catalog
 ```
 
 **Expect**: backend instances fail at startup with a message naming `OLLAMA_API_KEY` and never become
