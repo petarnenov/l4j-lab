@@ -19,7 +19,9 @@ describe('App shell', () => {
 
   it('renders the page content inside the main landmark', () => {
     renderWithQuery(<App />)
-    expect(within(screen.getByRole('main')).getByRole('heading', { name: 'Run the chain' })).toBeInTheDocument()
+    expect(
+      within(screen.getByRole('main')).getByRole('heading', { name: 'Run the chain' }),
+    ).toBeInTheDocument()
   })
 
   it('constrains the content to a centred container rather than the full viewport (FR-005)', () => {
@@ -57,7 +59,9 @@ describe.each(['light', 'dark'] as const)('keyboard access in the %s theme', (th
     const checkedTheme = screen.getByRole('radio', { name: theme === 'dark' ? 'Dark' : 'Light' })
     expect(await tabUntil(user, checkedTheme)).toBe(true)
     expect(await tabUntil(user, company)).toBe(true)
-    expect(await tabUntil(user, screen.getByRole('combobox', { name: 'Reporting period' }))).toBe(true)
+    expect(await tabUntil(user, screen.getByRole('combobox', { name: 'Reporting period' }))).toBe(
+      true,
+    )
     const start = screen.getByRole('button', { name: 'Run the chain' })
     await waitFor(() => expect(start).toBeEnabled())
     expect(await tabUntil(user, start)).toBe(true)

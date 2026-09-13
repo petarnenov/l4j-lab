@@ -8,13 +8,29 @@ import { useRuns } from '../hooks/useRuns'
 function OutcomeTag({ status }: { status: string | undefined }) {
   switch (status) {
     case 'SUCCEEDED':
-      return <Tag icon={<CheckCircleOutlined />} color="success">SUCCEEDED</Tag>
+      return (
+        <Tag icon={<CheckCircleOutlined />} color="success">
+          SUCCEEDED
+        </Tag>
+      )
     case 'FAILED':
-      return <Tag icon={<CloseCircleOutlined />} color="error">FAILED</Tag>
+      return (
+        <Tag icon={<CloseCircleOutlined />} color="error">
+          FAILED
+        </Tag>
+      )
     case 'TIMED_OUT':
-      return <Tag icon={<CloseCircleOutlined />} color="error">TIMED_OUT</Tag>
+      return (
+        <Tag icon={<CloseCircleOutlined />} color="error">
+          TIMED_OUT
+        </Tag>
+      )
     default:
-      return <Tag icon={<ClockCircleOutlined />} color="processing">{status}</Tag>
+      return (
+        <Tag icon={<ClockCircleOutlined />} color="processing">
+          {status}
+        </Tag>
+      )
   }
 }
 
@@ -35,7 +51,8 @@ export function RunHistory({ onOpen }: { onOpen: (runId: string) => void }) {
   const { token } = theme.useToken()
 
   if (history.isLoading) return <Spin description="Loading previous runs" />
-  if (history.isError) return <Alert type="error" showIcon title="The history could not be loaded." />
+  if (history.isError)
+    return <Alert type="error" showIcon title="The history could not be loaded." />
 
   const runs = history.data?.pages.flatMap((page) => page.runs ?? []) ?? []
 
@@ -46,7 +63,9 @@ export function RunHistory({ onOpen }: { onOpen: (runId: string) => void }) {
       </Typography.Title>
 
       {runs.length === 0 ? (
-        <Typography.Text type="secondary">No runs yet. Start one and it will appear here.</Typography.Text>
+        <Typography.Text type="secondary">
+          No runs yet. Start one and it will appear here.
+        </Typography.Text>
       ) : (
         <ul
           style={{
@@ -61,7 +80,9 @@ export function RunHistory({ onOpen }: { onOpen: (runId: string) => void }) {
           {runs.map((run, index) => (
             <li
               key={run.runId}
-              style={{ borderTop: index === 0 ? 'none' : `1px solid ${token.colorBorderSecondary}` }}
+              style={{
+                borderTop: index === 0 ? 'none' : `1px solid ${token.colorBorderSecondary}`,
+              }}
             >
               <button
                 type="button"
@@ -78,7 +99,9 @@ export function RunHistory({ onOpen }: { onOpen: (runId: string) => void }) {
                   font: 'inherit',
                 }}
               >
-                <span style={{ display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'baseline' }}>
+                <span
+                  style={{ display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'baseline' }}
+                >
                   <Typography.Text strong style={{ overflowWrap: 'anywhere' }}>
                     {run.companyName ?? run.companyId}
                   </Typography.Text>

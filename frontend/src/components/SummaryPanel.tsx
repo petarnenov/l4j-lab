@@ -17,11 +17,15 @@ export function SummaryPanel({ summary }: { summary: string | null | undefined }
       }
     >
       {summary ? (
-        <div style={{ maxHeight: '24rem', overflowY: 'auto', whiteSpace: 'pre-wrap', lineHeight: 1.6 }}>
+        <div
+          style={{ maxHeight: '24rem', overflowY: 'auto', whiteSpace: 'pre-wrap', lineHeight: 1.6 }}
+        >
           {summary}
         </div>
       ) : (
-        <Typography.Text type="secondary">The summary appears once the fourth node has run.</Typography.Text>
+        <Typography.Text type="secondary">
+          The summary appears once the fourth node has run.
+        </Typography.Text>
       )}
 
       <Alert

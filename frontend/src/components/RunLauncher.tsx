@@ -25,7 +25,8 @@ export function RunLauncher({ onStarted }: { onStarted: (runId: string) => void 
   }, [periods, period])
 
   if (catalog.isLoading) return <Spin description="Loading the catalog" />
-  if (catalog.isError) return <Alert type="error" showIcon title="The catalog could not be loaded." />
+  if (catalog.isError)
+    return <Alert type="error" showIcon title="The catalog could not be loaded." />
 
   const submit = () =>
     startRun.mutate(
@@ -45,7 +46,11 @@ export function RunLauncher({ onStarted }: { onStarted: (runId: string) => void 
           alignItems: narrow ? 'stretch' : 'flex-end',
         }}
       >
-        <Form.Item label="Company" htmlFor="launcher-company" style={{ marginBottom: 0, flex: '2 1 280px' }}>
+        <Form.Item
+          label="Company"
+          htmlFor="launcher-company"
+          style={{ marginBottom: 0, flex: '2 1 280px' }}
+        >
           <Select
             id="launcher-company"
             value={companyId || undefined}
@@ -53,12 +58,22 @@ export function RunLauncher({ onStarted }: { onStarted: (runId: string) => void 
             virtual={false}
             // Long company names wrap in the open list rather than being clipped.
             styles={{ popup: { root: { maxWidth: 'calc(100vw - 32px)' } } }}
-            optionRender={(option) => <span style={{ whiteSpace: 'normal', overflowWrap: 'anywhere' }}>{option.label}</span>}
-            options={companies.map((c) => ({ value: c.companyId, label: c.companyName, title: c.companyName }))}
+            optionRender={(option) => (
+              <span style={{ whiteSpace: 'normal', overflowWrap: 'anywhere' }}>{option.label}</span>
+            )}
+            options={companies.map((c) => ({
+              value: c.companyId,
+              label: c.companyName,
+              title: c.companyName,
+            }))}
           />
         </Form.Item>
 
-        <Form.Item label="Reporting period" htmlFor="launcher-period" style={{ marginBottom: 0, flex: '1 1 160px' }}>
+        <Form.Item
+          label="Reporting period"
+          htmlFor="launcher-period"
+          style={{ marginBottom: 0, flex: '1 1 160px' }}
+        >
           <Select
             id="launcher-period"
             value={period || undefined}
@@ -84,7 +99,12 @@ export function RunLauncher({ onStarted }: { onStarted: (runId: string) => void 
       </div>
 
       {startRun.isError && (
-        <Alert style={{ marginTop: 16 }} type="error" showIcon title={(startRun.error as Error).message} />
+        <Alert
+          style={{ marginTop: 16 }}
+          type="error"
+          showIcon
+          title={(startRun.error as Error).message}
+        />
       )}
     </Form>
   )

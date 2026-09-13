@@ -3,7 +3,13 @@ import { RunLauncher } from '../components/RunLauncher'
 import { RunDetailPage } from './RunDetailPage'
 
 /** Pick a company and a period, start the chain, and watch it run on the same screen. */
-export function NewRunPage({ runId, onStarted }: { runId: string | null; onStarted: (runId: string) => void }) {
+export function NewRunPage({
+  runId,
+  onStarted,
+}: {
+  runId: string | null
+  onStarted: (runId: string) => void
+}) {
   return (
     <div>
       <section aria-labelledby="launcher-heading">
@@ -11,7 +17,8 @@ export function NewRunPage({ runId, onStarted }: { runId: string | null; onStart
           Run the chain
         </Typography.Title>
         <Typography.Paragraph type="secondary">
-          Four nodes run in order. The first three are deterministic. Only the fourth calls a language model.
+          Four nodes run in order. The first three are deterministic. Only the fourth calls a
+          language model.
         </Typography.Paragraph>
         <Card>
           <RunLauncher onStarted={onStarted} />

@@ -47,10 +47,12 @@ export function RunDetailPage({ runId }: { runId: string }) {
           }
           description={
             <>
-              <Typography.Paragraph style={{ marginBottom: 4 }}>{detail.failureReason}</Typography.Paragraph>
+              <Typography.Paragraph style={{ marginBottom: 4 }}>
+                {detail.failureReason}
+              </Typography.Paragraph>
               <Typography.Text type="secondary">
-                Everything the earlier nodes produced is still below, including the indicators, which were
-                computed before the failure.
+                Everything the earlier nodes produced is still below, including the indicators,
+                which were computed before the failure.
               </Typography.Text>
             </>
           }

@@ -42,9 +42,24 @@ describe('IndicatorTable', () => {
     render(
       <IndicatorTable
         indicators={[
-          { name: 'revenueGrowth', value: '-0.0500', notApplicableReason: undefined, derivedFrom: ['revenue'] },
-          { name: 'grossMargin', value: '0.3400', notApplicableReason: undefined, derivedFrom: ['revenue'] },
-          { name: 'currentRatio', value: '2.0000', notApplicableReason: undefined, derivedFrom: ['currentAssets'] },
+          {
+            name: 'revenueGrowth',
+            value: '-0.0500',
+            notApplicableReason: undefined,
+            derivedFrom: ['revenue'],
+          },
+          {
+            name: 'grossMargin',
+            value: '0.3400',
+            notApplicableReason: undefined,
+            derivedFrom: ['revenue'],
+          },
+          {
+            name: 'currentRatio',
+            value: '2.0000',
+            notApplicableReason: undefined,
+            derivedFrom: ['currentAssets'],
+          },
         ]}
       />,
     )

@@ -48,7 +48,14 @@ export function RunProgress({
           // A model call can take the better part of a minute. For a learner who asked for less motion the
           // active step shows a static hourglass instead (FR-018). `spin={false}` would not do it: antd's
           // icon component spins anything named "loading" regardless of that prop.
-          icon: index === active ? reducedMotion ? <HourglassOutlined /> : <LoadingOutlined /> : undefined,
+          icon:
+            index === active ? (
+              reducedMotion ? (
+                <HourglassOutlined />
+              ) : (
+                <LoadingOutlined />
+              )
+            ) : undefined,
         }))}
       />
     </Card>

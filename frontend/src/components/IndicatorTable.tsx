@@ -19,7 +19,9 @@ const LABELS: Record<string, string> = {
 /** The one place a value is rendered, shared by the table and the cards so they cannot diverge. */
 function renderValue(row: IndicatorView) {
   return row.value ? (
-    <Typography.Text style={{ fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace' }}>{row.value}</Typography.Text>
+    <Typography.Text style={{ fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace' }}>
+      {row.value}
+    </Typography.Text>
   ) : (
     <span>
       <Typography.Text type="secondary" italic>
@@ -35,7 +37,11 @@ function renderValue(row: IndicatorView) {
 
 export function IndicatorTable({ indicators }: { indicators: IndicatorView[] | null | undefined }) {
   if (!indicators || indicators.length === 0) {
-    return <Typography.Text type="secondary">The indicators appear once the third node has run.</Typography.Text>
+    return (
+      <Typography.Text type="secondary">
+        The indicators appear once the third node has run.
+      </Typography.Text>
+    )
   }
 
   // Below the md breakpoint each indicator becomes a card. A phone user should not scroll sideways to see
@@ -69,7 +75,9 @@ export function IndicatorTable({ indicators }: { indicators: IndicatorView[] | n
         {
           title: 'Indicator',
           dataIndex: 'name',
-          render: (name: string) => <Typography.Text strong>{LABELS[name] ?? name}</Typography.Text>,
+          render: (name: string) => (
+            <Typography.Text strong>{LABELS[name] ?? name}</Typography.Text>
+          ),
         },
         {
           title: 'Value',

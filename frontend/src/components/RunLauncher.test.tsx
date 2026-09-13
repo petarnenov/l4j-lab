@@ -20,7 +20,9 @@ async function openAndReadOptions(label: string) {
 }
 
 function optionTitles() {
-  return Array.from(document.querySelectorAll('.ant-select-item-option')).map((o) => o.getAttribute('title'))
+  return Array.from(document.querySelectorAll('.ant-select-item-option')).map((o) =>
+    o.getAttribute('title'),
+  )
 }
 
 describe('RunLauncher', () => {
@@ -50,7 +52,9 @@ describe('RunLauncher', () => {
 
     const { user } = await openAndReadOptions('Company')
     await waitFor(() => expect(optionTitles()).toContain('Harbor Foods (fictional)'))
-    await user.click(document.querySelector('.ant-select-item-option[title="Harbor Foods (fictional)"]')!)
+    await user.click(
+      document.querySelector('.ant-select-item-option[title="Harbor Foods (fictional)"]')!,
+    )
 
     await openAndReadOptions('Reporting period')
     await waitFor(() => expect(optionTitles()).toContain('2024-Q2'))
@@ -66,7 +70,9 @@ describe('RunLauncher', () => {
     await waitFor(() => expect(button).toBeEnabled())
     await user.click(button)
 
-    await waitFor(() => expect(onStarted).toHaveBeenCalledWith('11111111-1111-1111-1111-111111111111'))
+    await waitFor(() =>
+      expect(onStarted).toHaveBeenCalledWith('11111111-1111-1111-1111-111111111111'),
+    )
   })
 
   it('groups the controls into one form', async () => {

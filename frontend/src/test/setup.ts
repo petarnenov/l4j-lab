@@ -45,11 +45,15 @@ function installMatchMedia() {
       onchange: null,
       addEventListener: (_: string, listener: Listener) => media.listeners.add({ query, listener }),
       removeEventListener: (_: string, listener: Listener) => {
-        media.listeners.forEach((entry) => entry.listener === listener && media.listeners.delete(entry))
+        media.listeners.forEach(
+          (entry) => entry.listener === listener && media.listeners.delete(entry),
+        )
       },
       addListener: (listener: Listener) => media.listeners.add({ query, listener }),
       removeListener: (listener: Listener) => {
-        media.listeners.forEach((entry) => entry.listener === listener && media.listeners.delete(entry))
+        media.listeners.forEach(
+          (entry) => entry.listener === listener && media.listeners.delete(entry),
+        )
       },
       dispatchEvent: () => true,
     }

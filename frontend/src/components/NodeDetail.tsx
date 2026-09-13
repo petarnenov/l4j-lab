@@ -71,7 +71,9 @@ export function NodeDetail({ node }: { node: NodeView }) {
 
       <Section label="Produced">
         {node.outputPayload == null ? (
-          <Typography.Text type="secondary">Nothing was produced, because this node failed.</Typography.Text>
+          <Typography.Text type="secondary">
+            Nothing was produced, because this node failed.
+          </Typography.Text>
         ) : (
           <pre style={region}>{JSON.stringify(node.outputPayload, null, 2)}</pre>
         )}

@@ -13,7 +13,9 @@ export function NodeTimeline({ nodes }: { nodes: NodeView[] | undefined }) {
   const vertical = Grid.useBreakpoint().md === false
 
   if (!nodes || nodes.length === 0) {
-    return <Typography.Text type="secondary">Node records appear as the chain advances.</Typography.Text>
+    return (
+      <Typography.Text type="secondary">Node records appear as the chain advances.</Typography.Text>
+    )
   }
 
   const index = Math.min(selected, nodes.length - 1)

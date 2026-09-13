@@ -14,7 +14,9 @@ describe('RunDetailPage', () => {
     // FR-012, the whole point of User Story 1.
     renderWithQuery(<RunDetailPage runId="11111111-1111-1111-1111-111111111111" />)
 
-    await waitFor(() => expect(screen.getByRole('heading', { name: 'Summary' })).toBeInTheDocument())
+    await waitFor(() =>
+      expect(screen.getByRole('heading', { name: 'Summary' })).toBeInTheDocument(),
+    )
 
     expect(screen.getByText(/Revenue grew 0.2500/)).toBeInTheDocument()
     expect(screen.getByText('Revenue growth')).toBeInTheDocument()
@@ -26,7 +28,9 @@ describe('RunDetailPage', () => {
 
     await waitFor(() => expect(screen.getByText('gpt-oss:120b')).toBeInTheDocument())
     expect(screen.getByText('CLOUD')).toBeInTheDocument()
-    expect(screen.getByRole('heading', { level: 1, name: /Northwind Lighting/ })).toBeInTheDocument()
+    expect(
+      screen.getByRole('heading', { level: 1, name: /Northwind Lighting/ }),
+    ).toBeInTheDocument()
   })
 
   it('names the failing node and its reason, and keeps the earlier work visible', async () => {
@@ -117,7 +121,13 @@ describe('RunDetailPage', () => {
       http.get('/api/runs/:runId', () => {
         requests++
         return HttpResponse.json(
-          runDetail({ status: 'RUNNING', currentNode: 'Summarize', summary: null, endedAt: null, nodes: nodes().slice(0, 3) }),
+          runDetail({
+            status: 'RUNNING',
+            currentNode: 'Summarize',
+            summary: null,
+            endedAt: null,
+            nodes: nodes().slice(0, 3),
+          }),
         )
       }),
     )
