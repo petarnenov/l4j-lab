@@ -39,6 +39,41 @@ describe('App shell', () => {
 })
 
 /**
+ * Feature 008, T020. The existing tests above are untouched: SC-007 requires them to pass unchanged,
+ * and they do — antd's horizontal menu is one tab stop whatever its item count, and every assertion
+ * above names the item it wants rather than enumerating the menu.
+ */
+describe('the MCP console entry', () => {
+  it('appears in the header navigation alongside the pages already there (FR-001)', () => {
+    renderWithQuery(<App />)
+
+    const nav = within(screen.getByRole('banner')).getByRole('navigation', { name: 'Main' })
+    expect(within(nav).getByRole('menuitem', { name: /MCP console/ })).toBeInTheDocument()
+  })
+
+  it('is visibly a development tool rather than part of the product (FR-002)', () => {
+    renderWithQuery(<App />)
+
+    // The suite runs with DEV === true, so the item is present here. That it is *absent* from the
+    // packaged build is not a question a test in this environment can ask: `npm run check:dev-only`
+    // reads the real production output instead.
+    const item = screen.getByRole('menuitem', { name: /MCP console/ })
+    expect(item).toHaveTextContent('dev')
+  })
+
+  it('opens the console without disturbing the pages already there', async () => {
+    const user = userEvent.setup()
+    renderWithQuery(<App />)
+
+    await user.click(screen.getByRole('menuitem', { name: /MCP console/ }))
+    expect(await screen.findByRole('heading', { name: 'MCP console' })).toBeInTheDocument()
+
+    await user.click(screen.getByRole('menuitem', { name: 'New run' }))
+    expect(screen.getByRole('heading', { name: 'Run the chain' })).toBeInTheDocument()
+  })
+})
+
+/**
  * FR-015 and SC-006: every control reachable and operable without a pointing device, in both themes.
  * Whether the focus ring is visible is a painting question jsdom cannot answer; T057 checks it in Chromium.
  */

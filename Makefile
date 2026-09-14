@@ -59,7 +59,7 @@ deps-down: ## Stop the development containers (data kept)
 
 ##@ MCP billing server
 
-.PHONY: mcp-up mcp-down mcp-logs mcp-verify
+.PHONY: mcp-up mcp-up-topology mcp-down mcp-reset mcp-logs mcp-verify
 
 MCP := docker compose -f compose.mcp.yaml
 # The acceptance scenarios address individual replicas, which the base stack does not publish.
@@ -72,9 +72,29 @@ mcp-up: ## Start the MCP stack (3 replicas + proxy) on http://localhost:8877
 	$(MCP) up -d --build --wait
 	@printf 'MCP endpoint: http://localhost:%s/mcp\n' "$(MCP_PORT)"
 
+# Feature 008, FR-017: the console can address an individual replica only while they are published,
+# and the overlay was until now started solely inside mcp-verify, which stops it again. This leaves it
+# running, so the cross-replica scenarios can be demonstrated by hand.
+mcp-up-topology: ## Start the MCP stack with each replica published too (8881-8883); needed for the cross-replica demos
+	@$(SCRIPTS)/require.sh docker
+	@$(SCRIPTS)/port-free.sh $(MCP_PORT) "The MCP proxy needs it. Stop what is listening, or choose another with MCP_HTTP_PORT=<port> make mcp-up-topology."
+	$(MCP_TOPOLOGY) up -d --build --wait
+	@printf 'MCP endpoint: http://localhost:%s/mcp\nReplicas: %s, %s, %s\n' "$(MCP_PORT)" \
+		"http://localhost:$(or $(MCP_REPLICA_A_PORT),8881)" \
+		"http://localhost:$(or $(MCP_REPLICA_B_PORT),8882)" \
+		"http://localhost:$(or $(MCP_REPLICA_C_PORT),8883)"
+
 mcp-down: ## Stop the MCP stack (data kept)
 	@$(SCRIPTS)/require.sh docker
 	$(MCP) down
+
+# Feature 008, FR-012b: the console offers no undo for an applied fee adjustment, because an undo
+# would have to be a second, opposite change and the audit log would then describe two events where
+# one happened. This is what it names instead, and it deletes data, so it asks first.
+mcp-reset: ## Stop the MCP stack and DELETE its stored data, reloading the seeded fixtures on next start (asks first)
+	@$(SCRIPTS)/require.sh docker
+	@$(SCRIPTS)/confirm.sh "the MCP stack's stored billing data"
+	$(MCP_TOPOLOGY) down -v
 
 mcp-logs: ## Tail all six MCP services
 	@$(SCRIPTS)/require.sh docker
@@ -152,7 +172,7 @@ reset: ## Stop the stack and DELETE stored runs and pulled models (asks first)
 
 ##@ Verification
 
-.PHONY: check test test-backend test-frontend test-live check-api
+.PHONY: check test test-backend test-frontend test-console test-live check-api
 
 # check, test, and check-api reach :frontend:* tasks, so Node.js is checked up front rather than after the
 # backend suite has run for minutes (FR-015).
@@ -171,6 +191,10 @@ test-backend: ## Run the backend tests (Docker for the database tests, no creden
 test-frontend: ## Run the frontend tests
 	@$(SCRIPTS)/require.sh node npm
 	cd frontend && npm test
+
+test-console: ## Run the MCP console's live tests against the running MCP stack (needs `make mcp-up`)
+	@$(SCRIPTS)/require.sh java node npm
+	$(GRADLEW) :frontend:mcpConsoleTest
 
 test-live: ## Run the live model tests against the configured provider (skips when none)
 	@$(SCRIPTS)/require.sh java
