@@ -123,6 +123,7 @@ One call and its answer. The console's central record, and what FR-010 and FR-01
 | `durationMs` | `number` | Measured client-side |
 | `outcome` | see below | |
 | `deliberate` | `boolean` | True for the malformed catalogue (FR-011a), so a refusal is not read as a fault |
+| `networkError` | `string \| null` | Set only when the request never arrived. It is what separates "the stack is stopping" from a server that answered with 401, and what the edge case requires be explained rather than shown blank |
 
 **`outcome` is the classification FR-011 requires**, and it has exactly four values:
 

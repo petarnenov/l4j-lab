@@ -64,8 +64,47 @@ design. The console is a 2026-07-28 client and says so in its headers.
 |---|---|
 | `complete`, `isError` false | Shows `structuredContent` as the result and `content` as the server's own rendering |
 | `complete`, `isError: true` | Shows the server's sentence, marked a **tool** failure, alongside the raw exchange |
-| `input_required` | Shows the elicitation's `message` verbatim, states nothing has been applied, offers confirm/decline, echoes `requestState` on the retry with a new JSON-RPC id |
+| `input_required` | Shows the elicitation's `message` verbatim, states nothing has been applied, offers confirm/decline, and retries in the shape below |
 | `task` | Shows `taskId` and `status` at once, then polls |
+
+### The confirmation retry, in full
+
+Stated here in full because 007's own contract does not, and a client built from that contract alone
+sends a confirmation the server reads as a **refusal** — silently, with a response that looks like
+success (finding F-005). This console hit exactly that on its first live run. Repeating the omission
+in this file would be indefensible.
+
+```json
+{
+  "name": "post_fee_adjustment",
+  "arguments": { "…the same arguments the first call sent…" },
+  "inputResponses": {
+    "confirm_adjustment": { "action": "accept", "content": { "confirmed": true } }
+  },
+  "requestState": "<echoed byte-for-byte>"
+}
+```
+
+Three things carry weight, and each is load-bearing for a different reason:
+
+- **`content` is not optional.** The answer goes inside the MCP `ElicitResult` envelope
+  (`{ action, content }`), with the requested schema's fields inside `content`. The server reads
+  `inputResponses.confirm_adjustment.content.confirmed` and treats anything else as a refusal. A flat
+  `{ "confirmed": true }` — which is what 007's contract and the elicitation's own
+  `requestedSchema` read as if they meant — is understood as "no".
+- **The arguments are repeated.** The sealed `requestState` carries a digest of them, verified on
+  the retry.
+- **The JSON-RPC `id` differs** from the call it retries. 007's contract requires it, and the
+  exchange log shows both ids so the difference is visible rather than asserted.
+
+`action` is `"accept"` or `"decline"`. The server reads only `content.confirmed`, but sending the
+action is what the protocol's own shape says, and a console demonstrating the protocol should send
+the protocol.
+
+**A declined confirmation comes back with `isError: true`**, though 007's contract says a declined
+change is answered with a result and "not an error". The console shows the outcome for what it is —
+nothing was applied — while the exchange log classifies it as the server sent it, and names the
+divergence. Also F-005.
 
 A JSON-RPC `error` at any point is a **protocol** failure and is shown with its code. The two are
 never rendered by the same component, because not confusing them is the thing the console exists to

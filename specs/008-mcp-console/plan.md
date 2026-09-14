@@ -73,9 +73,16 @@ Task polling uses the server's own `pollIntervalMs` rather than a number chosen 
 | **Workflow gates** | Yes | **PASS** | Spec and plan exist before implementation; the LangChain4j inventory question is answered explicitly in R-013; no new deterministic behaviour will merge without a test. |
 
 **Post-Phase-1 re-evaluation**: unchanged. Phase 1 introduced four contract files and one data model,
-added no dependency, added no backend code, and the one exception was already recorded. Two findings
-about feature 007 were produced and filed as findings rather than acted on, which is what the spec's
-Out of Scope section requires (R-007, R-011).
+added no dependency, added no backend code, and the exceptions are recorded below.
+
+**Post-implementation**: still unchanged, and the finding count is not. Phase 1 predicted two
+observations about feature 007 (R-007, R-011). Implementation produced **six**, and the three the
+live suite added are heavier than the two predicted: a `tools/list` that drops eighteen schema
+keywords it claims to serve verbatim (F-001), a confirmation retry whose documented shape the server
+reads as a refusal (F-005), and an entitlement path answering HTTP 500 with an internal message
+(F-006). All six are filed rather than acted on, which is what the spec's Out of Scope section
+requires, and each is pinned by a test so a change in either direction is noticed. See
+[findings.md](./findings.md).
 
 ## Project Structure
 
@@ -116,6 +123,8 @@ frontend/
         ├── principals.ts          # the six fixture names only — the rest comes from the token
         ├── transport.ts           # envelope + headers; splits protocol failure from tool failure
         ├── wire.ts                # the TypeScript envelope types (the Principle III exception)
+        ├── devOnlyMarker.ts        # the one string check-dev-only.mjs greps the build for
+        ├── liveFixture.ts          # the live suite's targets, minting and stack precheck (R-005)
         ├── malformed.ts           # the fixed catalogue of three (FR-011a)
         ├── schemaForm.tsx         # argument fields derived from inputSchema (FR-008)
         ├── hooks/
@@ -132,6 +141,7 @@ frontend/
         │   ├── ToolList.tsx           # FR-007
         │   ├── ToolCallPanel.tsx      # FR-008, FR-009
         │   ├── ExchangeView.tsx       # FR-010, FR-011
+        │   ├── ExchangeLog.tsx        # every call this session made, newest first
         │   ├── MalformedPanel.tsx     # FR-011a
         │   ├── ElicitationPanel.tsx   # FR-012, FR-012a, FR-012b
         │   ├── TaskWatcher.tsx        # FR-013, FR-014
@@ -157,3 +167,4 @@ directory is what makes SC-007 checkable by inspection — nothing under `src/co
 | Violation | Why Needed | Simpler Alternative Rejected Because |
 |---|---|---|
 | Hand-written TypeScript types for the MCP wire envelope (`src/mcp/wire.ts`), against Principle III's "the same shape MUST NOT be declared twice by hand" | The console must read `resultType`, `inputRequests`, `requestState`, `taskId`, `status`, and the JSON-RPC error shape to behave correctly at all. Feature 007 publishes no machine-readable description of its HTTP surface — deliberately, as the spec's Assumptions record: its contract is the tool declarations it serves, and those cover tool *arguments*, not the envelope around them. | Generating from an OpenAPI description was rejected because there is none to generate from, and adding one means changing feature 007's server, which this feature puts out of scope. Deriving the envelope at runtime was rejected because the console must know the field names before it can branch on them. **The exception is bounded by a check, not by a promise**: `wire.ts` describes only the envelope, never a tool's arguments or results (those stay derived), and the live suite asserts each declared field against what the running server actually sends — so a moved field fails a test rather than rendering blank. Recorded also as a finding for a future feature 007 change. |
+| A second copy of the issuer's principal claims in `src/mcp/test/mcpHandlers.ts` (`FIXTURE_CLAIMS`), against the same Principle III clause | The deterministic suite must mint a token-shaped credential for each of the six seeded principals, and `007/contracts/token-issuer.md` publishes that table only as markdown prose. There is nothing machine-readable to read it from. | Reading the markdown table at test time was rejected as parsing prose for a fixture. Minting through the real issuer was rejected outright: the deterministic suite must run with no network and no credential (Principle IV). **Bounded**: this copy lives only in test infrastructure — `principals.ts`, the module the console actually ships, holds the six *names* and nothing else, and every claim the console displays is decoded from the token the server minted. If the two ever disagree, the live suite is what notices, since it uses the real issuer. |

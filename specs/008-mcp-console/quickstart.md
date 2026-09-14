@@ -137,7 +137,7 @@ cd frontend && npm run check:dev-only    # builds, and fails if the console is i
 ## Reset
 
 ```bash
-make mcp-reset            # discards the stack's stored data and reloads the seeded fixtures (asks first)
+make mcp-reset            # discards the stack's stored data (asks first); the fixtures reload on the next start
 make mcp-down             # stop, keeping data
 ```
 

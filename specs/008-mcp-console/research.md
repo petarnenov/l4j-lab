@@ -119,6 +119,30 @@ the committed contracts themselves (R-004). A future tool introducing `oneOf` or
 therefore fails a test in this repository the day the contract file changes — the fallback exists
 for the running system, not as an excuse for the suite.
 
+### What actually arrives, and why half this table is dormant
+
+Added after implementation, because the table above describes the *contracts* and the console
+renders what the **server** declares — and those turned out not to be the same document.
+
+Feature 007's `tools/list` drops `enum`, `format`, `default`, `minimum`, `maximum`, `minLength` and
+`maxLength` on the way out, and turns `integer` into `number` (finding F-001, measured: eighteen
+keywords across the five tools). So against a running stack:
+
+| Row above | What happens against the real server |
+|---|---|
+| `enum` → select | **Dormant.** `status` arrives as a bare string and renders as a text box |
+| `format: "date"` → date picker | **Dormant.** `started_from`, `started_to` and `effective_date` render as text boxes |
+| `minimum` / `maximum` | **Dormant.** `page_size` and `limit` have no bounds |
+| `default` prefilled | **Dormant.** nothing is prefilled |
+| `type`, `description`, `required` | Live. These do survive, and they are what the form is mostly built from |
+
+The renderer is not wrong and neither is FR-008: it derives from what is declared, and what is
+declared is impoverished. But a reader of the table above would reasonably expect a chooser for
+`status` and would not get one, so the gap is recorded here rather than left to be discovered at the
+screen. The dormant rows stay in the code: they cost nothing, they are exercised by the
+deterministic suite against the committed contracts, and they light up by themselves the day F-001
+is fixed.
+
 **Alternatives considered**: `@rjsf/antd` (rejected: size, and it pulls its own validator);
 hand-writing a form per tool (rejected outright — it is the precise thing FR-008 forbids).
 

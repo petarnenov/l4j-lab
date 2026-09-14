@@ -409,10 +409,16 @@ so it follows the stories rather than preceding them.
   anything that does not behave as written — including the timing note and the troubleshooting table.
 - [X] T069 [P] Add a short "MCP console" section to `README.md` pointing at this feature's quickstart
   and saying plainly that it is development-only and absent from the packaged build.
-- [X] T070 [P] Create `specs/008-mcp-console/findings.md` recording the two observations about feature
-  007 that this feature deliberately did not act on: `post_fee_adjustment`'s `outputSchema` carries no
-  `previous_fee_bps` (research R-007), and nothing in `serverInfo` or the response headers identifies
-  the answering replica (research R-011). The spec requires these be recorded, not fixed here.
+- [X] T070 [P] Create `specs/008-mcp-console/findings.md` recording every observation about feature
+  007 that this feature deliberately did not act on. Two were predicted at planning time:
+  `post_fee_adjustment`'s `outputSchema` carries no `previous_fee_bps` (research R-007, filed F-002),
+  and nothing in `serverInfo` or the response headers identifies the answering replica (R-011, filed
+  F-003). **Four more came out of the live suite** and are heavier: `tools/list` drops eighteen schema
+  keywords it claims to serve verbatim (F-001), `start_billing_run` declares a different output shape
+  than its contract documents (F-004), the confirmation retry's documented shape is read by the server
+  as a refusal (F-005), and a cross-advisor search answers HTTP 500 with an internal message (F-006).
+  Each carries what a fix would look like, and each is pinned by a test so a change in either
+  direction is noticed. The spec requires these be recorded, not fixed here.
 - [ ] T071 Check SC-001 the only way it can be checked: give `frontend/src/mcp/McpConsolePage.tsx` as
   it renders to someone who has not seen it, and confirm they reach a read-only tool's result within
   two minutes without consulting documentation. Fix what confused them in that file, and note the
