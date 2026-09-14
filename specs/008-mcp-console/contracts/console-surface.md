@@ -55,6 +55,7 @@ Switching principal must not re-run anything already on screen (FR-006).
 | Each tool's `title` and `description` verbatim | US1-1 |
 | A field per declared argument, built from `inputSchema` | FR-008, US1-2 |
 | Which arguments are required | FR-009, US1-2 |
+| Required arguments **first**, keeping the server's order within each group | SC-001, and F-001: the server does not preserve declared order, so the one field you must fill can arrive fifth of seven |
 | The call disabled while a required argument is empty | FR-009 |
 | An unrenderable schema keyword as a marked raw-JSON field, never dropped | R-003 |
 

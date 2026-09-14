@@ -32,15 +32,31 @@ function kindOf(schema: Record<string, unknown>): FieldKind {
   return 'raw'
 }
 
+/**
+ * Every declared property, required ones first.
+ *
+ * The ordering is a presentation decision forced by the server: it does not preserve the order the
+ * contracts declare (finding F-001), and `search_billing_runs` arrives with its *only* required
+ * field fifth of seven. That is the tool SC-001 is measured on, and scrolling past four optional
+ * fields to find the one you must fill is most of a first-timer's two minutes.
+ *
+ * Within each group the server's order is kept, because the console has nothing better to go on —
+ * it cannot see the contract, only what was served. Alphabetical would be inventing an order;
+ * partitioning by what the server itself marked required is not.
+ *
+ * This is ordering, not derivation: every declared field is still rendered and none is invented,
+ * which is all FR-008 asks.
+ */
 export function properties(schema: JsonSchema): Property[] {
   const declared = (schema.properties ?? {}) as Record<string, Record<string, unknown>>
   const required = (schema.required ?? []) as string[]
-  return Object.entries(declared).map(([name, property]) => ({
+  const all = Object.entries(declared).map(([name, property]) => ({
     name,
     kind: kindOf(property),
     required: required.includes(name),
     schema: property,
   }))
+  return [...all.filter((property) => property.required), ...all.filter((p) => !p.required)]
 }
 
 /** Seeds the form from the defaults the server declared, so a default is offered rather than typed. */

@@ -421,8 +421,17 @@ so it follows the stories rather than preceding them.
   direction is noticed. The spec requires these be recorded, not fixed here.
 - [ ] T071 Check SC-001 the only way it can be checked: give `frontend/src/mcp/McpConsolePage.tsx` as
   it renders to someone who has not seen it, and confirm they reach a read-only tool's result within
-  two minutes without consulting documentation. Fix what confused them in that file, and note the
-  outcome in `specs/008-mcp-console/findings.md`.
+  two minutes without consulting documentation. Fix what confused them in that file.
+
+  **Left open deliberately — it needs a person who has not seen the page, and the implementer is not
+  that person.** What *was* done instead, and is not a substitute: a structured first-run walk in
+  Chrome against a running stack, which found one concrete obstacle and fixed it. The argument form
+  rendered in the server's order, and the server does not preserve the contracts' — so
+  `search_billing_runs`, the tool this criterion is measured on, put its only required field fifth of
+  seven, below four optional ones. `properties()` in `frontend/src/mcp/schemaForm.tsx` now renders
+  required fields first (research R-003, three tests in `schemaForm.test.tsx`). The rest of the first
+  run — principal, target, server, tools, call, result — read in a sensible order and nothing else
+  was changed on taste alone.
 
 ---
 

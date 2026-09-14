@@ -136,6 +136,16 @@ keywords across the five tools). So against a running stack:
 | `default` prefilled | **Dormant.** nothing is prefilled |
 | `type`, `description`, `required` | Live. These do survive, and they are what the form is mostly built from |
 
+**A third consequence, and the only one worth acting on.** The server does not preserve the order
+the contracts declare either — `search_billing_runs` arrives with its *only* required field fifth of
+seven. That is the tool SC-001 is measured on, and scrolling past four optional fields to find the
+one you must fill is most of a first-timer's two minutes. So `properties()` renders required fields
+first, keeping the server's order within each group.
+
+That is ordering, not derivation: every declared field is still rendered and none is invented, which
+is all FR-008 asks. Alphabetical would be inventing an order; partitioning by what the server itself
+marked required is reading one.
+
 The renderer is not wrong and neither is FR-008: it derives from what is declared, and what is
 declared is impoverished. But a reader of the table above would reasonably expect a chooser for
 `status` and would not get one, so the gap is recorded here rather than left to be discovered at the

@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
 import { renderWithQuery } from '../test/render'
-import { SchemaForm, missingRequired, prunedArguments } from './schemaForm'
+import { SchemaForm, missingRequired, properties, prunedArguments } from './schemaForm'
 import { TOOL_CONTRACTS } from './test/mcpHandlers'
 import type { JsonSchema } from './wire'
 
@@ -74,6 +74,58 @@ describe('fields derived from the declared input shape', () => {
     renderWithQuery(<SchemaForm schema={requested} values={{}} onChange={vi.fn()} />)
 
     expect(screen.getByLabelText(/^confirmed/)).toBeInTheDocument()
+  })
+})
+
+describe('the order the fields appear in', () => {
+  it('puts the required ones first, whatever order the server sent', () => {
+    // The server does not preserve the declared order (finding F-001): search_billing_runs arrives
+    // with firm_id fifth of seven, so its only required field sits below four optional ones. That
+    // is the tool SC-001 is measured on, and scrolling past four fields to find the one you must
+    // fill is most of a first-timer's two minutes.
+    //
+    // Ordering is presentation, not derivation: every declared field is still rendered and none is
+    // invented, which is all FR-008 asks.
+    const scrambled: JsonSchema = {
+      type: 'object',
+      properties: {
+        started_from: { type: 'string' },
+        cursor: { type: 'string' },
+        firm_id: { type: 'string' },
+        page_size: { type: 'integer' },
+      },
+      required: ['firm_id'],
+    }
+
+    expect(properties(scrambled).map((property) => property.name)).toEqual([
+      'firm_id',
+      'started_from',
+      'cursor',
+      'page_size',
+    ])
+  })
+
+  it('keeps the server order within each group, because it has nothing better to go on', () => {
+    const schema: JsonSchema = {
+      type: 'object',
+      properties: {
+        b: { type: 'string' },
+        a: { type: 'string' },
+        d: { type: 'string' },
+        c: { type: 'string' },
+      },
+      required: ['d', 'a'],
+    }
+
+    // Not alphabetical, and not the order of `required` either: the declared order, partitioned.
+    expect(properties(schema).map((property) => property.name)).toEqual(['a', 'd', 'b', 'c'])
+  })
+
+  it('renders the required ones first on screen, not merely in the model', () => {
+    renderWithQuery(<SchemaForm schema={search.inputSchema} values={{}} onChange={vi.fn()} />)
+
+    const labels = screen.getAllByText(/^(firm_id|status|advisor_id|cursor|page_size)$/)
+    expect(labels[0]).toHaveTextContent('firm_id')
   })
 })
 
