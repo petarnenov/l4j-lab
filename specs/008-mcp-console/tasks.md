@@ -394,20 +394,20 @@ so it follows the stories rather than preceding them.
   asserts the check rejects it, then asserts a guarded fixture passes. Wire it into the same
   `check:dev-only` npm script so both run together. A check never seen to fail is not evidence, and a
   proof performed once by hand leaves nothing behind for the next reader (research R-002, FR-001a).
-- [ ] T065 [P] Run `make test-frontend` and confirm every pre-existing suite under `frontend/src/`
+- [X] T065 [P] Run `make test-frontend` and confirm every pre-existing suite under `frontend/src/`
   passes **unchanged** — `frontend/src/App.test.tsx`, `frontend/src/components/*.test.tsx`,
   `frontend/src/pages/*.test.tsx` and `frontend/src/theme/*.test.*` with no assertion edited and no
   existing component touched (SC-007).
-- [ ] T066 [P] Bring the console's controls to the standard the existing pages are held to: both
+- [X] T066 [P] Bring the console's controls to the standard the existing pages are held to: both
   themes, keyboard-reachable, named regions — as
   [contracts/console-surface.md](./contracts/console-surface.md) requires. Follow the patterns already
   in `frontend/src/components/`.
-- [ ] T067 [P] Run `npm run lint` and `npm run format` in `frontend/` over the new code in
+- [X] T067 [P] Run `npm run lint` and `npm run format` in `frontend/` over the new code in
   `frontend/src/mcp/`, `frontend/vite.config.ts`, `frontend/vitest.mcp.config.ts` and
   `frontend/scripts/check-dev-only.mjs`, and commit the result.
-- [ ] T068 Walk [quickstart.md](./quickstart.md) end to end against `make mcp-up-topology` and correct
+- [X] T068 Walk [quickstart.md](./quickstart.md) end to end against `make mcp-up-topology` and correct
   anything that does not behave as written — including the timing note and the troubleshooting table.
-- [ ] T069 [P] Add a short "MCP console" section to `README.md` pointing at this feature's quickstart
+- [X] T069 [P] Add a short "MCP console" section to `README.md` pointing at this feature's quickstart
   and saying plainly that it is development-only and absent from the packaged build.
 - [X] T070 [P] Create `specs/008-mcp-console/findings.md` recording the two observations about feature
   007 that this feature deliberately did not act on: `post_fee_adjustment`'s `outputSchema` carries no
