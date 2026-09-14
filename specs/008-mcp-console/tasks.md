@@ -100,29 +100,29 @@ default Vitest project.
 
 ### Tests (write first, confirm they fail)
 
-- [ ] T008 [P] Write failing tests in `frontend/src/mcp/transport.test.ts` for the envelope builder:
+- [X] T008 [P] Write failing tests in `frontend/src/mcp/transport.test.ts` for the envelope builder:
   `MCP-Protocol-Version` mirrors `params._meta[…/protocolVersion]`, `Mcp-Method` mirrors `method`,
   `Mcp-Name` mirrors `params.name` on `tools/call` and is absent otherwise, the `_meta` block matches
   [contracts/mcp-client.md](./contracts/mcp-client.md) including both declared capabilities, and ids
   are monotonic strings with a **new** id on a confirmation retry.
-- [ ] T009 [P] Write failing tests in `frontend/src/mcp/transport.outcome.test.ts` for the four-way
+- [X] T009 [P] Write failing tests in `frontend/src/mcp/transport.outcome.test.ts` for the four-way
   classification in [data-model.md](./data-model.md): `ok`; `tool-error` (HTTP 200, `result`,
   `isError: true`); `protocol-error` (a JSON-RPC `error`, **including `-32602` arriving at HTTP 200**,
   which is the case that breaks any status-only classifier); and `transport-error` in **both** its
   forms — a 401, and a request that never arrived at all, which is what a call made while the stack
   is shutting down looks like (spec edge case). The file is named for `transport.ts` because that is
   where the classification lives; there is no separate `outcome.ts`.
-- [ ] T010 [P] Write failing tests in `frontend/src/mcp/targets.test.ts`: the base URL for each of the
+- [X] T010 [P] Write failing tests in `frontend/src/mcp/targets.test.ts`: the base URL for each of the
   four targets, the three reachability states, an unreachable replica carrying an `absenceReason` that
   names `make mcp-up-topology`, and an unreachable proxy being a distinct state from an unreachable
   replica.
-- [ ] T011 [P] Write failing tests in `frontend/src/mcp/principals.test.ts`: the six fixture names from
+- [X] T011 [P] Write failing tests in `frontend/src/mcp/principals.test.ts`: the six fixture names from
   `007/contracts/token-issuer.md`, user/firm/role/advisors read from the token's `sub`, `firm_id`,
   `role`, `advisor_ids` claims, expiry taken from `exp` rather than from a failed call, and **nothing
   written to `localStorage` or to any other shared store** (research R-009). That last assertion is
   also what keeps the "two people using the console at once" edge case true: it holds only while the
   chosen principal and its token stay in tab-local memory (research R-010).
-- [ ] T012 [P] Create `frontend/src/mcp/test/mcpHandlers.ts`: MSW handlers for `POST /mcp-dev/*/mcp`
+- [X] T012 [P] Create `frontend/src/mcp/test/mcpHandlers.ts`: MSW handlers for `POST /mcp-dev/*/mcp`
   and `POST /mcp-dev/proxy/dev/token`, serving `tools/list` from the committed
   `specs/007-mcp-billing-server/contracts/tools/*.json` through the T002 alias. **No copied fixture**
   (research R-004). Register them alongside the existing handlers in `frontend/src/test/handlers.ts`
@@ -130,36 +130,36 @@ default Vitest project.
 
 ### Implementation
 
-- [ ] T013 [P] Create `frontend/src/mcp/wire.ts`: TypeScript types for the JSON-RPC **envelope only** —
+- [X] T013 [P] Create `frontend/src/mcp/wire.ts`: TypeScript types for the JSON-RPC **envelope only** —
   `resultType`, `isError`, `content`/`structuredContent`, `inputRequests`, `requestState`, the task
   fields, and the JSON-RPC error shape. Carry a comment recording the Principle III exception from
   plan.md's Complexity Tracking and its two bounds: no tool argument or result shape may be typed
   here, and the live suite asserts each field against the running server.
-- [ ] T014 [P] Implement `frontend/src/mcp/targets.ts` to make T010 pass, with the base-URL seam
+- [X] T014 [P] Implement `frontend/src/mcp/targets.ts` to make T010 pass, with the base-URL seam
   research R-005 describes (dev-proxy paths in the browser, absolute URLs in the live suite).
-- [ ] T015 [P] Implement `frontend/src/mcp/principals.ts` and
+- [X] T015 [P] Implement `frontend/src/mcp/principals.ts` and
   `frontend/src/mcp/hooks/usePrincipalToken.ts` to make T011 pass: the six names are the only thing
   written down; decode claims **without verification, for display only**, with a comment saying
   exactly that; cache in memory; re-mint on expiry. **The issuer's address comes from `targets.ts`**
   — `resolve('proxy') + '/dev/token'`, never the literal string `/mcp-dev/proxy/dev/token`. That
   literal is a browser-only path; hardcoding it would leave the live suite unable to mint a token at
   all, since nothing rewrites the prefix outside `vite dev` (research R-005).
-- [ ] T016 Implement `frontend/src/mcp/transport.ts` to make T008 and T009 pass: build headers,
+- [X] T016 Implement `frontend/src/mcp/transport.ts` to make T008 and T009 pass: build headers,
   `_meta`, and envelope; send; classify; return an `Exchange` with the `Authorization` value replaced
   by the labelled redaction research R-009 specifies and every other header and the whole body
   byte-for-byte.
-- [ ] T017 [P] Implement `frontend/src/mcp/hooks/useReachableTargets.ts`: probe `GET /lb-health` on
+- [X] T017 [P] Implement `frontend/src/mcp/hooks/useReachableTargets.ts`: probe `GET /lb-health` on
   the proxy and `GET /health/readiness` on each replica (research R-006), distinguishing "not
   published" from "answered with an error".
-- [ ] T018 Add the console's navigation item to `frontend/src/App.tsx` behind `import.meta.env.DEV`,
+- [X] T018 Add the console's navigation item to `frontend/src/App.tsx` behind `import.meta.env.DEV`,
   alongside the two existing items (FR-001), carrying a visible development tag (FR-002) and lazily
   importing the console page so the guard encloses the import. Change nothing else in that file —
   FR-001 also forbids altering the behaviour of the pages already there.
-- [ ] T019 Create `frontend/src/mcp/McpConsolePage.tsx`: the page shell with its opening sentence
+- [X] T019 Create `frontend/src/mcp/McpConsolePage.tsx`: the page shell with its opening sentence
   saying what it is for, the named regions from
   [contracts/console-surface.md](./contracts/console-surface.md), and the marker constant
   `check-dev-only.mjs` greps for.
-- [ ] T020 [P] Append to `frontend/src/App.test.tsx` an assertion that the console item is present in
+- [X] T020 [P] Append to `frontend/src/App.test.tsx` an assertion that the console item is present in
   the header menu with its development marker. **The file's existing tests must not be modified** —
   SC-007 requires them to pass unchanged, and research R-014 records why a third item does not
   disturb them.

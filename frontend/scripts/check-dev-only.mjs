@@ -34,10 +34,20 @@ import { build } from 'vite'
 const frontendDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 
 /**
- * The one string that must never reach a production bundle. Declared here and imported by the
- * console page, so the two cannot drift: renaming it in one place breaks the other's build.
+ * The one string that must never reach a production bundle.
+ *
+ * Read from the source that declares it rather than copied, so the check and the thing it checks
+ * for cannot drift: renaming it in src/mcp/devOnlyMarker.ts changes what this looks for, in the
+ * same commit. A second copy here would go on being believed after it went stale.
  */
-export const MARKER = 'mcp-console-dev-only-do-not-ship'
+export const MARKER = (() => {
+  const declaration = path.join(frontendDir, 'src/mcp/devOnlyMarker.ts')
+  const match = /DEV_ONLY_MARKER = '([^']+)'/.exec(readFileSync(declaration, 'utf8'))
+  if (!match) {
+    throw new Error(`Could not read DEV_ONLY_MARKER from ${declaration}. Has it been renamed?`)
+  }
+  return match[1]
+})()
 
 /** Every file under `dir` whose bytes contain `marker`. */
 export function filesContaining(dir, marker) {

@@ -19,7 +19,8 @@
     "isolatedModules": true,
     "noEmit": true,
     "types": [
-      "vitest/globals"
+      "vitest/globals",
+      "vite/client"
     ],
     "baseUrl": ".",
     "paths": {

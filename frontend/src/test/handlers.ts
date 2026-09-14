@@ -1,5 +1,6 @@
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
+import { mcpHandlers } from '../mcp/test/mcpHandlers'
 
 export const catalog = {
   companies: [
@@ -134,7 +135,10 @@ export function runDetail(overrides: Record<string, unknown> = {}) {
   }
 }
 
+// Feature 008: the MCP console's handlers join the same server, so a console test needs no second
+// setup and `onUnhandledRequest: 'error'` keeps covering both. Nothing above this line changed.
 export const server = setupServer(
+  ...mcpHandlers(),
   http.get('/api/catalog', () => HttpResponse.json(catalog)),
   http.post('/api/runs', () =>
     HttpResponse.json(
