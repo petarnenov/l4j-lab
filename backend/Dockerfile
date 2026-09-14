@@ -11,6 +11,14 @@ COPY gradle/ gradle/
 # settings.gradle.kts includes the frontend project, so its build file must exist for Gradle to
 # configure. Nothing of the frontend is built here.
 COPY frontend/build.gradle.kts frontend/.nvmrc frontend/
+# Feature 007 added three more projects to settings.gradle.kts, and Gradle refuses to configure an
+# included project whose directory does not exist — so the packaged backend image stopped building
+# the moment they were included. Same treatment as the frontend above: the build file is enough to
+# configure, and nothing of these three is built here. They ship as their own images from
+# compose.mcp.yaml, not in this one.
+COPY mcp-server/build.gradle.kts mcp-server/
+COPY legacy-billing-api/build.gradle.kts legacy-billing-api/
+COPY token-issuer/build.gradle.kts token-issuer/
 COPY backend/ backend/
 # installDist writes a launcher script and a lib/ directory: exactly what runs, readable in the image.
 RUN --mount=type=cache,target=/root/.gradle ./gradlew :backend:installDist --no-daemon
