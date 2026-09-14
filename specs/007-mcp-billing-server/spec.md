@@ -4,7 +4,9 @@
 
 **Created**: 2026-09-13
 
-**Status**: Draft
+**Status**: Implemented, 2026-09-14. All 123 tasks complete. Six findings raised against this
+feature by feature 008 remain open; see `specs/008-mcp-console/findings.md`. Status corrected
+2026-09-14.
 
 **Input**: User description supplied to `/speckit-plan`. This spec was written from that
 description because no spec existed for the feature; it restates the description without

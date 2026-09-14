@@ -4,8 +4,11 @@
 
 **Created**: 2026-09-12
 
-**Status**: Approved, 2026-09-12. Planning and task generation are complete against
-constitution v2.2.0, and the quality checklist in `checklists/requirements.md` passes.
+**Status**: Implemented, 2026-09-13. 101 of 102 tasks complete; T101 is left open deliberately —
+it asks for a recorded trace against both provider modes, which needs a person. Planning was approved
+against constitution v2.2.0 and the quality checklist passes. Status corrected 2026-09-14: it still
+read `Approved` after delivery, which meant feature 009's check was not holding these documents to
+the code.
 
 **Input**: User description: "Правим симпле агентик чейн с 4 възли и на последната използваме модела за съмъри на резултатите. Възлите нека да са учебни на финансова тематика. Целта да видят базовите концепции. Моделът ще е от клоуда на оллама гпт-оси-120 ще приложа ключ в енв проментлива"
 

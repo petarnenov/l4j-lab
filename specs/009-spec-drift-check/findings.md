@@ -98,3 +98,54 @@ this check did not exist. None is serious. But nobody would have known.
 **The recommendation**, offered rather than taken: correct 006, 007 and 008 to `Implemented`, fix
 005's task count, and decide whether `Approved` is a state this flow still uses. Then baseline what
 that surfaces, with reasons, as this feature did for 003 to 005.
+
+### Decided, 2026-09-14
+
+The maintainer took it. All six were corrected, and `Approved` was settled as a state this flow no
+longer uses after delivery: 001 and 002 were approved at planning and never updated, so both are now
+`Implemented` with the date the work landed. Each correction says in the status line itself that it
+was a correction, and why.
+
+**What it changed**, measured before and after:
+
+| | Before | After |
+|---|---|---|
+| Features held to their code | 3 | **9** |
+| Claims checked each run | 622 | **1,699** |
+| Baseline entries | 75 | **201** |
+
+The baseline nearly tripled, which is the honest price of looking at three times as much. Every entry
+carries a reason and prints on every run; anything new fails.
+
+
+---
+
+## G-006: feature 007's reading guide points at classes that were never written
+
+**The largest single finding, and the most useful.** Feature 007's quickstart carries a table headed
+*"Reading the code against the spec (SC-004)"* — the one place to look for each 2026-07-28 feature.
+Of the twelve files it names, most do not exist:
+
+```
+Header-based routing and validation  →  protocol/HeaderValidationFilter.java
+Dispatch on Micronaut                →  protocol/McpController.java
+Stateless requests, per-request _meta →  protocol/RequestEnvelope.java
+```
+
+The delivered package holds `McpMethodHandler.java`, `HttpMethodGate.java`,
+`BillingTransportContextExtractor.java` and others. The implementation went a different way —
+`tasks.md` T039 says so outright: *"Superseded by R-014. No controller is written."* — and the
+reading guide was never updated to follow.
+
+Fifty-eight of feature 007's seventy-three baselined entries are this: planned class names that
+survive in the documents and nowhere else.
+
+**Why it matters more than a stale path usually would.** That table exists to be *followed*. It is
+addressed at someone trying to read an unfamiliar protocol implementation against its specification,
+which is the hardest moment to be sent to a file that is not there. A reader who checks two entries
+and finds neither stops trusting the table, and then stops trusting the document.
+
+**Not corrected here.** Rewriting a past feature's record is out of scope for this one, and the
+correction needs someone who knows which delivered class took over which planned responsibility —
+that is a reading of feature 007, not of its documents. Recorded so that whoever next opens 007 finds
+it already written down.

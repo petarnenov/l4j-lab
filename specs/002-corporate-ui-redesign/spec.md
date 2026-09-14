@@ -4,8 +4,9 @@
 
 **Created**: 2026-09-12
 
-**Status**: Approved, 2026-09-12. Planning and task generation are complete against
-constitution v2.2.0, and the quality checklist in `checklists/requirements.md` passes.
+**Status**: Implemented, 2026-09-12. All 58 tasks complete. Planning was approved against
+constitution v2.2.0 and the quality checklist passes. Status corrected 2026-09-14, for the reason
+recorded in `specs/009-spec-drift-check/findings.md` G-005.
 
 **Input**: User description: "Дизайнът трябва да се подобри. Трябва да се подържа дарк и лайт моде. Трябва да е респонсиже. Избери фрее компонрнт лайбръри и я ползвай. Дизайнът да строг корпоративен стил" (with a screenshot of the current New run screen)
 

@@ -4,7 +4,7 @@
 
 **Created**: 2026-09-13
 
-**Status**: Implemented, 2026-09-13. All 46 tasks complete. Provider mode verified: cloud (gpt-oss:120b), through the containerized stack and the live model test. Local mode not exercised.
+**Status**: Implemented, 2026-09-13. All 54 tasks complete. Provider mode verified: cloud (gpt-oss:120b), through the containerized stack and the live model test. Local mode not exercised.
 
 **Input**: User description: "Migrate the financial agent chain to LangChain4j declarative AI Services and agentic orchestration: the summarizer as an AI Service interface, the four steps as an agentic sequence with the three deterministic steps kept as code, traces captured through LangChain4j listeners, same API, persistence, and UI."
 

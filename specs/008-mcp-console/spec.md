@@ -4,7 +4,9 @@
 
 **Created**: 2026-09-14
 
-**Status**: Draft
+**Status**: Implemented, 2026-09-14. 70 of 71 tasks complete; T071 is left open deliberately — SC-001
+asks that someone who has never seen the console reach a result in two minutes, and the implementer is
+not that person. Status corrected 2026-09-14.
 
 **Input**: User description: "Направи лек УИ към съществуващият по аналогичен начин за да тестваме функционалността от 007"
 

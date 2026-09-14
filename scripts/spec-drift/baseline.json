@@ -1,452 +1,1208 @@
 [
   {
+    "document": "specs/001-financial-agent-chain/plan.md",
+    "subject": "backend/settings.gradle.kts",
+    "reason": "a document of a feature that predates this check names a path the implementation no longer has - most often a class feature 005 deleted when it moved the chain onto LangChain4j agentic orchestration. A past feature's record may not be edited by this one.",
+    "recorded": "2026-09-14"
+  },
+  {
     "document": "specs/001-financial-agent-chain/spec.md",
-    "subject": "Approved, 2026-09-12. Planning and task generation are complete against",
-    "reason": "the status field of a feature that predates this check. Three implemented features still declare themselves drafts and two say Approved; correcting them is a maintainer decision recorded in specs/009-spec-drift-check/findings.md, not something this feature may do to a past record. Until it is made, these features are not held to their code.",
+    "subject": "FR-001",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/001-financial-agent-chain/spec.md",
+    "subject": "FR-004",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/001-financial-agent-chain/spec.md",
+    "subject": "FR-006",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/001-financial-agent-chain/spec.md",
+    "subject": "FR-008",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/001-financial-agent-chain/spec.md",
+    "subject": "FR-009",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/001-financial-agent-chain/spec.md",
+    "subject": "FR-011",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/001-financial-agent-chain/spec.md",
+    "subject": "FR-017",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/001-financial-agent-chain/spec.md",
+    "subject": "FR-021",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/001-financial-agent-chain/spec.md",
+    "subject": "SC-001",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/001-financial-agent-chain/spec.md",
+    "subject": "SC-007",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/001-financial-agent-chain/tasks.md",
+    "subject": "backend/src/main/java/dev/l4jlab/chain/core/ChainNode.java",
+    "reason": "a document of a feature that predates this check names a path the implementation no longer has - most often a class feature 005 deleted when it moved the chain onto LangChain4j agentic orchestration. A past feature's record may not be edited by this one.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/001-financial-agent-chain/tasks.md",
+    "subject": "backend/src/test/java/dev/l4jlab/chain/core/ChainRunnerTest.java",
+    "reason": "a document of a feature that predates this check names a path the implementation no longer has - most often a class feature 005 deleted when it moved the chain onto LangChain4j agentic orchestration. A past feature's record may not be edited by this one.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/001-financial-agent-chain/tasks.md",
+    "subject": "backend/src/main/java/dev/l4jlab/chain/core/ChainRunner.java",
+    "reason": "a document of a feature that predates this check names a path the implementation no longer has - most often a class feature 005 deleted when it moved the chain onto LangChain4j agentic orchestration. A past feature's record may not be edited by this one.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/001-financial-agent-chain/tasks.md",
+    "subject": "backend/src/test/java/dev/l4jlab/chain/node/SummarizeNodeTest.java",
+    "reason": "a document of a feature that predates this check names a path the implementation no longer has - most often a class feature 005 deleted when it moved the chain onto LangChain4j agentic orchestration. A past feature's record may not be edited by this one.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/001-financial-agent-chain/tasks.md",
+    "subject": "backend/src/test/java/dev/l4jlab/chain/web/CatalogControllerTest.java",
+    "reason": "a document of a feature that predates this check names a path the implementation no longer has - most often a class feature 005 deleted when it moved the chain onto LangChain4j agentic orchestration. A past feature's record may not be edited by this one.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/001-financial-agent-chain/tasks.md",
+    "subject": "backend/src/main/java/dev/l4jlab/chain/node/SummarizeNode.java",
+    "reason": "a document of a feature that predates this check names a path the implementation no longer has - most often a class feature 005 deleted when it moved the chain onto LangChain4j agentic orchestration. A past feature's record may not be edited by this one.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/001-financial-agent-chain/tasks.md",
+    "subject": "backend/src/test/java/dev/l4jlab/chain/persistence/ChainRunRepositoryTest.java",
+    "reason": "a document of a feature that predates this check names a path the implementation no longer has - most often a class feature 005 deleted when it moved the chain onto LangChain4j agentic orchestration. A past feature's record may not be edited by this one.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/001-financial-agent-chain/tasks.md",
+    "subject": "backend/src/liveTest/java/dev/l4jlab/chain/live/SummarizeNodeLiveTest.java",
+    "reason": "a document of a feature that predates this check names a path the implementation no longer has - most often a class feature 005 deleted when it moved the chain onto LangChain4j agentic orchestration. A past feature's record may not be edited by this one.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/001-financial-agent-chain/tasks.md",
+    "subject": "backend/src/test/java/dev/l4jlab/chain/core/DeterministicNodeBudgetTest.java",
+    "reason": "a document of a feature that predates this check names a path the implementation no longer has - most often a class feature 005 deleted when it moved the chain onto LangChain4j agentic orchestration. A past feature's record may not be edited by this one.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/001-financial-agent-chain/tasks.md",
+    "subject": "backend/src/test/java/dev/l4jlab/chain/integration/RunDurationTest.java",
+    "reason": "a document of a feature that predates this check names a path the implementation no longer has - most often a class feature 005 deleted when it moved the chain onto LangChain4j agentic orchestration. A past feature's record may not be edited by this one.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/002-corporate-ui-redesign/spec.md",
-    "subject": "Approved, 2026-09-12. Planning and task generation are complete against",
-    "reason": "the status field of a feature that predates this check. Three implemented features still declare themselves drafts and two say Approved; correcting them is a maintainer decision recorded in specs/009-spec-drift-check/findings.md, not something this feature may do to a past record. Until it is made, these features are not held to their code.",
+    "subject": "FR-001",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
     "recorded": "2026-09-14"
   },
   {
-    "document": "specs/005-langchain4j-declarative-migration/spec.md",
-    "subject": "Implemented, 2026-09-13. All 46 tasks complete. Provider mode verified: cloud (gpt-oss:120b), through the containerized stack and the live model test. Local mode not exercised.",
-    "reason": "the status field of a feature that predates this check. Three implemented features still declare themselves drafts and two say Approved; correcting them is a maintainer decision recorded in specs/009-spec-drift-check/findings.md, not something this feature may do to a past record. Until it is made, these features are not held to their code.",
+    "document": "specs/002-corporate-ui-redesign/spec.md",
+    "subject": "FR-003",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
     "recorded": "2026-09-14"
   },
   {
-    "document": "specs/006-makefile-entrypoint/spec.md",
-    "subject": "Draft",
-    "reason": "the status field of a feature that predates this check. Three implemented features still declare themselves drafts and two say Approved; correcting them is a maintainer decision recorded in specs/009-spec-drift-check/findings.md, not something this feature may do to a past record. Until it is made, these features are not held to their code.",
+    "document": "specs/002-corporate-ui-redesign/spec.md",
+    "subject": "FR-004",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
     "recorded": "2026-09-14"
   },
   {
-    "document": "specs/007-mcp-billing-server/spec.md",
-    "subject": "Draft",
-    "reason": "the status field of a feature that predates this check. Three implemented features still declare themselves drafts and two say Approved; correcting them is a maintainer decision recorded in specs/009-spec-drift-check/findings.md, not something this feature may do to a past record. Until it is made, these features are not held to their code.",
+    "document": "specs/002-corporate-ui-redesign/spec.md",
+    "subject": "FR-009",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
     "recorded": "2026-09-14"
   },
   {
-    "document": "specs/008-mcp-console/spec.md",
-    "subject": "Draft",
-    "reason": "the status field of a feature that predates this check. Three implemented features still declare themselves drafts and two say Approved; correcting them is a maintainer decision recorded in specs/009-spec-drift-check/findings.md, not something this feature may do to a past record. Until it is made, these features are not held to their code.",
+    "document": "specs/002-corporate-ui-redesign/spec.md",
+    "subject": "FR-010",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/002-corporate-ui-redesign/spec.md",
+    "subject": "FR-014",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/002-corporate-ui-redesign/spec.md",
+    "subject": "SC-002",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/002-corporate-ui-redesign/spec.md",
+    "subject": "SC-003",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/002-corporate-ui-redesign/spec.md",
+    "subject": "SC-004",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/002-corporate-ui-redesign/spec.md",
+    "subject": "SC-005",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/002-corporate-ui-redesign/spec.md",
+    "subject": "SC-007",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/002-corporate-ui-redesign/spec.md",
+    "subject": "SC-008",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/002-corporate-ui-redesign/spec.md",
+    "subject": "SC-009",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/002-corporate-ui-redesign/tasks.md",
+    "subject": "scripts/measure-contrast.mjs",
+    "reason": "a document of a feature that predates this check names a path the implementation no longer has - most often a class feature 005 deleted when it moved the chain onto LangChain4j agentic orchestration. A past feature's record may not be edited by this one.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/003-monorepo-integration/research.md",
     "subject": "contracts/openapi.yml",
-    "reason": "a migration document necessarily names what it replaced: feature 005 deleted this class when it moved the chain onto LangChain4j agentic orchestration, so the path is absent by design. The grammar cannot tell 'names a file that should exist' from 'names the file it removed', and the inline marker that would say so cannot be added to a past record.",
+    "reason": "a document of a feature that predates this check names a path the implementation no longer has - most often a class feature 005 deleted when it moved the chain onto LangChain4j agentic orchestration. A past feature's record may not be edited by this one.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/003-monorepo-integration/spec.md",
     "subject": "FR-001",
-    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/003-monorepo-integration/spec.md",
     "subject": "FR-002",
-    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/003-monorepo-integration/spec.md",
     "subject": "FR-003",
-    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/003-monorepo-integration/spec.md",
     "subject": "FR-004",
-    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/003-monorepo-integration/spec.md",
     "subject": "FR-005",
-    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/003-monorepo-integration/spec.md",
     "subject": "FR-007",
-    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/003-monorepo-integration/spec.md",
     "subject": "FR-009",
-    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/003-monorepo-integration/spec.md",
     "subject": "FR-010",
-    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/003-monorepo-integration/spec.md",
     "subject": "FR-011",
-    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/003-monorepo-integration/spec.md",
     "subject": "FR-012",
-    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/003-monorepo-integration/spec.md",
     "subject": "FR-013",
-    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/003-monorepo-integration/spec.md",
     "subject": "FR-014",
-    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/003-monorepo-integration/spec.md",
     "subject": "FR-015",
-    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/003-monorepo-integration/spec.md",
     "subject": "FR-016",
-    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/003-monorepo-integration/spec.md",
     "subject": "FR-017",
-    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/003-monorepo-integration/spec.md",
     "subject": "FR-018",
-    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/003-monorepo-integration/spec.md",
     "subject": "SC-001",
-    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/003-monorepo-integration/spec.md",
     "subject": "SC-002",
-    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/003-monorepo-integration/spec.md",
     "subject": "SC-003",
-    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/003-monorepo-integration/spec.md",
     "subject": "SC-004",
-    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/003-monorepo-integration/spec.md",
     "subject": "SC-005",
-    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/003-monorepo-integration/spec.md",
     "subject": "SC-006",
-    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/004-containerized-deployment/spec.md",
     "subject": "FR-001",
-    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/004-containerized-deployment/spec.md",
     "subject": "FR-002",
-    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/004-containerized-deployment/spec.md",
     "subject": "FR-003",
-    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/004-containerized-deployment/spec.md",
     "subject": "FR-005",
-    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/004-containerized-deployment/spec.md",
     "subject": "FR-006",
-    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/004-containerized-deployment/spec.md",
     "subject": "FR-008",
-    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/004-containerized-deployment/spec.md",
     "subject": "FR-009",
-    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/004-containerized-deployment/spec.md",
     "subject": "FR-015",
-    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/004-containerized-deployment/spec.md",
     "subject": "FR-017",
-    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/004-containerized-deployment/spec.md",
     "subject": "FR-020",
-    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/004-containerized-deployment/spec.md",
     "subject": "FR-023",
-    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/004-containerized-deployment/spec.md",
     "subject": "FR-025",
-    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/004-containerized-deployment/spec.md",
     "subject": "SC-001",
-    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/004-containerized-deployment/spec.md",
     "subject": "SC-002",
-    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/004-containerized-deployment/spec.md",
     "subject": "SC-003",
-    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/004-containerized-deployment/spec.md",
     "subject": "SC-004",
-    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/004-containerized-deployment/spec.md",
     "subject": "SC-005",
-    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/004-containerized-deployment/spec.md",
     "subject": "SC-007",
-    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/005-langchain4j-declarative-migration/plan.md",
     "subject": "backend/src/main/java/dev/l4jlab/chain/core/ChainRunner.java",
-    "reason": "a migration document necessarily names what it replaced: feature 005 deleted this class when it moved the chain onto LangChain4j agentic orchestration, so the path is absent by design. The grammar cannot tell 'names a file that should exist' from 'names the file it removed', and the inline marker that would say so cannot be added to a past record.",
+    "reason": "a document of a feature that predates this check names a path the implementation no longer has - most often a class feature 005 deleted when it moved the chain onto LangChain4j agentic orchestration. A past feature's record may not be edited by this one.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/005-langchain4j-declarative-migration/plan.md",
     "subject": "backend/src/main/java/dev/l4jlab/chain/core/ChainNode.java",
-    "reason": "a migration document necessarily names what it replaced: feature 005 deleted this class when it moved the chain onto LangChain4j agentic orchestration, so the path is absent by design. The grammar cannot tell 'names a file that should exist' from 'names the file it removed', and the inline marker that would say so cannot be added to a past record.",
+    "reason": "a document of a feature that predates this check names a path the implementation no longer has - most often a class feature 005 deleted when it moved the chain onto LangChain4j agentic orchestration. A past feature's record may not be edited by this one.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/005-langchain4j-declarative-migration/plan.md",
     "subject": "backend/src/main/java/dev/l4jlab/chain/node/SummarizeNode.java",
-    "reason": "a migration document necessarily names what it replaced: feature 005 deleted this class when it moved the chain onto LangChain4j agentic orchestration, so the path is absent by design. The grammar cannot tell 'names a file that should exist' from 'names the file it removed', and the inline marker that would say so cannot be added to a past record.",
+    "reason": "a document of a feature that predates this check names a path the implementation no longer has - most often a class feature 005 deleted when it moved the chain onto LangChain4j agentic orchestration. A past feature's record may not be edited by this one.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/005-langchain4j-declarative-migration/plan.md",
     "subject": "backend/src/liveTest/java/dev/l4jlab/chain/live/SummarizeNodeLiveTest.java",
-    "reason": "a migration document necessarily names what it replaced: feature 005 deleted this class when it moved the chain onto LangChain4j agentic orchestration, so the path is absent by design. The grammar cannot tell 'names a file that should exist' from 'names the file it removed', and the inline marker that would say so cannot be added to a past record.",
+    "reason": "a document of a feature that predates this check names a path the implementation no longer has - most often a class feature 005 deleted when it moved the chain onto LangChain4j agentic orchestration. A past feature's record may not be edited by this one.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/005-langchain4j-declarative-migration/spec.md",
     "subject": "FR-001",
-    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/005-langchain4j-declarative-migration/spec.md",
     "subject": "FR-004",
-    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/005-langchain4j-declarative-migration/spec.md",
     "subject": "FR-005",
-    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/005-langchain4j-declarative-migration/spec.md",
     "subject": "FR-006",
-    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/005-langchain4j-declarative-migration/spec.md",
     "subject": "FR-007",
-    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/005-langchain4j-declarative-migration/spec.md",
     "subject": "FR-008",
-    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/005-langchain4j-declarative-migration/spec.md",
     "subject": "FR-009",
-    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/005-langchain4j-declarative-migration/spec.md",
     "subject": "FR-010",
-    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/005-langchain4j-declarative-migration/spec.md",
     "subject": "FR-012",
-    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/005-langchain4j-declarative-migration/spec.md",
     "subject": "FR-013",
-    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/005-langchain4j-declarative-migration/spec.md",
     "subject": "FR-014",
-    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/005-langchain4j-declarative-migration/spec.md",
     "subject": "FR-015",
-    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/005-langchain4j-declarative-migration/spec.md",
     "subject": "FR-016",
-    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/005-langchain4j-declarative-migration/spec.md",
     "subject": "FR-017",
-    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/005-langchain4j-declarative-migration/spec.md",
     "subject": "FR-018",
-    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/005-langchain4j-declarative-migration/spec.md",
     "subject": "FR-020",
-    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/005-langchain4j-declarative-migration/spec.md",
     "subject": "FR-021",
-    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/005-langchain4j-declarative-migration/spec.md",
     "subject": "FR-022",
-    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/005-langchain4j-declarative-migration/spec.md",
     "subject": "FR-023",
-    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/005-langchain4j-declarative-migration/spec.md",
     "subject": "SC-001",
-    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/005-langchain4j-declarative-migration/spec.md",
     "subject": "SC-003",
-    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/005-langchain4j-declarative-migration/spec.md",
     "subject": "SC-007",
-    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/005-langchain4j-declarative-migration/tasks.md",
     "subject": "node/SummarizeNode.java",
-    "reason": "a migration document necessarily names what it replaced: feature 005 deleted this class when it moved the chain onto LangChain4j agentic orchestration, so the path is absent by design. The grammar cannot tell 'names a file that should exist' from 'names the file it removed', and the inline marker that would say so cannot be added to a past record.",
+    "reason": "a document of a feature that predates this check names a path the implementation no longer has - most often a class feature 005 deleted when it moved the chain onto LangChain4j agentic orchestration. A past feature's record may not be edited by this one.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/005-langchain4j-declarative-migration/tasks.md",
     "subject": "agent/RunTraceListener.java",
-    "reason": "a migration document necessarily names what it replaced: feature 005 deleted this class when it moved the chain onto LangChain4j agentic orchestration, so the path is absent by design. The grammar cannot tell 'names a file that should exist' from 'names the file it removed', and the inline marker that would say so cannot be added to a past record.",
+    "reason": "a document of a feature that predates this check names a path the implementation no longer has - most often a class feature 005 deleted when it moved the chain onto LangChain4j agentic orchestration. A past feature's record may not be edited by this one.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/006-makefile-entrypoint/spec.md",
+    "subject": "FR-001",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/006-makefile-entrypoint/spec.md",
+    "subject": "FR-002",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/006-makefile-entrypoint/spec.md",
+    "subject": "FR-003",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/006-makefile-entrypoint/spec.md",
+    "subject": "FR-004",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/006-makefile-entrypoint/spec.md",
+    "subject": "FR-005",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/006-makefile-entrypoint/spec.md",
+    "subject": "FR-006",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/006-makefile-entrypoint/spec.md",
+    "subject": "FR-007",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/006-makefile-entrypoint/spec.md",
+    "subject": "FR-008",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/006-makefile-entrypoint/spec.md",
+    "subject": "FR-009",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/006-makefile-entrypoint/spec.md",
+    "subject": "FR-012",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/006-makefile-entrypoint/spec.md",
+    "subject": "FR-013",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/006-makefile-entrypoint/spec.md",
+    "subject": "FR-014",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/006-makefile-entrypoint/spec.md",
+    "subject": "FR-017",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/006-makefile-entrypoint/spec.md",
+    "subject": "FR-019",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/006-makefile-entrypoint/spec.md",
+    "subject": "SC-001",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/006-makefile-entrypoint/spec.md",
+    "subject": "SC-003",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/006-makefile-entrypoint/spec.md",
+    "subject": "SC-004",
+    "reason": "features 001 to 006 predate the convention of citing requirement identifiers in task descriptions, which 007 onward follow. Their tasks cover the work; they do not name what they cover. Adding citations means rewriting past task lists, which feature 009 may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/006-makefile-entrypoint/tasks.md",
+    "subject": "$STUBS/sys/",
+    "reason": "a document of a feature that predates this check names a path the implementation no longer has - most often a class feature 005 deleted when it moved the chain onto LangChain4j agentic orchestration. A past feature's record may not be edited by this one.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/007-mcp-billing-server/plan.md",
+    "subject": "mcp-server/src/main/java/dev/l4jlab/mcp/protocol/McpController.java",
+    "reason": "feature 007 planned a set of classes and delivered a different one - R-014 superseded the controller, and much of the protocol package was renamed. Its quickstart's reading guide and its tasks still name the planned names. Recorded rather than corrected: rewriting a past feature's record is out of scope for 009, and the correction belongs to whoever next touches 007.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/007-mcp-billing-server/plan.md",
+    "subject": "mcp-server/src/main/java/dev/l4jlab/mcp/protocol/HeaderValidationFilter.java",
+    "reason": "feature 007 planned a set of classes and delivered a different one - R-014 superseded the controller, and much of the protocol package was renamed. Its quickstart's reading guide and its tasks still name the planned names. Recorded rather than corrected: rewriting a past feature's record is out of scope for 009, and the correction belongs to whoever next touches 007.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/007-mcp-billing-server/plan.md",
+    "subject": "mcp-server/src/main/java/dev/l4jlab/mcp/protocol/RequestEnvelope.java",
+    "reason": "feature 007 planned a set of classes and delivered a different one - R-014 superseded the controller, and much of the protocol package was renamed. Its quickstart's reading guide and its tasks still name the planned names. Recorded rather than corrected: rewriting a past feature's record is out of scope for 009, and the correction belongs to whoever next touches 007.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/007-mcp-billing-server/plan.md",
+    "subject": "mcp-server/src/main/java/dev/l4jlab/mcp/protocol/ProtocolVersionGate.java",
+    "reason": "feature 007 planned a set of classes and delivered a different one - R-014 superseded the controller, and much of the protocol package was renamed. Its quickstart's reading guide and its tasks still name the planned names. Recorded rather than corrected: rewriting a past feature's record is out of scope for 009, and the correction belongs to whoever next touches 007.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/007-mcp-billing-server/plan.md",
+    "subject": "mcp-server/src/main/java/dev/l4jlab/mcp/protocol/ClientCapabilities.java",
+    "reason": "feature 007 planned a set of classes and delivered a different one - R-014 superseded the controller, and much of the protocol package was renamed. Its quickstart's reading guide and its tasks still name the planned names. Recorded rather than corrected: rewriting a past feature's record is out of scope for 009, and the correction belongs to whoever next touches 007.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/007-mcp-billing-server/plan.md",
+    "subject": "mcp-server/src/main/java/dev/l4jlab/mcp/protocol/ResultEnvelope.java",
+    "reason": "feature 007 planned a set of classes and delivered a different one - R-014 superseded the controller, and much of the protocol package was renamed. Its quickstart's reading guide and its tasks still name the planned names. Recorded rather than corrected: rewriting a past feature's record is out of scope for 009, and the correction belongs to whoever next touches 007.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/007-mcp-billing-server/plan.md",
+    "subject": "mcp-server/src/main/java/dev/l4jlab/mcp/protocol/DiscoverHandler.java",
+    "reason": "feature 007 planned a set of classes and delivered a different one - R-014 superseded the controller, and much of the protocol package was renamed. Its quickstart's reading guide and its tasks still name the planned names. Recorded rather than corrected: rewriting a past feature's record is out of scope for 009, and the correction belongs to whoever next touches 007.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/007-mcp-billing-server/plan.md",
+    "subject": "mcp-server/src/main/java/dev/l4jlab/mcp/protocol/ToolsListHandler.java",
+    "reason": "feature 007 planned a set of classes and delivered a different one - R-014 superseded the controller, and much of the protocol package was renamed. Its quickstart's reading guide and its tasks still name the planned names. Recorded rather than corrected: rewriting a past feature's record is out of scope for 009, and the correction belongs to whoever next touches 007.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/007-mcp-billing-server/plan.md",
+    "subject": "mcp-server/src/main/java/dev/l4jlab/mcp/protocol/ToolsCallHandler.java",
+    "reason": "feature 007 planned a set of classes and delivered a different one - R-014 superseded the controller, and much of the protocol package was renamed. Its quickstart's reading guide and its tasks still name the planned names. Recorded rather than corrected: rewriting a past feature's record is out of scope for 009, and the correction belongs to whoever next touches 007.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/007-mcp-billing-server/plan.md",
+    "subject": "mcp-server/src/main/java/dev/l4jlab/mcp/protocol/ToolCatalog.java",
+    "reason": "feature 007 planned a set of classes and delivered a different one - R-014 superseded the controller, and much of the protocol package was renamed. Its quickstart's reading guide and its tasks still name the planned names. Recorded rather than corrected: rewriting a past feature's record is out of scope for 009, and the correction belongs to whoever next touches 007.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/007-mcp-billing-server/plan.md",
+    "subject": "mcp-server/src/main/java/dev/l4jlab/mcp/protocol/ErrorBoundary.java",
+    "reason": "feature 007 planned a set of classes and delivered a different one - R-014 superseded the controller, and much of the protocol package was renamed. Its quickstart's reading guide and its tasks still name the planned names. Recorded rather than corrected: rewriting a past feature's record is out of scope for 009, and the correction belongs to whoever next touches 007.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/007-mcp-billing-server/tasks.md",
+    "subject": "src/main/resources/dev-keys/",
+    "reason": "feature 007 planned a set of classes and delivered a different one - R-014 superseded the controller, and much of the protocol package was renamed. Its quickstart's reading guide and its tasks still name the planned names. Recorded rather than corrected: rewriting a past feature's record is out of scope for 009, and the correction belongs to whoever next touches 007.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/007-mcp-billing-server/tasks.md",
+    "subject": "mcp-server/src/test/java/dev/l4jlab/mcp/security/InboundTokenTest.java",
+    "reason": "feature 007 planned a set of classes and delivered a different one - R-014 superseded the controller, and much of the protocol package was renamed. Its quickstart's reading guide and its tasks still name the planned names. Recorded rather than corrected: rewriting a past feature's record is out of scope for 009, and the correction belongs to whoever next touches 007.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/007-mcp-billing-server/tasks.md",
+    "subject": "mcp-server/src/test/java/dev/l4jlab/mcp/security/TokenExchangeClientTest.java",
+    "reason": "feature 007 planned a set of classes and delivered a different one - R-014 superseded the controller, and much of the protocol package was renamed. Its quickstart's reading guide and its tasks still name the planned names. Recorded rather than corrected: rewriting a past feature's record is out of scope for 009, and the correction belongs to whoever next touches 007.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/007-mcp-billing-server/tasks.md",
+    "subject": "mcp-server/src/main/java/dev/l4jlab/mcp/protocol/RequestEnvelope.java",
+    "reason": "feature 007 planned a set of classes and delivered a different one - R-014 superseded the controller, and much of the protocol package was renamed. Its quickstart's reading guide and its tasks still name the planned names. Recorded rather than corrected: rewriting a past feature's record is out of scope for 009, and the correction belongs to whoever next touches 007.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/007-mcp-billing-server/tasks.md",
+    "subject": "mcp-server/src/test/java/dev/l4jlab/mcp/protocol/ResultEnvelopeTest.java",
+    "reason": "feature 007 planned a set of classes and delivered a different one - R-014 superseded the controller, and much of the protocol package was renamed. Its quickstart's reading guide and its tasks still name the planned names. Recorded rather than corrected: rewriting a past feature's record is out of scope for 009, and the correction belongs to whoever next touches 007.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/007-mcp-billing-server/tasks.md",
+    "subject": "mcp-server/src/main/java/dev/l4jlab/mcp/protocol/ResultEnvelope.java",
+    "reason": "feature 007 planned a set of classes and delivered a different one - R-014 superseded the controller, and much of the protocol package was renamed. Its quickstart's reading guide and its tasks still name the planned names. Recorded rather than corrected: rewriting a past feature's record is out of scope for 009, and the correction belongs to whoever next touches 007.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/007-mcp-billing-server/tasks.md",
+    "subject": "mcp-server/src/main/java/dev/l4jlab/mcp/protocol/McpController.java",
+    "reason": "feature 007 planned a set of classes and delivered a different one - R-014 superseded the controller, and much of the protocol package was renamed. Its quickstart's reading guide and its tasks still name the planned names. Recorded rather than corrected: rewriting a past feature's record is out of scope for 009, and the correction belongs to whoever next touches 007.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/007-mcp-billing-server/tasks.md",
+    "subject": "mcp-server/src/test/java/dev/l4jlab/mcp/protocol/ErrorBoundaryTest.java",
+    "reason": "feature 007 planned a set of classes and delivered a different one - R-014 superseded the controller, and much of the protocol package was renamed. Its quickstart's reading guide and its tasks still name the planned names. Recorded rather than corrected: rewriting a past feature's record is out of scope for 009, and the correction belongs to whoever next touches 007.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/007-mcp-billing-server/tasks.md",
+    "subject": "mcp-server/src/main/java/dev/l4jlab/mcp/protocol/ErrorBoundary.java",
+    "reason": "feature 007 planned a set of classes and delivered a different one - R-014 superseded the controller, and much of the protocol package was renamed. Its quickstart's reading guide and its tasks still name the planned names. Recorded rather than corrected: rewriting a past feature's record is out of scope for 009, and the correction belongs to whoever next touches 007.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/007-mcp-billing-server/tasks.md",
+    "subject": "src/main/resources/tools/",
+    "reason": "feature 007 planned a set of classes and delivered a different one - R-014 superseded the controller, and much of the protocol package was renamed. Its quickstart's reading guide and its tasks still name the planned names. Recorded rather than corrected: rewriting a past feature's record is out of scope for 009, and the correction belongs to whoever next touches 007.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/007-mcp-billing-server/tasks.md",
+    "subject": "mcp-server/src/test/java/dev/l4jlab/mcp/protocol/ToolCatalogTest.java",
+    "reason": "feature 007 planned a set of classes and delivered a different one - R-014 superseded the controller, and much of the protocol package was renamed. Its quickstart's reading guide and its tasks still name the planned names. Recorded rather than corrected: rewriting a past feature's record is out of scope for 009, and the correction belongs to whoever next touches 007.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/007-mcp-billing-server/tasks.md",
+    "subject": "mcp-server/src/main/java/dev/l4jlab/mcp/protocol/ToolCatalog.java",
+    "reason": "feature 007 planned a set of classes and delivered a different one - R-014 superseded the controller, and much of the protocol package was renamed. Its quickstart's reading guide and its tasks still name the planned names. Recorded rather than corrected: rewriting a past feature's record is out of scope for 009, and the correction belongs to whoever next touches 007.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/007-mcp-billing-server/tasks.md",
+    "subject": "mcp-server/src/test/java/dev/l4jlab/mcp/audit/AuditWriterTest.java",
+    "reason": "feature 007 planned a set of classes and delivered a different one - R-014 superseded the controller, and much of the protocol package was renamed. Its quickstart's reading guide and its tasks still name the planned names. Recorded rather than corrected: rewriting a past feature's record is out of scope for 009, and the correction belongs to whoever next touches 007.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/007-mcp-billing-server/tasks.md",
+    "subject": "mcp-server/src/test/java/dev/l4jlab/mcp/testclient/ScriptedMcpClient.java",
+    "reason": "feature 007 planned a set of classes and delivered a different one - R-014 superseded the controller, and much of the protocol package was renamed. Its quickstart's reading guide and its tasks still name the planned names. Recorded rather than corrected: rewriting a past feature's record is out of scope for 009, and the correction belongs to whoever next touches 007.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/007-mcp-billing-server/tasks.md",
+    "subject": "mcp-server/src/test/java/dev/l4jlab/mcp/protocol/HeaderValidationTest.java",
+    "reason": "feature 007 planned a set of classes and delivered a different one - R-014 superseded the controller, and much of the protocol package was renamed. Its quickstart's reading guide and its tasks still name the planned names. Recorded rather than corrected: rewriting a past feature's record is out of scope for 009, and the correction belongs to whoever next touches 007.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/007-mcp-billing-server/tasks.md",
+    "subject": "mcp-server/src/test/java/dev/l4jlab/mcp/protocol/ProtocolVersionTest.java",
+    "reason": "feature 007 planned a set of classes and delivered a different one - R-014 superseded the controller, and much of the protocol package was renamed. Its quickstart's reading guide and its tasks still name the planned names. Recorded rather than corrected: rewriting a past feature's record is out of scope for 009, and the correction belongs to whoever next touches 007.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/007-mcp-billing-server/tasks.md",
+    "subject": "mcp-server/src/test/java/dev/l4jlab/mcp/protocol/DiscoverHandlerTest.java",
+    "reason": "feature 007 planned a set of classes and delivered a different one - R-014 superseded the controller, and much of the protocol package was renamed. Its quickstart's reading guide and its tasks still name the planned names. Recorded rather than corrected: rewriting a past feature's record is out of scope for 009, and the correction belongs to whoever next touches 007.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/007-mcp-billing-server/tasks.md",
+    "subject": "mcp-server/src/test/java/dev/l4jlab/mcp/protocol/ToolsListTest.java",
+    "reason": "feature 007 planned a set of classes and delivered a different one - R-014 superseded the controller, and much of the protocol package was renamed. Its quickstart's reading guide and its tasks still name the planned names. Recorded rather than corrected: rewriting a past feature's record is out of scope for 009, and the correction belongs to whoever next touches 007.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/007-mcp-billing-server/tasks.md",
+    "subject": "mcp-server/src/test/java/dev/l4jlab/mcp/protocol/NoSessionTest.java",
+    "reason": "feature 007 planned a set of classes and delivered a different one - R-014 superseded the controller, and much of the protocol package was renamed. Its quickstart's reading guide and its tasks still name the planned names. Recorded rather than corrected: rewriting a past feature's record is out of scope for 009, and the correction belongs to whoever next touches 007.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/007-mcp-billing-server/tasks.md",
+    "subject": "mcp-server/src/test/java/dev/l4jlab/mcp/protocol/UnknownMethodTest.java",
+    "reason": "feature 007 planned a set of classes and delivered a different one - R-014 superseded the controller, and much of the protocol package was renamed. Its quickstart's reading guide and its tasks still name the planned names. Recorded rather than corrected: rewriting a past feature's record is out of scope for 009, and the correction belongs to whoever next touches 007.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/007-mcp-billing-server/tasks.md",
+    "subject": "mcp-server/src/test/java/dev/l4jlab/mcp/protocol/CapabilityGateTest.java",
+    "reason": "feature 007 planned a set of classes and delivered a different one - R-014 superseded the controller, and much of the protocol package was renamed. Its quickstart's reading guide and its tasks still name the planned names. Recorded rather than corrected: rewriting a past feature's record is out of scope for 009, and the correction belongs to whoever next touches 007.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/007-mcp-billing-server/tasks.md",
+    "subject": "mcp-server/src/test/java/dev/l4jlab/mcp/audit/ProtocolErrorAuditTest.java",
+    "reason": "feature 007 planned a set of classes and delivered a different one - R-014 superseded the controller, and much of the protocol package was renamed. Its quickstart's reading guide and its tasks still name the planned names. Recorded rather than corrected: rewriting a past feature's record is out of scope for 009, and the correction belongs to whoever next touches 007.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/007-mcp-billing-server/tasks.md",
+    "subject": "mcp-server/src/topologyTest/java/dev/l4jlab/mcp/topology/TokenRejectionTopologyTest.java",
+    "reason": "feature 007 planned a set of classes and delivered a different one - R-014 superseded the controller, and much of the protocol package was renamed. Its quickstart's reading guide and its tasks still name the planned names. Recorded rather than corrected: rewriting a past feature's record is out of scope for 009, and the correction belongs to whoever next touches 007.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/007-mcp-billing-server/tasks.md",
+    "subject": "mcp-server/src/main/java/dev/l4jlab/mcp/protocol/HeaderValidationFilter.java",
+    "reason": "feature 007 planned a set of classes and delivered a different one - R-014 superseded the controller, and much of the protocol package was renamed. Its quickstart's reading guide and its tasks still name the planned names. Recorded rather than corrected: rewriting a past feature's record is out of scope for 009, and the correction belongs to whoever next touches 007.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/007-mcp-billing-server/tasks.md",
+    "subject": "mcp-server/src/main/java/dev/l4jlab/mcp/protocol/ProtocolVersionGate.java",
+    "reason": "feature 007 planned a set of classes and delivered a different one - R-014 superseded the controller, and much of the protocol package was renamed. Its quickstart's reading guide and its tasks still name the planned names. Recorded rather than corrected: rewriting a past feature's record is out of scope for 009, and the correction belongs to whoever next touches 007.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/007-mcp-billing-server/tasks.md",
+    "subject": "mcp-server/src/main/java/dev/l4jlab/mcp/protocol/DiscoverHandler.java",
+    "reason": "feature 007 planned a set of classes and delivered a different one - R-014 superseded the controller, and much of the protocol package was renamed. Its quickstart's reading guide and its tasks still name the planned names. Recorded rather than corrected: rewriting a past feature's record is out of scope for 009, and the correction belongs to whoever next touches 007.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/007-mcp-billing-server/tasks.md",
+    "subject": "mcp-server/src/main/java/dev/l4jlab/mcp/protocol/ToolsListHandler.java",
+    "reason": "feature 007 planned a set of classes and delivered a different one - R-014 superseded the controller, and much of the protocol package was renamed. Its quickstart's reading guide and its tasks still name the planned names. Recorded rather than corrected: rewriting a past feature's record is out of scope for 009, and the correction belongs to whoever next touches 007.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/007-mcp-billing-server/tasks.md",
+    "subject": "mcp-server/src/main/java/dev/l4jlab/mcp/protocol/ClientCapabilities.java",
+    "reason": "feature 007 planned a set of classes and delivered a different one - R-014 superseded the controller, and much of the protocol package was renamed. Its quickstart's reading guide and its tasks still name the planned names. Recorded rather than corrected: rewriting a past feature's record is out of scope for 009, and the correction belongs to whoever next touches 007.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/007-mcp-billing-server/tasks.md",
+    "subject": "mcp-server/src/test/java/dev/l4jlab/mcp/tools/SearchBillingRunsTest.java",
+    "reason": "feature 007 planned a set of classes and delivered a different one - R-014 superseded the controller, and much of the protocol package was renamed. Its quickstart's reading guide and its tasks still name the planned names. Recorded rather than corrected: rewriting a past feature's record is out of scope for 009, and the correction belongs to whoever next touches 007.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/007-mcp-billing-server/tasks.md",
+    "subject": "mcp-server/src/test/java/dev/l4jlab/mcp/tools/GetBillingRunStatusTest.java",
+    "reason": "feature 007 planned a set of classes and delivered a different one - R-014 superseded the controller, and much of the protocol package was renamed. Its quickstart's reading guide and its tasks still name the planned names. Recorded rather than corrected: rewriting a past feature's record is out of scope for 009, and the correction belongs to whoever next touches 007.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/007-mcp-billing-server/tasks.md",
+    "subject": "mcp-server/src/test/java/dev/l4jlab/mcp/tools/GetRunFailuresTest.java",
+    "reason": "feature 007 planned a set of classes and delivered a different one - R-014 superseded the controller, and much of the protocol package was renamed. Its quickstart's reading guide and its tasks still name the planned names. Recorded rather than corrected: rewriting a past feature's record is out of scope for 009, and the correction belongs to whoever next touches 007.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/007-mcp-billing-server/tasks.md",
+    "subject": "mcp-server/src/test/java/dev/l4jlab/mcp/tools/LegacyErrorTranslationTest.java",
+    "reason": "feature 007 planned a set of classes and delivered a different one - R-014 superseded the controller, and much of the protocol package was renamed. Its quickstart's reading guide and its tasks still name the planned names. Recorded rather than corrected: rewriting a past feature's record is out of scope for 009, and the correction belongs to whoever next touches 007.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/007-mcp-billing-server/tasks.md",
+    "subject": "mcp-server/src/topologyTest/java/dev/l4jlab/mcp/topology/CursorTopologyTest.java",
+    "reason": "feature 007 planned a set of classes and delivered a different one - R-014 superseded the controller, and much of the protocol package was renamed. Its quickstart's reading guide and its tasks still name the planned names. Recorded rather than corrected: rewriting a past feature's record is out of scope for 009, and the correction belongs to whoever next touches 007.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/007-mcp-billing-server/tasks.md",
+    "subject": "mcp-server/src/topologyTest/java/dev/l4jlab/mcp/topology/ReadToolsTopologyTest.java",
+    "reason": "feature 007 planned a set of classes and delivered a different one - R-014 superseded the controller, and much of the protocol package was renamed. Its quickstart's reading guide and its tasks still name the planned names. Recorded rather than corrected: rewriting a past feature's record is out of scope for 009, and the correction belongs to whoever next touches 007.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/007-mcp-billing-server/tasks.md",
+    "subject": "mcp-server/src/topologyTest/java/dev/l4jlab/mcp/topology/TraceparentTopologyTest.java",
+    "reason": "feature 007 planned a set of classes and delivered a different one - R-014 superseded the controller, and much of the protocol package was renamed. Its quickstart's reading guide and its tasks still name the planned names. Recorded rather than corrected: rewriting a past feature's record is out of scope for 009, and the correction belongs to whoever next touches 007.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/007-mcp-billing-server/tasks.md",
+    "subject": "mcp-server/src/main/java/dev/l4jlab/mcp/protocol/ToolsCallHandler.java",
+    "reason": "feature 007 planned a set of classes and delivered a different one - R-014 superseded the controller, and much of the protocol package was renamed. Its quickstart's reading guide and its tasks still name the planned names. Recorded rather than corrected: rewriting a past feature's record is out of scope for 009, and the correction belongs to whoever next touches 007.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/007-mcp-billing-server/tasks.md",
+    "subject": "mcp-server/src/main/java/dev/l4jlab/mcp/tools/SearchBillingRunsTool.java",
+    "reason": "feature 007 planned a set of classes and delivered a different one - R-014 superseded the controller, and much of the protocol package was renamed. Its quickstart's reading guide and its tasks still name the planned names. Recorded rather than corrected: rewriting a past feature's record is out of scope for 009, and the correction belongs to whoever next touches 007.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/007-mcp-billing-server/tasks.md",
+    "subject": "mcp-server/src/main/java/dev/l4jlab/mcp/tools/GetBillingRunStatusTool.java",
+    "reason": "feature 007 planned a set of classes and delivered a different one - R-014 superseded the controller, and much of the protocol package was renamed. Its quickstart's reading guide and its tasks still name the planned names. Recorded rather than corrected: rewriting a past feature's record is out of scope for 009, and the correction belongs to whoever next touches 007.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/007-mcp-billing-server/tasks.md",
+    "subject": "mcp-server/src/main/java/dev/l4jlab/mcp/tools/GetRunFailuresTool.java",
+    "reason": "feature 007 planned a set of classes and delivered a different one - R-014 superseded the controller, and much of the protocol package was renamed. Its quickstart's reading guide and its tasks still name the planned names. Recorded rather than corrected: rewriting a past feature's record is out of scope for 009, and the correction belongs to whoever next touches 007.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/007-mcp-billing-server/tasks.md",
+    "subject": "mcp-server/src/test/java/dev/l4jlab/mcp/protocol/RequestStateCodecTest.java",
+    "reason": "feature 007 planned a set of classes and delivered a different one - R-014 superseded the controller, and much of the protocol package was renamed. Its quickstart's reading guide and its tasks still name the planned names. Recorded rather than corrected: rewriting a past feature's record is out of scope for 009, and the correction belongs to whoever next touches 007.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/007-mcp-billing-server/tasks.md",
+    "subject": "mcp-server/src/test/java/dev/l4jlab/mcp/tools/PostFeeAdjustmentConfirmationTest.java",
+    "reason": "feature 007 planned a set of classes and delivered a different one - R-014 superseded the controller, and much of the protocol package was renamed. Its quickstart's reading guide and its tasks still name the planned names. Recorded rather than corrected: rewriting a past feature's record is out of scope for 009, and the correction belongs to whoever next touches 007.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/007-mcp-billing-server/tasks.md",
+    "subject": "mcp-server/src/test/java/dev/l4jlab/mcp/tools/IdempotencyTest.java",
+    "reason": "feature 007 planned a set of classes and delivered a different one - R-014 superseded the controller, and much of the protocol package was renamed. Its quickstart's reading guide and its tasks still name the planned names. Recorded rather than corrected: rewriting a past feature's record is out of scope for 009, and the correction belongs to whoever next touches 007.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/007-mcp-billing-server/tasks.md",
+    "subject": "mcp-server/src/test/java/dev/l4jlab/mcp/tools/FeeAdjustmentValidationTest.java",
+    "reason": "feature 007 planned a set of classes and delivered a different one - R-014 superseded the controller, and much of the protocol package was renamed. Its quickstart's reading guide and its tasks still name the planned names. Recorded rather than corrected: rewriting a past feature's record is out of scope for 009, and the correction belongs to whoever next touches 007.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/007-mcp-billing-server/tasks.md",
+    "subject": "mcp-server/src/test/java/dev/l4jlab/mcp/protocol/MrtrCachingTest.java",
+    "reason": "feature 007 planned a set of classes and delivered a different one - R-014 superseded the controller, and much of the protocol package was renamed. Its quickstart's reading guide and its tasks still name the planned names. Recorded rather than corrected: rewriting a past feature's record is out of scope for 009, and the correction belongs to whoever next touches 007.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/007-mcp-billing-server/tasks.md",
+    "subject": "mcp-server/src/topologyTest/java/dev/l4jlab/mcp/topology/FeeAdjustmentTopologyTest.java",
+    "reason": "feature 007 planned a set of classes and delivered a different one - R-014 superseded the controller, and much of the protocol package was renamed. Its quickstart's reading guide and its tasks still name the planned names. Recorded rather than corrected: rewriting a past feature's record is out of scope for 009, and the correction belongs to whoever next touches 007.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/007-mcp-billing-server/tasks.md",
+    "subject": "mcp-server/src/topologyTest/java/dev/l4jlab/mcp/topology/CrossReplicaConfirmationTest.java",
+    "reason": "feature 007 planned a set of classes and delivered a different one - R-014 superseded the controller, and much of the protocol package was renamed. Its quickstart's reading guide and its tasks still name the planned names. Recorded rather than corrected: rewriting a past feature's record is out of scope for 009, and the correction belongs to whoever next touches 007.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/007-mcp-billing-server/tasks.md",
+    "subject": "mcp-server/src/topologyTest/java/dev/l4jlab/mcp/topology/FeeAdjustmentAuditTest.java",
+    "reason": "feature 007 planned a set of classes and delivered a different one - R-014 superseded the controller, and much of the protocol package was renamed. Its quickstart's reading guide and its tasks still name the planned names. Recorded rather than corrected: rewriting a past feature's record is out of scope for 009, and the correction belongs to whoever next touches 007.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/007-mcp-billing-server/tasks.md",
+    "subject": "mcp-server/src/main/java/dev/l4jlab/mcp/ops/OperationRecordRepository.java",
+    "reason": "feature 007 planned a set of classes and delivered a different one - R-014 superseded the controller, and much of the protocol package was renamed. Its quickstart's reading guide and its tasks still name the planned names. Recorded rather than corrected: rewriting a past feature's record is out of scope for 009, and the correction belongs to whoever next touches 007.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/007-mcp-billing-server/tasks.md",
+    "subject": "mcp-server/src/main/java/dev/l4jlab/mcp/tools/PostFeeAdjustmentTool.java",
+    "reason": "feature 007 planned a set of classes and delivered a different one - R-014 superseded the controller, and much of the protocol package was renamed. Its quickstart's reading guide and its tasks still name the planned names. Recorded rather than corrected: rewriting a past feature's record is out of scope for 009, and the correction belongs to whoever next touches 007.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/007-mcp-billing-server/tasks.md",
+    "subject": "legacy-billing-api/src/test/java/dev/l4jlab/legacy/runsim/RunCancellationTest.java",
+    "reason": "feature 007 planned a set of classes and delivered a different one - R-014 superseded the controller, and much of the protocol package was renamed. Its quickstart's reading guide and its tasks still name the planned names. Recorded rather than corrected: rewriting a past feature's record is out of scope for 009, and the correction belongs to whoever next touches 007.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/007-mcp-billing-server/tasks.md",
+    "subject": "mcp-server/src/test/java/dev/l4jlab/mcp/tasks/TaskStoreTest.java",
+    "reason": "feature 007 planned a set of classes and delivered a different one - R-014 superseded the controller, and much of the protocol package was renamed. Its quickstart's reading guide and its tasks still name the planned names. Recorded rather than corrected: rewriting a past feature's record is out of scope for 009, and the correction belongs to whoever next touches 007.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/007-mcp-billing-server/tasks.md",
+    "subject": "mcp-server/src/test/java/dev/l4jlab/mcp/tasks/CreateTaskResultTest.java",
+    "reason": "feature 007 planned a set of classes and delivered a different one - R-014 superseded the controller, and much of the protocol package was renamed. Its quickstart's reading guide and its tasks still name the planned names. Recorded rather than corrected: rewriting a past feature's record is out of scope for 009, and the correction belongs to whoever next touches 007.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/007-mcp-billing-server/tasks.md",
+    "subject": "mcp-server/src/test/java/dev/l4jlab/mcp/tasks/TasksGetTest.java",
+    "reason": "feature 007 planned a set of classes and delivered a different one - R-014 superseded the controller, and much of the protocol package was renamed. Its quickstart's reading guide and its tasks still name the planned names. Recorded rather than corrected: rewriting a past feature's record is out of scope for 009, and the correction belongs to whoever next touches 007.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/007-mcp-billing-server/tasks.md",
+    "subject": "mcp-server/src/test/java/dev/l4jlab/mcp/tasks/TasksCancelUpdateTest.java",
+    "reason": "feature 007 planned a set of classes and delivered a different one - R-014 superseded the controller, and much of the protocol package was renamed. Its quickstart's reading guide and its tasks still name the planned names. Recorded rather than corrected: rewriting a past feature's record is out of scope for 009, and the correction belongs to whoever next touches 007.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/007-mcp-billing-server/tasks.md",
+    "subject": "mcp-server/src/test/java/dev/l4jlab/mcp/tasks/TasksFallbackTest.java",
+    "reason": "feature 007 planned a set of classes and delivered a different one - R-014 superseded the controller, and much of the protocol package was renamed. Its quickstart's reading guide and its tasks still name the planned names. Recorded rather than corrected: rewriting a past feature's record is out of scope for 009, and the correction belongs to whoever next touches 007.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/007-mcp-billing-server/tasks.md",
+    "subject": "mcp-server/src/topologyTest/java/dev/l4jlab/mcp/topology/StartRunTopologyTest.java",
+    "reason": "feature 007 planned a set of classes and delivered a different one - R-014 superseded the controller, and much of the protocol package was renamed. Its quickstart's reading guide and its tasks still name the planned names. Recorded rather than corrected: rewriting a past feature's record is out of scope for 009, and the correction belongs to whoever next touches 007.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/007-mcp-billing-server/tasks.md",
+    "subject": "mcp-server/src/topologyTest/java/dev/l4jlab/mcp/topology/TaskPollingReplicaTest.java",
+    "reason": "feature 007 planned a set of classes and delivered a different one - R-014 superseded the controller, and much of the protocol package was renamed. Its quickstart's reading guide and its tasks still name the planned names. Recorded rather than corrected: rewriting a past feature's record is out of scope for 009, and the correction belongs to whoever next touches 007.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/007-mcp-billing-server/tasks.md",
+    "subject": "mcp-server/src/topologyTest/java/dev/l4jlab/mcp/topology/TaskCancellationTopologyTest.java",
+    "reason": "feature 007 planned a set of classes and delivered a different one - R-014 superseded the controller, and much of the protocol package was renamed. Its quickstart's reading guide and its tasks still name the planned names. Recorded rather than corrected: rewriting a past feature's record is out of scope for 009, and the correction belongs to whoever next touches 007.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/007-mcp-billing-server/tasks.md",
+    "subject": "mcp-server/src/topologyTest/java/dev/l4jlab/mcp/topology/TasksFallbackTopologyTest.java",
+    "reason": "feature 007 planned a set of classes and delivered a different one - R-014 superseded the controller, and much of the protocol package was renamed. Its quickstart's reading guide and its tasks still name the planned names. Recorded rather than corrected: rewriting a past feature's record is out of scope for 009, and the correction belongs to whoever next touches 007.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/007-mcp-billing-server/tasks.md",
+    "subject": "mcp-server/src/main/java/dev/l4jlab/mcp/tasks/TasksGetHandler.java",
+    "reason": "feature 007 planned a set of classes and delivered a different one - R-014 superseded the controller, and much of the protocol package was renamed. Its quickstart's reading guide and its tasks still name the planned names. Recorded rather than corrected: rewriting a past feature's record is out of scope for 009, and the correction belongs to whoever next touches 007.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/007-mcp-billing-server/tasks.md",
+    "subject": "mcp-server/src/main/java/dev/l4jlab/mcp/tasks/TasksCancelHandler.java",
+    "reason": "feature 007 planned a set of classes and delivered a different one - R-014 superseded the controller, and much of the protocol package was renamed. Its quickstart's reading guide and its tasks still name the planned names. Recorded rather than corrected: rewriting a past feature's record is out of scope for 009, and the correction belongs to whoever next touches 007.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/007-mcp-billing-server/tasks.md",
+    "subject": "mcp-server/src/topologyTest/java/dev/l4jlab/mcp/topology/TokenNeverForwardedTest.java",
+    "reason": "feature 007 planned a set of classes and delivered a different one - R-014 superseded the controller, and much of the protocol package was renamed. Its quickstart's reading guide and its tasks still name the planned names. Recorded rather than corrected: rewriting a past feature's record is out of scope for 009, and the correction belongs to whoever next touches 007.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/008-mcp-console/data-model.md",
+    "subject": "007/contracts/token-issuer.md",
+    "reason": "a document of a feature that predates this check names a path the implementation no longer has - most often a class feature 005 deleted when it moved the chain onto LangChain4j agentic orchestration. A past feature's record may not be edited by this one.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/008-mcp-console/findings.md",
+    "subject": "007/contracts/README.md",
+    "reason": "a document of a feature that predates this check names a path the implementation no longer has - most often a class feature 005 deleted when it moved the chain onto LangChain4j agentic orchestration. A past feature's record may not be edited by this one.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/008-mcp-console/findings.md",
+    "subject": "007/contracts/mcp-protocol.md",
+    "reason": "a document of a feature that predates this check names a path the implementation no longer has - most often a class feature 005 deleted when it moved the chain onto LangChain4j agentic orchestration. A past feature's record may not be edited by this one.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/008-mcp-console/plan.md",
+    "subject": "007/contracts/token-issuer.md",
+    "reason": "a document of a feature that predates this check names a path the implementation no longer has - most often a class feature 005 deleted when it moved the chain onto LangChain4j agentic orchestration. A past feature's record may not be edited by this one.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/008-mcp-console/research.md",
+    "subject": "007/contracts/token-issuer.md",
+    "reason": "a document of a feature that predates this check names a path the implementation no longer has - most often a class feature 005 deleted when it moved the chain onto LangChain4j agentic orchestration. A past feature's record may not be edited by this one.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/008-mcp-console/tasks.md",
+    "subject": "007/contracts/token-issuer.md",
+    "reason": "a document of a feature that predates this check names a path the implementation no longer has - most often a class feature 005 deleted when it moved the chain onto LangChain4j agentic orchestration. A past feature's record may not be edited by this one.",
     "recorded": "2026-09-14"
   }
 ]

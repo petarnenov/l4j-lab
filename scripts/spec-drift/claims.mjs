@@ -188,7 +188,9 @@ export function completeDirectories(lines) {
  * Three prefixes and no others. `docker`, `curl`, `git` and the rest describe the reader's machine;
  * failing a build because someone's container runtime is absent is not drift.
  */
-const COMMAND = /^(make\s+[\w:.-]+|npm\s+run\s+[\w:.-]+|\.\/gradlew\s+[\w:.-]+)$/
+// A flag is not a target: `make --version` and `make -qp` ask make about itself, and this project
+// promises neither. Every name here must start with a word character.
+const COMMAND = /^(make\s+\w[\w:.-]*|npm\s+run\s+\w[\w:.-]*|\.\/gradlew\s+[:\w][\w:.-]*)$/
 
 export function commandClaims({ document, lines, feature }) {
   const claims = []

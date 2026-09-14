@@ -4,7 +4,8 @@
 
 **Created**: 2026-09-13
 
-**Status**: Draft
+**Status**: Implemented, 2026-09-13. All 32 tasks complete. Status corrected 2026-09-14: it read
+`Draft` after delivery, which is what feature 009's check exists to notice.
 
 **Input**: User description: "Добави Макефиле. Искам да стартирам всичко от там." (Add a Makefile. I want to start everything from there.)
 
