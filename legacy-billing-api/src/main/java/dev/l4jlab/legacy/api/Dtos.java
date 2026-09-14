@@ -13,9 +13,22 @@ public final class Dtos {
     private Dtos() {
     }
 
-    /** A page of results plus the caller's own total — never the unfiltered total. */
+    /**
+     * A page of results plus the caller's own total — never the unfiltered total.
+     *
+     * <p>{@code items} is never null, and {@code jackson.serialization-inclusion: ALWAYS} in
+     * application.yml keeps an empty one in the JSON. Serde's default omitted it, so a page with
+     * nothing in it went out as {@code {"totalCount":0}} — which makes "nothing matched" and
+     * "malformed response" the same bytes. The MCP server dereferenced the absent field, and an
+     * ordinary query — a date range with no runs in it — answered HTTP 500 (feature 010, R-001).
+     *
+     * <p>An empty collection is a fact. It is serialised as one.
+     */
     @Serdeable
     public record Page<T>(List<T> items, long totalCount) {
+        public Page {
+            items = items == null ? List.of() : items;
+        }
     }
 
     @Serdeable

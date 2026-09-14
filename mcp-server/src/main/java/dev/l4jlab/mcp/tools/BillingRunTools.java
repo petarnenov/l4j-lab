@@ -171,7 +171,11 @@ public class BillingRunTools {
         }
         LegacyRunPage page = (LegacyRunPage) ok.value();
 
-        List<BillingRunSummary> runs = page.items().stream()
+        // Never dereferenced directly: the system of record is outside this server's control — every
+        // one of these tools declares openWorldHint: true — and it omitted `items` from an empty page,
+        // so an ordinary query with no matches crashed the tool (feature 010, research R-001). A client
+        // of a system it does not own does not assume a field is present because a record says it is.
+        List<BillingRunSummary> runs = orEmpty(page.items()).stream()
             .map(r -> new BillingRunSummary(r.runId(), r.firmId(), r.executedByAdvisorId(),
                 RunStatus.valueOf(r.status()), r.startedAt()))
             .toList();
@@ -218,7 +222,7 @@ public class BillingRunTools {
         }
         LegacyFailurePage page = (LegacyFailurePage) ok.value();
 
-        List<RunFailure> failures = page.items().stream()
+        List<RunFailure> failures = orEmpty(page.items()).stream()
             .map(f -> new RunFailure(f.householdId(), f.householdName(), f.cause()))
             .toList();
         return new RunFailuresResult(runId, failures, page.totalCount(),
@@ -235,5 +239,16 @@ public class BillingRunTools {
             throw new ToolFailure("No authenticated caller.");
         }
         return context;
+    }
+
+    /**
+     * A collection read from the system of record, never null.
+     *
+     * <p>Feature 010, FR-001. The legacy API omitted an empty {@code items}, this class dereferenced
+     * it, and a date range matching nothing answered HTTP 500. That serialiser is fixed too — but a
+     * client of a system it does not control should not have needed the fix to be safe.
+     */
+    private static <T> List<T> orEmpty(List<T> maybe) {
+        return maybe == null ? List.of() : maybe;
     }
 }
