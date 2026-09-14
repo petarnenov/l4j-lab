@@ -1,0 +1,43 @@
+# The MCP billing server. Every setting is an environment variable with a documented default (R-012).
+micronaut:
+  application:
+    name: mcp-billing-server
+  server:
+    port: ${MCP_PORT:8080}
+  mcp:
+    server:
+      # FR-029: hosted by micronaut-mcp-server-java-sdk over HTTP, on Micronaut's own Netty server.
+      transport: HTTP
+      endpoint: /mcp
+      enabled: true
+      info:
+        name: mcp-billing-server
+        version: 0.1.0
+datasources:
+  default:
+    url: ${DATASOURCE_URL:`jdbc:postgresql://postgres:5432/l4j`}
+    username: ${DATASOURCE_USER:l4j}
+    password: ${DATASOURCE_PASSWORD:l4j}
+    driver-class-name: org.postgresql.Driver
+    schema-generate: NONE
+flyway:
+  datasources:
+    default:
+      enabled: true
+      # Protocol and operational state only. No billing entity lives here: that is what
+      # "the MCP server has no database of its own for domain data" means concretely.
+      schemas: mcp_ops
+      default-schema: mcp_ops
+mcp:
+  # The two keys every replica must share, or a cursor minted by one fails on another (R-009, R-002).
+  cursor-hmac-key: ${MCP_CURSOR_HMAC_KEY:dev-cursor-key-not-a-secret}
+  request-state-key: ${MCP_REQUEST_STATE_KEY:dev-request-state-key-not-secret}
+  issuer-url: ${MCP_ISSUER_URL:`http://token-issuer:8080`}
+  legacy-url: ${MCP_LEGACY_URL:`http://legacy-billing-api:8080`}
+  legacy-timeout-ms: ${MCP_LEGACY_TIMEOUT_MS:5000}
+  task-ttl-ms: ${MCP_TASK_TTL_MS:900000}
+  tools-ttl-ms: ${MCP_TOOLS_TTL_MS:300000}
+endpoints:
+  health:
+    enabled: true
+    details-visible: ANONYMOUS

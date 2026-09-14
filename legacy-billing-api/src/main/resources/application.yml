@@ -1,0 +1,29 @@
+# The legacy billing API. Settings are environment variables with documented defaults (R-012).
+micronaut:
+  application:
+    name: legacy-billing-api
+  server:
+    port: ${LEGACY_PORT:8080}
+datasources:
+  default:
+    url: ${DATASOURCE_URL:`jdbc:postgresql://postgres:5432/l4j`}
+    username: ${DATASOURCE_USER:l4j}
+    password: ${DATASOURCE_PASSWORD:l4j}
+    driver-class-name: org.postgresql.Driver
+    schema-generate: NONE
+flyway:
+  datasources:
+    default:
+      enabled: true
+      # The schema this service owns. The MCP server migrates its own, separately.
+      schemas: legacy_billing
+      default-schema: legacy_billing
+legacy:
+  issuer-url: ${MCP_ISSUER_URL:`http://token-issuer:8080`}
+  # R-012: unset means a random duration in [30s, 90s], which is FR-024 exactly. The topology suite
+  # sets it to a few seconds so `make mcp-verify` does not spend minutes waiting.
+  run-duration-ms: ${LEGACY_RUN_DURATION_MS:-1}
+endpoints:
+  health:
+    enabled: true
+    details-visible: ANONYMOUS

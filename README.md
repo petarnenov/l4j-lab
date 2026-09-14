@@ -200,3 +200,43 @@ is identical on every run, while the summary is whatever the model said this tim
 
 Specifications, plans, and task lists live in `specs/`, one directory per feature. The project
 constitution is in `.specify/memory/constitution.md`.
+
+## MCP billing server (feature 007)
+
+A second, independent system in this repository: an MCP server targeting protocol revision
+**2026-07-28**, three replicas behind a proxy, a legacy billing API that owns the data, and a
+development token issuer. It shares the repository and the build, and nothing else — it has its own
+Compose file, its own schemas, and its own published port.
+
+```bash
+make mcp-up       # the whole system, one command
+make mcp-verify   # start it, run the acceptance scenarios, stop it
+make mcp-down
+make mcp-logs
+```
+
+Served at `http://localhost:8877/mcp` unless `MCP_HTTP_PORT` says otherwise. Deliberately not 8080
+or 5432, which `make dev` and `compose.yaml` already use: all three setups are meant to run at once.
+
+Details in [`mcp-server/README.md`](mcp-server/README.md); specification and research in
+[`specs/007-mcp-billing-server/`](specs/007-mcp-billing-server/).
+
+### Configuration
+
+Every setting is an environment variable with a documented default.
+
+| Variable | Default | Meaning |
+|---|---|---|
+| `MCP_HTTP_PORT` | `8877` | The only published port of the MCP stack |
+| `MCP_CURSOR_HMAC_KEY` | a development value | Signs pagination cursors. **Must be identical on every replica**, or a cursor minted by one fails on another |
+| `MCP_REQUEST_STATE_KEY` | a development value | Seals the confirmation state of a fee adjustment. Same sharing requirement |
+| `MCP_ISSUER_URL` | `http://token-issuer:8080` | Where the JWKS and the token exchange live |
+| `MCP_LEGACY_URL` | `http://legacy-billing-api:8080` | The system of record |
+| `MCP_LEGACY_TIMEOUT_MS` | `5000` | Bounds every legacy call, so an unreachable system of record becomes a tool error rather than a hang |
+| `MCP_TASK_TTL_MS` | `900000` | `ttlMs` on a task handle |
+| `MCP_TOOLS_TTL_MS` | `300000` | `ttlMs` on `tools/list` and `server/discover` |
+| `LEGACY_RUN_DURATION_MS` | unset | Unset means a random 30–90s, which is what the requirement specifies. `make mcp-verify` sets it low so the acceptance suite does not wait a run out |
+| `DATASOURCE_URL`, `DATASOURCE_USER`, `DATASOURCE_PASSWORD` | as `compose.yaml` | Reused rather than renamed |
+
+The two keys are the only settings that must match across replicas, and both fail at startup outside
+development rather than at first use.

@@ -1,0 +1,46 @@
+{
+  "name": "start_billing_run",
+  "title": "Start a billing run",
+  "description": "Start a billing run for a firm. The run takes 30 to 90 seconds and advances through four phases. This call returns immediately with a handle rather than waiting. Poll the handle until the run reaches a terminal status; the final status is then available. Starting a run writes to the billing system of record.",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "firm_id": {
+        "type": "string",
+        "description": "Firm to bill."
+      },
+      "executed_by_advisor_id": {
+        "type": "string",
+        "description": "Advisor the run is executed for. Must be an advisor the caller may act for."
+      }
+    },
+    "required": ["firm_id", "executed_by_advisor_id"],
+    "additionalProperties": false
+  },
+  "outputSchema": {
+    "type": "object",
+    "description": "The final result, delivered on the task once it completes.",
+    "properties": {
+      "run_id": { "type": "string" },
+      "status": {
+        "type": "string",
+        "enum": ["PENDING", "RUNNING", "COMPLETED", "FAILED", "CANCELED"]
+      },
+      "phase": {
+        "type": ["string", "null"],
+        "enum": ["DATA_COLLECTION", "FEE_CALC", "INVOICING", "POSTING", null]
+      },
+      "accounts_processed": { "type": "integer", "minimum": 0 },
+      "accounts_total": { "type": "integer", "minimum": 0 },
+      "failure_reason": { "type": ["string", "null"] }
+    },
+    "required": ["run_id", "status", "phase", "accounts_processed", "accounts_total", "failure_reason"],
+    "additionalProperties": false
+  },
+  "annotations": {
+    "readOnlyHint": false,
+    "destructiveHint": false,
+    "idempotentHint": false,
+    "openWorldHint": true
+  }
+}

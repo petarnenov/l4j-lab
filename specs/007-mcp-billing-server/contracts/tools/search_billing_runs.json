@@ -1,0 +1,95 @@
+{
+  "name": "search_billing_runs",
+  "title": "Search billing runs",
+  "description": "Search billing runs for a firm by status, executing advisor, and start-date range. Returns one page of at most 20 runs. When more matches exist, the result carries an opaque cursor; pass it back as the 'cursor' argument to get the next page. Results are limited to what the caller is entitled to see.",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "firm_id": {
+        "type": "string",
+        "description": "Firm whose runs to search."
+      },
+      "status": {
+        "type": "string",
+        "enum": ["PENDING", "RUNNING", "COMPLETED", "FAILED", "CANCELED"],
+        "description": "Optional. Only runs in this status."
+      },
+      "advisor_id": {
+        "type": "string",
+        "description": "Optional. Only runs executed by this advisor."
+      },
+      "started_from": {
+        "type": "string",
+        "format": "date",
+        "description": "Optional. Only runs started on or after this date."
+      },
+      "started_to": {
+        "type": "string",
+        "format": "date",
+        "description": "Optional. Only runs started on or before this date."
+      },
+      "page_size": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 20,
+        "default": 20,
+        "description": "Runs per page. Values above 20 are clamped to 20."
+      },
+      "cursor": {
+        "type": "string",
+        "description": "Opaque cursor from a previous result. Do not construct or modify it."
+      }
+    },
+    "required": ["firm_id"],
+    "additionalProperties": false
+  },
+  "outputSchema": {
+    "type": "object",
+    "properties": {
+      "runs": {
+        "type": "array",
+        "maxItems": 20,
+        "items": {
+          "type": "object",
+          "properties": {
+            "run_id": { "type": "string" },
+            "firm_id": { "type": "string" },
+            "executed_by_advisor_id": { "type": "string" },
+            "status": {
+              "type": "string",
+              "enum": ["PENDING", "RUNNING", "COMPLETED", "FAILED", "CANCELED"]
+            },
+            "started_at": { "type": "string", "format": "date-time" }
+          },
+          "required": ["run_id", "firm_id", "executed_by_advisor_id", "status", "started_at"],
+          "additionalProperties": false
+        }
+      },
+      "total_match_count": {
+        "type": "integer",
+        "minimum": 0,
+        "description": "Total runs matching the search, not just this page."
+      },
+      "truncated": {
+        "type": "boolean",
+        "description": "True when more matches exist than this page carries."
+      },
+      "next_cursor": {
+        "type": "string",
+        "description": "Present only when truncated is true."
+      },
+      "refine_hint": {
+        "type": "string",
+        "description": "Present only when truncated is true. Says how to narrow the search."
+      }
+    },
+    "required": ["runs", "total_match_count", "truncated"],
+    "additionalProperties": false
+  },
+  "annotations": {
+    "readOnlyHint": true,
+    "destructiveHint": false,
+    "idempotentHint": true,
+    "openWorldHint": true
+  }
+}

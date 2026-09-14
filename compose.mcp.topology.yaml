@@ -1,0 +1,28 @@
+# Overlay for the acceptance scenarios only.
+#
+#   docker compose -f compose.mcp.yaml -f compose.mcp.topology.yaml up -d --wait
+#
+# The base stack publishes exactly one port, which is the honest shape for a deployment: a client
+# has no business addressing an individual replica. But four of the acceptance scenarios exist
+# precisely to prove that any replica can answer — a cursor minted by one read by another, a
+# confirmation retry landing elsewhere, polls spread across three. Proving that requires addressing
+# them by name, so this overlay publishes them, and the legacy API's test-only capture log with them.
+#
+# Kept separate rather than folded into the base file so the normal topology stays honest.
+
+services:
+  mcp-a:
+    ports:
+      - "${MCP_REPLICA_A_PORT:-8881}:8080"
+  mcp-b:
+    ports:
+      - "${MCP_REPLICA_B_PORT:-8882}:8080"
+  mcp-c:
+    ports:
+      - "${MCP_REPLICA_C_PORT:-8883}:8080"
+
+  # SC-005 and FR-027 are both assertions about what actually arrived here, and neither can be made
+  # from outside without reading this log.
+  legacy-billing-api:
+    ports:
+      - "${MCP_LEGACY_TEST_PORT:-8886}:8080"

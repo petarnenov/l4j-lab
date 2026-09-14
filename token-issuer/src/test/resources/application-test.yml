@@ -1,0 +1,4 @@
+# The container needs a fixed port; tests need one each. -1 asks Micronaut for a free one.
+micronaut:
+  server:
+    port: -1

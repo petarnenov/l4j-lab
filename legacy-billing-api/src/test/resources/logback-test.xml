@@ -1,0 +1,10 @@
+<configuration>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder><pattern>%-5level %logger{25} - %msg%n</pattern></encoder>
+    </appender>
+    <logger name="org.testcontainers" level="WARN"/>
+    <logger name="com.github.dockerjava" level="WARN"/>
+    <!-- The one line that matters: Micronaut logs unhandled controller exceptions here. -->
+    <logger name="io.micronaut.http.server.RouteExecutor" level="ERROR"/>
+    <root level="WARN"><appender-ref ref="STDOUT"/></root>
+</configuration>

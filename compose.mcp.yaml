@@ -1,0 +1,137 @@
+# Feature 007: the MCP billing server topology.
+#
+#   make mcp-up        # start
+#   make mcp-verify    # start, run the acceptance scenarios, stop
+#
+# Three MCP replicas behind a round-robin proxy, because FR-007's scenarios — a cursor from one
+# replica read by another, a confirmation retry landing elsewhere, task polls spread across three —
+# only exist across replicas. One instance would let every one of those tests pass while the code was
+# quietly stateful, which is worse than failing.
+#
+# ONE published port, ${MCP_HTTP_PORT:-8877}. Deliberately not 8080 or 5432: `make dev` guards 8080
+# and compose.yaml already publishes 5432, and feature 004 promised its stack and the development
+# setup can run at the same time. A third stack honours the same property.
+
+name: mcp-billing-server
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg17
+    environment:
+      POSTGRES_DB: l4j
+      POSTGRES_USER: ${DATASOURCE_USER:-l4j}
+      POSTGRES_PASSWORD: ${DATASOURCE_PASSWORD:-l4j}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d l4j"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - mcppgdata:/var/lib/postgresql/data
+    networks: [mcp]
+    restart: unless-stopped
+
+  # Development only (FR-025), and gated as such in code (R-013). Reachable through the proxy so the
+  # stack needs no second published port.
+  token-issuer:
+    build:
+      context: .
+      dockerfile: token-issuer/Dockerfile
+    environment:
+      MICRONAUT_ENVIRONMENTS: dev
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8080/health"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    networks: [mcp]
+    restart: unless-stopped
+
+  # The system of record. Owns the data and enforces every entitlement (FR-014, FR-023).
+  legacy-billing-api:
+    build:
+      context: .
+      dockerfile: legacy-billing-api/Dockerfile
+    environment:
+      DATASOURCE_URL: jdbc:postgresql://postgres:5432/l4j
+      DATASOURCE_USER: ${DATASOURCE_USER:-l4j}
+      DATASOURCE_PASSWORD: ${DATASOURCE_PASSWORD:-l4j}
+      MCP_ISSUER_URL: http://token-issuer:8080
+      # R-012: unset means FR-024's real 30-90s. mcp-verify sets it low so the suite finishes.
+      LEGACY_RUN_DURATION_MS: ${LEGACY_RUN_DURATION_MS:-}
+      MICRONAUT_ENVIRONMENTS: ${LEGACY_ENVIRONMENTS:-test-capture}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      token-issuer:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8080/health/readiness"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    networks: [mcp]
+    restart: unless-stopped
+
+  # Three replicas, named rather than scaled, so a test can address one deliberately and prove the
+  # hop between them.
+  mcp-a: &mcp
+    build:
+      context: .
+      dockerfile: mcp-server/Dockerfile
+    environment: &mcp-env
+      DATASOURCE_URL: jdbc:postgresql://postgres:5432/l4j
+      DATASOURCE_USER: ${DATASOURCE_USER:-l4j}
+      DATASOURCE_PASSWORD: ${DATASOURCE_PASSWORD:-l4j}
+      MCP_ISSUER_URL: http://token-issuer:8080
+      MCP_LEGACY_URL: http://legacy-billing-api:8080
+      # The two keys every replica must share, or a cursor minted by one fails on another.
+      MCP_CURSOR_HMAC_KEY: ${MCP_CURSOR_HMAC_KEY:-dev-cursor-key-not-a-secret}
+      MCP_REQUEST_STATE_KEY: ${MCP_REQUEST_STATE_KEY:-dev-request-state-key-not-secret}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      legacy-billing-api:
+        condition: service_healthy
+    healthcheck: &mcp-health
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8080/health/readiness"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    networks: [mcp]
+    restart: unless-stopped
+
+  mcp-b:
+    <<: *mcp
+    environment: *mcp-env
+
+  mcp-c:
+    <<: *mcp
+    environment: *mcp-env
+
+  mcp-proxy:
+    image: nginx:1.27-alpine
+    volumes:
+      - ./deploy/mcp/nginx.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - "${MCP_HTTP_PORT:-8877}:8080"
+    depends_on:
+      mcp-a:
+        condition: service_healthy
+      mcp-b:
+        condition: service_healthy
+      mcp-c:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8080/lb-health"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks: [mcp]
+    restart: unless-stopped
+
+volumes:
+  mcppgdata:
+
+networks:
+  mcp:
