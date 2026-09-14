@@ -149,18 +149,25 @@ The one place to look for each 2026-07-28 feature:
 Everything the MCP Java SDK provides is imported; the table below is the list of things it
 does not. Each row is a 2026-07-28 delta with an open upstream issue (`research.md` R-003).
 
+**Corrected by feature 010 (finding G-006, FR-015).** Eight of the twelve rows below named files
+that were never written: the table was filled in from the plan and never re-read against what was
+delivered. `research.md` R-014 superseded the controller and much of the package was renamed during
+implementation, and nothing carried that back here. A reading guide whose files do not exist is worse
+than no guide — it sends a newcomer looking for code and leaves them doubting the repository rather
+than the table. Every path below was opened before it was written down.
+
 | Feature | Where |
 |---|---|
-| Stateless requests, per-request `_meta` | `mcp-server/.../protocol/RequestEnvelope.java` (#1011) |
-| Header-based routing and validation | `mcp-server/.../protocol/HeaderValidationFilter.java` |
-| `server/discover` | `mcp-server/.../protocol/DiscoverHandler.java` (#1011) |
-| Cacheable list results | `mcp-server/.../protocol/ToolsListHandler.java` (#1009) |
+| Stateless requests, per-request `_meta` | `mcp-server/.../protocol/RequestContext.java` — the per-request state — assembled by `protocol/BillingTransportContextExtractor.java` (#1011) |
+| Header-based routing and validation | `mcp-server/.../protocol/McpRequestGate.java`, with `protocol/HttpMethodGate.java` for the `405` on non-`POST` |
+| `server/discover` | `mcp-server/.../protocol/McpMethodHandler.java` (#1011) — **not a file of its own**; it is one branch of the method dispatch |
+| Cacheable list results | `mcp-server/.../protocol/McpMethodHandler.java` (#1009) — `ttlMs` and `cacheScope` are set alongside the `tools/list` branch |
 | Server-minted handles (cursors) | `mcp-server/.../protocol/CursorCodec.java` |
-| Multi Round-Trip Requests | `mcp-server/.../tools/PostFeeAdjustmentTool.java` + `protocol/RequestStateCodec.java` |
+| Multi Round-Trip Requests | `mcp-server/.../tools/FeeAdjustmentTool.java` + `protocol/RequestStateCodec.java`, with the `input_required` result shaped by `protocol/InputRequired.java` and `protocol/InputRequiredMapper.java` |
 | Tasks extension | `mcp-server/.../tasks/` (#1013) |
-| `resultType` on every result | `mcp-server/.../protocol/ResultEnvelope.java` (#1011) |
-| Dispatch on Micronaut, not the SDK's servlet transport | `mcp-server/.../protocol/McpController.java` (FR-029) |
-| Protocol vs tool error split | `mcp-server/.../protocol/ErrorBoundary.java` |
+| `resultType` on every result | `mcp-server/.../protocol/JsonRpcResponseSerializer.java` (#1011) — every result shape is written here, which is why there is no envelope type |
+| Dispatch on Micronaut, not the SDK's servlet transport | `mcp-server/.../protocol/McpMethodHandler.java` (FR-029) — **`McpController` was never written**: `research.md` R-014 replaced it with the SDK's own endpoint plus these beans. `tasks.md` T039 still records the controller, and this row is the answer to anyone who finds that name and wonders which is current. |
+| Protocol vs tool error split | **No single file.** The split is a pattern, not a class: a tool throws `protocol/ToolFailure.java` (or `InputRequired`, `TaskCreated`, `NothingApplied`), a matching `*Mapper` turns it into an `McpError`, `protocol/ToolErrorStatusFilter.java` restores HTTP 200 for tool-level outcomes, and `protocol/UnexpectedFailureMapper.java` catches everything else. Naming one of them would be arbitrary and would hide the other four. |
 | Token exchange, never forwarding | `mcp-server/.../security/TokenExchangeClient.java` |
 | Audit and trace propagation | `mcp-server/.../audit/` |
 

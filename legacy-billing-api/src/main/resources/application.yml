@@ -27,10 +27,3 @@ endpoints:
   health:
     enabled: true
     details-visible: ANONYMOUS
-
-# An empty collection is a fact. Serde's default omits one, so a page with no results went out as
-# {"totalCount":0} — which made "nothing matched" and "malformed response" the same bytes, and the MCP
-# server dereferenced the absent field. An ordinary query — a date range with no runs in it — answered
-# HTTP 500 (feature 010, research R-001).
-jackson:
-  serialization-inclusion: ALWAYS

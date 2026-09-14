@@ -112,6 +112,7 @@ public class StubLegacyApi {
     @Get("/api/v1/billing-runs")
     public HttpResponse<?> search(@QueryValue String firmId,
                                   @QueryValue @Nullable String status,
+                                  @QueryValue @Nullable String startedFrom,
                                   @QueryValue(defaultValue = "0") int offset,
                                   @QueryValue(defaultValue = "20") int limit,
                                   @Header("Authorization") @Nullable String authorization,
@@ -126,6 +127,12 @@ public class StubLegacyApi {
             all.add(new Run("run-a%03d".formatted(i), firmId, "adv-101",
                 status == null ? "COMPLETED" : status, null, 12, 12, null,
                 "2026-08-%02dT09:00:00Z".formatted(i)));
+        }
+        // The stub honours startedFrom so a search matching nothing can be reproduced here rather
+        // than only against the running stack. The seeded runs are all in August 2026, so any later
+        // date is an empty result — which is the query that used to answer HTTP 500 (feature 010).
+        if (startedFrom != null && startedFrom.compareTo("2026-09-01") >= 0) {
+            all.clear();
         }
         int from = Math.min(offset, all.size());
         int to = Math.min(from + limit, all.size());

@@ -6,6 +6,7 @@ import dev.l4jlab.mcp.ops.OperationRecords;
 import dev.l4jlab.mcp.protocol.InputRequired;
 import dev.l4jlab.mcp.protocol.RequestContext;
 import dev.l4jlab.mcp.protocol.RequestStateCodec;
+import dev.l4jlab.mcp.protocol.NothingApplied;
 import dev.l4jlab.mcp.protocol.ToolFailure;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.type.Argument;
@@ -123,10 +124,21 @@ public class FeeAdjustmentTool {
         }
         requestState.open(context.requestState(), user, digest);
 
-        if (!confirmed(context)) {
-            // Declining is an outcome, not an error. Nothing was applied, and saying so plainly is
-            // more useful to a model than isError.
-            throw new ToolFailure("The change was not confirmed, so nothing was applied.");
+        Answer answer = answer(context);
+        if (answer == Answer.UNREADABLE) {
+            // Present but uninterpretable is a failure to communicate, not a decision. Reading it as a
+            // decline is what turned a client following the published contract into a declining one:
+            // it sent the flat shape the contract described, and was silently understood as "no"
+            // (feature 010, FR-007, research R-004).
+            throw new ToolFailure("The confirmation answer could not be read. It must carry the "
+                + "elicitation result shape: inputResponses.confirm_adjustment.content.confirmed. "
+                + "Nothing was applied.");
+        }
+        if (answer == Answer.DECLINED) {
+            // Declining is an outcome, not an error — which the contract has always said and the code
+            // did not do. isError tells a model something went wrong and invites a retry; this tells
+            // it what it asked for did not happen, which is the answer (FR-008).
+            throw new NothingApplied("The change was not confirmed, so nothing was applied.");
         }
         return execute(context, user, operationId, accountId, deltaBps, effectiveDate, reason, digest);
     }
@@ -206,15 +218,51 @@ public class FeeAdjustmentTool {
     }
 
     /** True only for an explicit {@code confirmed: true}; anything else is a refusal. */
-    private static boolean confirmed(RequestContext context) {
+    /** What the caller said, and whether it could be read at all (feature 010, FR-007). */
+    private enum Answer { CONFIRMED, DECLINED, UNREADABLE }
+
+    /**
+     * Reads the elicitation result the caller echoed back.
+     *
+     * <p>The shape is the MCP {@code ElicitResult} envelope — {@code {action, content}} — with the
+     * requested schema's fields inside {@code content}. That is the protocol's own shape and the server
+     * was always right to expect it; what was wrong is that anything else counted as a refusal, and
+     * {@code contracts/mcp-protocol.md} described the flat form without saying so.
+     *
+     * <p>Absent is a refusal. Present and unreadable is a failure to communicate, and the two are no
+     * longer the same answer. The line between them is drawn at <em>whether the caller tried</em>:
+     *
+     * <ul>
+     *   <li>No envelope, or an envelope carrying no decision anywhere — nothing was confirmed, so
+     *       nothing is applied. Declining by omission is still declining.</li>
+     *   <li>A {@code confirmed} that is present but somewhere this server does not read it — most of
+     *       all the flat {@code {confirmed: true}} the incomplete contract implied — is a caller who
+     *       answered and was not understood. Reading that as a refusal is how a client asked for a
+     *       change and was recorded as having declined it (F-005).</li>
+     * </ul>
+     */
+    private static Answer answer(RequestContext context) {
         Object response = context.inputResponses().get("confirm_adjustment");
+        if (response == null) {
+            return Answer.DECLINED;
+        }
         if (!(response instanceof Map<?, ?> map)) {
-            return false;
+            return Answer.UNREADABLE;
         }
         if (map.get("content") instanceof Map<?, ?> content) {
-            return Boolean.TRUE.equals(content.get("confirmed"));
+            Object confirmed = content.get("confirmed");
+            if (Boolean.TRUE.equals(confirmed)) {
+                return Answer.CONFIRMED;
+            }
+            if (Boolean.FALSE.equals(confirmed)) {
+                return Answer.DECLINED;
+            }
+            // The envelope is right and the decision inside it is not a boolean: they tried.
+            return Answer.UNREADABLE;
         }
-        return false;
+        // No `content`. If a decision is sitting outside it, the caller answered in a shape this
+        // server does not read, and must be told. If there is no decision at all, none was given.
+        return map.containsKey("confirmed") ? Answer.UNREADABLE : Answer.DECLINED;
     }
 
     /**

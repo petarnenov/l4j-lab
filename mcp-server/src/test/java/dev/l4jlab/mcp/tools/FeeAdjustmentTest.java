@@ -138,14 +138,66 @@ class FeeAdjustmentTest extends McpServerTestBase {
         assertThat(stub().adjustments()).isEmpty();
     }
 
+    /**
+     * Feature 010, T018 (FR-008). This assertion changed: it used to require {@code isError: true}.
+     *
+     * <p>{@code contracts/mcp-protocol.md} has always said a declined confirmation is answered
+     * <em>"with a tool result saying the change was not applied — not an error"</em>, and the code
+     * disagreed with it. The distinction matters to a model: {@code isError} says something went wrong
+     * and invites a retry, which is the one thing nobody wants attempted with a fee adjustment.
+     */
     @Test
     void decliningAppliesNothingAndSaysSo() {
         String operationId = newOperationId();
         String state = (String) call(operationId, 15, null, null).get("requestState");
 
         Map<String, Object> result = call(operationId, 15, confirm(false), state);
-        assertThat(result).containsEntry("isError", true);
+        assertThat(result).doesNotContainKey("isError");
+        assertThat(result).containsEntry("resultType", "complete");
         assertThat(textOf(result)).contains("not confirmed");
+        assertThat(stub().adjustments()).isEmpty();
+    }
+
+    /**
+     * Feature 010, T017 (FR-007). Absent and unreadable are different answers.
+     *
+     * <p>A client following the published contract sent the flat shape — {@code {confirmed: true}} —
+     * and the server read anything it could not interpret as a refusal. So the client asked for a
+     * change and was silently understood to have declined it, with no diagnostic and a response that
+     * looked like success.
+     */
+    @Test
+    void anAnswerThatCannotBeReadIsSaidSoRatherThanTakenAsARefusal() {
+        String operationId = newOperationId();
+        String state = (String) call(operationId, 15, null, null).get("requestState");
+
+        Map<String, Object> flat = call(operationId, 15,
+            Map.of("confirm_adjustment", Map.of("confirmed", true)), state);
+
+        assertThat(flat).containsEntry("isError", true);
+        assertThat(textOf(flat)).contains("could not be read");
+        assertThat(textOf(flat)).contains("content.confirmed");
+        assertThat(stub().adjustments()).isEmpty();
+    }
+
+    /**
+     * Feature 010, T019 (FR-007). The other side of the distinction T017 draws.
+     *
+     * <p>An answer that is simply <em>not there</em> is still a refusal: the caller carried the
+     * elicitation envelope and left the decision out, which is a decision. Only an answer that is
+     * present and uninterpretable is an error. Collapsing the two is what let a client ask for a
+     * change and be recorded as having declined it.
+     */
+    @Test
+    void anAbsentAnswerIsStillARefusal() {
+        String operationId = newOperationId();
+        String state = (String) call(operationId, 15, null, null).get("requestState");
+
+        Map<String, Object> absent = call(operationId, 15,
+            Map.of("confirm_adjustment", Map.of("action", "decline")), state);
+
+        assertThat(absent).doesNotContainKey("isError");
+        assertThat(textOf(absent)).contains("not confirmed");
         assertThat(stub().adjustments()).isEmpty();
     }
 

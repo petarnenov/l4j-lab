@@ -29,7 +29,7 @@ rather than against memory.
 |---|---|
 | **F-006** | `search_billing_runs` with `started_from: 2030-01-01` → **HTTP 500**, `{"code":-32603,"message":"message must not be empty"}` |
 | **F-004** | `start_billing_run`'s served `outputSchema` declares `run_id`, `task_id`, `poll_with`, `next_step_hint` — **the handle**, which research R-005 concluded is correct. The committed contract declares the completed run. **The server is right and the contract is wrong**, so this closes when the contract is generated (T032). |
-| **F-006, after** | `started_from: 2030-01-01` → **HTTP 200**, `isError: false`, `total_match_count: 0`. The crash is gone. **`runs` is still omitted from an empty result**: `jackson.serialization-inclusion: ALWAYS` fixed it at the legacy API but not at the MCP server, whose `structuredContent` the SDK serialises itself. US1-1 asks for an empty collection, not merely a count — that half is unfinished. |
+| **F-006, after** | `started_from: 2030-01-01` → **HTTP 200**, `isError: false`, `structuredContent: {"runs": [], "total_match_count": 0, "truncated": false}`. US1-1 in full: the collection is present and empty, not absent. |
 | **F-001** | **106 differences** between what the server declares and what this repository commits, from `ToolDeclarationContractTest` (T005): 71 in output schemas, 23 in input schemas, 10 in annotations, 2 in descriptions. Feature 008's live suite could see 18 + 18, because it compared only what it knew to look for; this compares everything. |
 
 ## Reproduce each finding, then close it
@@ -37,7 +37,7 @@ rather than against memory.
 | Finding | Reproduce it | After |
 |---|---|---|
 | **F-006** | `search_billing_runs` with `started_from: 2030-01-01` — a date range with nothing in it | an empty result: `runs: []`, `total_match_count: 0`, no `isError`, HTTP 200 |
-| **F-006** | the same as an advisor, filtered by an advisor they may not act for | an entitlement refusal, identical in shape to one for a record that does not exist |
+| **F-006** | the same as an advisor, filtered by an advisor they may not act for | an empty result, byte-for-byte identical to the one for an advisor that does not exist |
 | **F-005** | send a confirmation retry built from the published contract — `inputResponses.<key>.confirmed`, flat | the contract now describes the envelope; a client following it applies the change |
 | **F-005** | send an answer the server cannot interpret at all | an error saying the answer could not be read, not a silent decline |
 | **F-005** | decline a confirmation | a result reporting nothing was applied, without `isError` |
@@ -87,3 +87,33 @@ Then mark each finding closed where it was recorded, in
 [`specs/008-mcp-console/findings.md`](../008-mcp-console/findings.md) and
 [`specs/009-spec-drift-check/findings.md`](../009-spec-drift-check/findings.md), with what was done —
 or leave it open, with why. None of the seven ends this feature undiscussed.
+
+## After, confirmed by hand against the running stack on 2026-09-15 (T016)
+
+Each row was run through the proxy with `make mcp-up-topology` up, and each is covered by a test that
+now fails if it regresses.
+
+| Scenario | Answer | Held by |
+|---|---|---|
+| US1-1: `search_billing_runs` with `started_from: 2030-01-01` | HTTP 200, `runs: []`, `total_match_count: 0`, no `isError` | `EmptyResultTopologyTest`, `ReadToolsTest`, `BillingRunSearchTest` |
+| US1-2: any query at all | no 500 anywhere in the suites above | `UnexpectedFailureMapper` + `ToolErrorStatusFilterTest` |
+| US1-4/5: an unentitled advisor and an unknown one | the same empty result, compared field by field | `EmptyResultTopologyTest`, `entitlement.live.test.ts` |
+| US1-6: a cross-firm search | still a refusal, still says nothing about `firm-beta` | `EmptyResultTopologyTest` |
+| US2-1: a retry built only from the corrected contract | the change is applied | `ConfirmationTopologyTest` |
+| US2-2: an answer present but unreadable | `isError: true`, naming `content.confirmed` | `ConfirmationTopologyTest`, `FeeAdjustmentTest` |
+| US2-3: a decline | `resultType: complete`, no `isError`, no `structuredContent` | `ConfirmationTopologyTest`, `FeeAdjustmentTest`, `confirmation.live.test.ts` |
+
+**Two things found on the way, both recorded because they were the same mistake in a new place:**
+
+- `jackson.serialization-inclusion: ALWAYS` was added to both services' `application.yml` as the fix
+  for the empty collection, and **it does not cover this case**. The legacy API still wrote
+  `{"totalCount":0}` with it in place; what actually stopped the 500 was the null-guard one layer up.
+  The setting has been removed from both files and replaced with `@JsonInclude(ALWAYS)` on the two
+  components that need it, where a test can see it. A setting that reads like a fix and is not one is
+  worse than none.
+- `compose.mcp.yaml` passed `LEGACY_RUN_DURATION_MS: ${LEGACY_RUN_DURATION_MS:-}` — an empty *string*,
+  which is not the same as unset. Micronaut resolved the property to nothing, `RunSimulator`'s `long`
+  had nothing to bind, and **every billing-run route answered HTTP 500**. `make mcp-verify` sets the
+  variable and was green; `make mcp-up` does not, and served a broken stack. The default is now
+  written out (`:--1`). This is F-006's shape exactly — a failure that looked like the code and was
+  the configuration — found only because the live suite was run against a stack brought up by hand.

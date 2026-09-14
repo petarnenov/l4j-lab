@@ -84,30 +84,44 @@ describe('identity decides what is visible', () => {
   })
 
   /**
-   * Finding F-006, pinned. An advisor asking for another advisor's runs — inside its own firm —
-   * gets HTTP 500 and JSON-RPC -32603 "message must not be empty", instead of the tool error the
-   * cross-firm path correctly returns.
+   * Finding F-006, closed by feature 010. An advisor asking for another advisor's runs — inside its
+   * own firm — used to get HTTP 500 and JSON-RPC -32603 "message must not be empty": a code absent
+   * from 007's error mapping table, a status contradicting its rule that an entitlement decision is
+   * settled at HTTP 200, and an internal validation complaint reaching a caller, which SC-006
+   * forbids.
    *
-   * -32603 is not in 007's error mapping table at all, the status contradicts its rule that an
-   * entitlement refusal is a tool failure at HTTP 200, and the message is an internal validation
-   * complaint, which SC-006 says must never reach a caller.
+   * The cause was not the entitlement. The legacy API omitted an empty `items` array, so "nothing
+   * matched" and "malformed response" were the same bytes; the MCP server dereferenced the absent
+   * field and the NPE became an error with no message. Fixed at the source (R-001).
    *
-   * Asserted as it behaves rather than as it should, so the console's rendering is tested against
-   * reality. When the server is fixed this fails, and that is the notification.
+   * These two now assert the answer rather than the defect, and the pair still matters: a search
+   * that matches nothing and a search whose advisor does not exist must both be ordinary empty
+   * results, because neither is a failure.
    */
-  it('still answers a cross-advisor search with an internal error (F-006)', async () => {
+  it('answers a cross-advisor search with an empty result, not an error (F-006)', async () => {
     const refused = await filterByAdvisor(advisor, 'adv-102')
 
-    expect(refused.httpStatus).toBe(500)
-    expect(refused.outcome).toBe('protocol-error')
-    expect((refused.responseBody as { error: { code: number } }).error.code).toBe(-32603)
+    expect(refused.httpStatus).toBe(200)
+    expect(refused.outcome).toBe('ok')
+
+    const result = (refused.responseBody as { result: Record<string, unknown> }).result
+    expect(result.isError).toBeFalsy()
+
+    // `runs` is asserted present, not merely empty. Serde omits an empty collection by default, and
+    // a page that arrives without the field is the malformed-looking shape that started all of this.
+    const structured = result.structuredContent as { runs: unknown[]; total_match_count: number }
+    expect(structured.runs).toEqual([])
+    expect(structured.total_match_count).toBe(0)
   })
 
   it('answers an unknown advisor the same way, so it is the path and not the entitlement (F-006)', async () => {
     const unknown = await filterByAdvisor(advisor, 'adv-does-not-exist')
 
-    expect(unknown.httpStatus).toBe(500)
-    expect((unknown.responseBody as { error: { code: number } }).error.code).toBe(-32603)
+    expect(unknown.httpStatus).toBe(200)
+
+    const result = (unknown.responseBody as { result: Record<string, unknown> }).result
+    expect(result.isError).toBeFalsy()
+    expect((result.structuredContent as { total_match_count: number }).total_match_count).toBe(0)
   })
 
   it('refuses another firm as a tool failure, not a protocol failure', async () => {

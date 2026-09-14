@@ -135,9 +135,53 @@ Three result shapes:
 the request digest, and a short expiry. It is verified on the retry and rejected if the
 principal differs, it has expired, or the digest does not match the retried arguments.
 
-The retry carries `params.inputResponses.confirm_adjustment` and echoes
-`params.requestState`, with a **different** JSON-RPC `id`. A `confirmed: false` response is
-answered with a tool result saying the change was not applied — not an error.
+### The retry, in full
+
+Written out because the first version of this section was not, and a client built from it did the
+opposite of what it asked. Corrected by feature 010; see its finding F-005.
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": "a-different-id-from-the-first-call",
+  "method": "tools/call",
+  "params": {
+    "name": "post_fee_adjustment",
+    "arguments": { "…the same arguments the first call sent…" },
+    "inputResponses": {
+      "confirm_adjustment": {
+        "action": "accept",
+        "content": { "confirmed": true }
+      }
+    },
+    "requestState": "<echoed byte-for-byte>"
+  }
+}
+```
+
+Three things carry weight:
+
+- **`content` is not optional.** The answer goes inside the MCP `ElicitResult` envelope —
+  `{ action, content }` — with the elicitation's `requestedSchema` fields inside `content`. A flat
+  `{ "confirmed": true }` is **not** understood as a confirmation. The earlier wording of this
+  paragraph named only `params.inputResponses.confirm_adjustment` and stopped, and the
+  `requestedSchema` is `{ confirmed: boolean }`, so the flat form is what a careful reader
+  assembles — and is answered as though the change had been declined.
+- **The arguments are repeated**, because `requestState` seals a digest of them and it is verified.
+- **The JSON-RPC `id` differs** from the call being retried.
+
+`action` is `"accept"` or `"decline"`. The server reads `content.confirmed`; sending the action as
+well is what the protocol's own shape says, and a client that sends it will keep working if that
+changes.
+
+**An answer the server cannot interpret is an error, not a refusal.** It is answered with
+`isError: true` and a sentence naming the shape expected. Absent and unreadable are different: one is
+a decision, the other is a failure to communicate, and treating them alike is what made a
+contract-following client silently decline.
+
+**A `confirmed: false` response is answered with a tool result saying the change was not applied —
+not an error.** No `isError`, no `structuredContent`: nothing was applied, so there is nothing to
+describe, and inventing an empty payload would be a worse lie than omitting it.
 
 ### `start_billing_run` and the Tasks extension
 

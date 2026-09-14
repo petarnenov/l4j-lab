@@ -109,3 +109,45 @@ own shape; the boundary alone leaves the crash and makes it quieter, which is wo
 The third is the one worth having anyway: an unexpected exception now reaches a caller as a sentence
 they can act on, with the detail in the log. It was one bad exception away from leaking a stack trace
 instead of an empty string.
+
+---
+
+## H-005: two green suites that depended on state nobody could see
+
+Found while running feature 007's own suites to check this feature's work. Neither is one of the
+seven findings; both are the same shape as F-006, which is why they are recorded rather than quietly
+patched.
+
+**An empty string is not an unset variable.** `compose.mcp.yaml` passed
+`LEGACY_RUN_DURATION_MS: ${LEGACY_RUN_DURATION_MS:-}`, whose comment read "unset means FR-024's real
+30–90s". It does not mean that. Compose substituted an empty *string*, Micronaut resolved the
+property to nothing, `RunSimulator`'s `long` parameter had nothing to bind, and **every billing-run
+route answered HTTP 500** — a dependency-injection failure escaping as a server error, arriving at
+the MCP server as an unusable page.
+
+`make mcp-verify` sets the variable and was green. `make mcp-up` does not, and served a stack where
+the main tool did not work. The two commands disagreed and nothing said so. Fixed by writing the
+default out: `${LEGACY_RUN_DURATION_MS:--1}`.
+
+**A suite that is green once.** `make mcp-verify` ends with `down`, not `down -v`, so the volume
+outlives the run. Every pass of the topology suite starts billing runs, all under `adv-101`, and they
+sort ahead of the seeded rows:
+
+| | seeded | created by test runs |
+|---|---|---|
+| `adv-101` | 13 | 88 |
+| `adv-102` | 13 | 0 |
+| `adv-201` | 4 | 0 |
+
+`EntitlementTopologyTest.aFirmAdminAndOpsBothSeeTheWholeFirm` asserts that a firm administrator's
+**first page** holds both advisors. After enough runs it does not, and
+`CrossReplicaTest.aCursorFromOneReplicaContinuesTheSameSearchOnAnother` drifts for the same reason.
+Both pass on a fresh volume and fail on a used one, so the suite's verdict depends on how many times
+it has been run before — which is not a property of the code it tests.
+
+Left as feature 007's to fix, and recorded here rather than repaired in passing: making a red test
+green by rewriting its assertion is the move this whole feature exists to argue against, and the
+right repair is to give the suite its own data or reset the volume, which is a change to how 007 is
+verified rather than a correction of a claim.
+
+**Run `make mcp-reset` before `make mcp-verify` if the two rows above are the failures you see.**

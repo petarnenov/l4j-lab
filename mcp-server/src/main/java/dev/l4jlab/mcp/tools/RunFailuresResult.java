@@ -1,5 +1,6 @@
 package dev.l4jlab.mcp.tools;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.micronaut.jsonschema.JsonSchema;
 import io.micronaut.serde.annotation.Serdeable;
@@ -17,7 +18,7 @@ import java.util.List;
 @Serdeable
 public record RunFailuresResult(
     @JsonProperty("run_id") String runId,
-    List<RunFailure> failures,
+    @JsonInclude(JsonInclude.Include.ALWAYS) List<RunFailure> failures,
     @JsonProperty("total_count") int totalCount,
     boolean truncated) {
 }

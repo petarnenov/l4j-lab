@@ -149,15 +149,14 @@ describe('a change that asks before it acts', () => {
       }),
     })
 
-    // Nothing was applied, which is the point. But the server marks it isError: true, against its
-    // own contract — "a confirmed: false response is answered with a tool result saying the change
-    // was not applied, not an error". Pinned as finding F-005 rather than worked around: if the
-    // server is corrected, this test says so.
+    // Feature 010 closed F-005: a decline is now the result the contract always said it was. This
+    // assertion used to require isError: true and to explain why the server disagreed with its own
+    // contract. The explanation is gone because the divergence is.
     const body = result(declined) as CompleteResult
     expect(body.resultType).toBe('complete')
     expect(body.structuredContent?.legacy_reference_id).toBeUndefined()
     expect(body.content?.[0]?.text).toMatch(/nothing was applied/i)
-    expect(declined.outcome).toBe('tool-error')
-    expect(body.isError).toBe(true)
+    expect(body.isError).toBeUndefined()
+    expect(declined.outcome).toBe('ok')
   })
 })

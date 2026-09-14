@@ -57,8 +57,13 @@ services:
       DATASOURCE_USER: ${DATASOURCE_USER:-l4j}
       DATASOURCE_PASSWORD: ${DATASOURCE_PASSWORD:-l4j}
       MCP_ISSUER_URL: http://token-issuer:8080
-      # R-012: unset means FR-024's real 30-90s. mcp-verify sets it low so the suite finishes.
-      LEGACY_RUN_DURATION_MS: ${LEGACY_RUN_DURATION_MS:-}
+      # R-012: -1 means FR-024's real 30-90s. mcp-verify sets it low so the suite finishes.
+      # The default is written out rather than left empty: `${LEGACY_RUN_DURATION_MS:-}` passes an
+      # empty *string*, which is not the same as unset — Micronaut resolved the property to nothing,
+      # RunSimulator's `long` had nothing to bind, and every billing-run route answered HTTP 500. So
+      # `make mcp-up` served a broken stack while `make mcp-verify`, which sets the variable, was
+      # green. Feature 010; the same shape as F-006.
+      LEGACY_RUN_DURATION_MS: ${LEGACY_RUN_DURATION_MS:--1}
       MICRONAUT_ENVIRONMENTS: ${LEGACY_ENVIRONMENTS:-test-capture}
     depends_on:
       postgres:

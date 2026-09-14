@@ -39,6 +39,29 @@ class ReadToolsTest extends McpServerTestBase {
         assertThat((String) result.get("refine_hint")).contains("Narrow by status");
     }
 
+    /**
+     * Feature 010, T010 (FR-001, US1-1). The defect behind finding F-006, reproduced in-process.
+     *
+     * <p>The stub serialises its page the same way the real legacy API did, so an empty one arrives
+     * as {@code {"totalCount":0}} with no {@code items} at all. This server used to dereference that
+     * absent field; the NPE became a JSON-RPC error with an empty message, which the SDK then
+     * rejected, and a date range with nothing in it answered HTTP 500.
+     *
+     * <p>Two things are asserted, and the first is the one that was missing: {@code runs} is
+     * <em>present</em> and empty. A search that matched nothing is a search that matched nothing —
+     * not a response a client has to guess about.
+     */
+    @Test
+    void aSearchMatchingNothingIsAnEmptyResultRatherThanACrash() {
+        Map<String, Object> result = callStructured("search_billing_runs",
+            Map.of("firm_id", "firm-alpha", "started_from", "2030-01-01"));
+
+        assertThat(result).containsKey("runs");
+        assertThat((List<?>) result.get("runs")).isEmpty();
+        assertThat(result).containsEntry("total_match_count", 0);
+        assertThat(result).containsEntry("truncated", false);
+    }
+
     @Test
     void aPageSizeAboveTheCapIsClampedRatherThanRefused() {
         Map<String, Object> result = callStructured("search_billing_runs",

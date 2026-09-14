@@ -87,6 +87,8 @@ public class JsonRpcResponseSerializer implements Serializer<McpSchema.JSONRPCRe
         McpSchema.JSONRPCResponse.JSONRPCError error = value.error();
         if (error != null && error.code() == ToolFailure.CODE) {
             message.put("result", toolErrorResult(error.message()));
+        } else if (error != null && error.code() == NothingApplied.CODE) {
+            message.put("result", nothingAppliedResult(error.message()));
         } else if (error != null && error.code() == InputRequired.CODE) {
             message.put("result", inputRequiredResult(error.data()));
         } else if (error != null && error.code() == TaskCreated.CODE) {
@@ -166,6 +168,24 @@ public class JsonRpcResponseSerializer implements Serializer<McpSchema.JSONRPCRe
         result.put(RESULT_TYPE, COMPLETE);
         result.put("content", content);
         result.put("isError", true);
+        attachServerInfo(result);
+        return result;
+    }
+
+    /**
+     * A tool that decided not to act. A complete result, with the sentence explaining why and
+     * **no** {@code isError} — because nothing went wrong (feature 010, FR-008).
+     *
+     * <p>No {@code structuredContent} either: there is no adjustment to describe, and inventing an
+     * empty one would be a worse lie than omitting it.
+     */
+    private Map<String, Object> nothingAppliedResult(String message) {
+        List<Map<String, Object>> content = new ArrayList<>(1);
+        content.add(Map.of("type", "text", "text", message));
+
+        Map<String, Object> result = new LinkedHashMap<>();
+        result.put(RESULT_TYPE, COMPLETE);
+        result.put("content", content);
         attachServerInfo(result);
         return result;
     }

@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * The last boundary: what a caller receives when something throws where nobody expected it
@@ -43,20 +44,24 @@ public class UnexpectedFailureMapper implements McpErrorExceptionMapper<RuntimeE
     static final String MESSAGE =
         "This tool could not complete the request. Do not retry; report it and stop.";
 
+    /**
+     * Everything this server throws deliberately. Each is a signal the serializer turns into a result:
+     * a failure with an actionable sentence, an elicitation, a task handle, a decision not to act.
+     *
+     * <p>They are listed rather than detected because the first version of this class detected — it
+     * returned true for every {@code RuntimeException} except {@code ToolFailure}, and swallowed all of
+     * them. Worse, whether it did depended on the order the framework happened to resolve the mappers
+     * in, so the suite was green once and red the next run. A catch-all at a boundary catches the
+     * control flow too, and intermittently is the worst way to find that out.
+     */
+    private static final Set<Class<? extends RuntimeException>> SIGNALS = Set.of(
+        ToolFailure.class, InputRequired.class, TaskCreated.class, NothingApplied.class,
+        McpError.class);
+
     @Override
     public boolean canMap(Class<? extends Throwable> clazz) {
-        // Only what nobody wrote a message for.
-        //
-        // The first version of this returned true for every RuntimeException except ToolFailure, and
-        // that was badly wrong: McpError extends RuntimeException, and the SDK raises it for things
-        // that are not failures at all — an elicitation the tool is asking for, a task that does not
-        // exist, a request state that did not validate. Intercepting those replaced fifteen carefully
-        // written sentences with one generic one, and turned a green suite red.
-        //
-        // The lesson is worth the comment: a catch-all at a boundary catches the control flow too.
         return RuntimeException.class.isAssignableFrom(clazz)
-            && !ToolFailure.class.isAssignableFrom(clazz)
-            && !McpError.class.isAssignableFrom(clazz);
+            && SIGNALS.stream().noneMatch(signal -> signal.isAssignableFrom(clazz));
     }
 
     @Override

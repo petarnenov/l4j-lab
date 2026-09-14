@@ -73,11 +73,16 @@ it crashes the tool.
    carries a sentence someone can act on — never an empty message, never a stack frame, never a
    hostname.
 4. **Given** an advisor searching for a different advisor's runs within their own firm, **When** the
-   search runs, **Then** the answer is a refusal: a tool failure carried by a successful response,
-   with a short sentence saying access was refused.
+   search runs, **Then** the answer is an ordinary empty result. *Corrected after the fix made the
+   behaviour observable: this scenario first said "a refusal — a tool failure carried by a successful
+   response". It is not. The system of record applies the entitlement predicate before it counts, so
+   a filter the caller may not use simply matches nothing. The refusal path is cross-**firm**, which
+   scenario 6 covers; the two were conflated while this query still answered HTTP 500 and nobody
+   could see which one it was.*
 5. **Given** a search filtered by an advisor that does not exist at all, **When** it runs, **Then** it
    is answered identically to the one above — the caller cannot tell the two apart, and must not be
-   able to.
+   able to. This is the scenario that carries the weight, and it survives the correction unchanged:
+   whichever answer the pair gets, it must be the *same* answer, or the search becomes a directory.
 6. **Given** a cross-firm search, **When** it runs, **Then** it behaves exactly as it does today:
    the path that was already correct does not move.
 

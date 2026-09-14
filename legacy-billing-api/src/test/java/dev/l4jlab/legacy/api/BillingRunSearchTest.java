@@ -130,6 +130,29 @@ class BillingRunSearchTest extends LegacyApiTestBase {
         });
     }
 
+    /**
+     * Feature 010, T009 (FR-001, research R-001). The bytes, not the deserialised object.
+     *
+     * <p>Serde omits an empty collection by default, so a page with nothing in it went out as
+     * {@code {"totalCount":0}}. That makes "nothing matched" and "a response missing its items
+     * field" the same bytes — and the MCP server, reading the absent field, turned an ordinary
+     * query into HTTP 500 with an internal validation message (finding F-006).
+     *
+     * <p>Asserted against the raw response on purpose: {@code Page}'s compact constructor would
+     * hand back an empty list either way, so a typed assertion here would pass while the wire was
+     * still wrong.
+     */
+    @Test
+    void aSearchMatchingNothingWritesAnEmptyItemsArray() {
+        String raw = http.toBlocking().retrieve(
+            as(HttpRequest.GET("/api/v1/billing-runs?firmId=firm-alpha&startedFrom=2030-01-01"),
+                TestKeys.ADMIN_ALPHA),
+            String.class);
+
+        assertThat(raw).contains("\"items\"");
+        assertThat(raw).contains("\"totalCount\":0");
+    }
+
     private Dtos.Page<Dtos.BillingRun> search(String query, TestKeys.Fixture who) {
         return http.toBlocking()
             .retrieve(as(HttpRequest.GET("/api/v1/billing-runs?" + query), who), PAGE);

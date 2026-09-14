@@ -41,10 +41,3 @@ endpoints:
   health:
     enabled: true
     details-visible: ANONYMOUS
-
-# The same rule the legacy API needs, for the same reason and one layer out: an empty collection is a
-# fact, and Serde's default omits one. Without this a search matching nothing answers with no `runs`
-# at all, so a client cannot tell "no results" from "field missing" — which is precisely the ambiguity
-# that made an empty page crash this server in the first place (feature 010, research R-001).
-jackson:
-  serialization-inclusion: ALWAYS

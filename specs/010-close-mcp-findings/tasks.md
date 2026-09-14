@@ -113,24 +113,24 @@ scenarios 4 to 6 keep the behaviour that already works written down, as regressi
 
 ### Tests for User Story 1 (write first, confirm they fail)
 
-- [ ] T009 [P] [US1] Failing test (FR-004: each finding gets a test that fails on today's behaviour
+- [X] T009 [P] [US1] Failing test (FR-004: each finding gets a test that fails on today's behaviour
   before anything changes) in
   `legacy-billing-api/src/test/java/dev/l4jlab/legacy/api/BillingRunControllerTest.java`: a search
   matching nothing serialises `items` as an empty array rather than omitting it.
-- [ ] T010 [P] [US1] Failing test in
+- [X] T010 [P] [US1] Failing test in
   `mcp-server/src/test/java/dev/l4jlab/mcp/tools/BillingRunToolsTest.java`: a legacy page whose `items`
   is absent is read as an empty page, not dereferenced. Every one of these tools declares
   `openWorldHint: true`; a client of a system it does not control does not assume a field is present.
-- [ ] T011 [P] [US1] Failing test in
+- [X] T011 [P] [US1] Failing test in
   `mcp-server/src/topologyTest/java/dev/l4jlab/mcp/topology/EmptyResultTopologyTest.java`: against the
   running stack, a date range matching nothing returns HTTP 200 with `runs: []`,
   `total_match_count: 0`, and no `isError` (US1-1, FR-001). No query anywhere returns 500 (FR-001a).
-- [ ] T012 [P] [US1] Failing test in
+- [X] T012 [P] [US1] Failing test in
   `mcp-server/src/topologyTest/java/dev/l4jlab/mcp/topology/EmptyResultTopologyTest.java`: an advisor filtering by an advisor they
   may not act for receives a tool failure carried by a successful response (US1-4), and
   **indistinguishable** from the answer for an advisor that does not exist (US1-5, FR-003) — the pair
   must not become a probe.
-- [ ] T013 [P] [US1] Test in
+- [X] T013 [P] [US1] Test in
   `mcp-server/src/topologyTest/java/dev/l4jlab/mcp/topology/EmptyResultTopologyTest.java` that a cross-firm search behaves exactly as it does today
   (US1-4): the path that was already correct must not move.
 
@@ -144,7 +144,7 @@ scenarios 4 to 6 keep the behaviour that already works written down, as regressi
   `mcp-server/src/main/java/dev/l4jlab/mcp/tools/BillingRunTools.java` (the `.stream()` at the search
   path, and every other place a legacy collection is dereferenced) so a missing collection is an empty
   one.
-- [ ] T016 [US1] Confirm the five acceptance scenarios by hand against the running stack, and record
+- [X] T016 [US1] Confirm the five acceptance scenarios by hand against the running stack, and record
   the after-values beside T001's before-values in `specs/010-close-mcp-findings/quickstart.md`.
 
 **Checkpoint**: User Story 1 is demonstrable alone. This is the MVP, and it is the only defect among
@@ -161,36 +161,36 @@ asked for.
 
 ### Tests for User Story 2 (write first, confirm they fail)
 
-- [ ] T017 [P] [US2] Failing test in
+- [X] T017 [P] [US2] Failing test in
   `mcp-server/src/test/java/dev/l4jlab/mcp/tools/FeeAdjustmentToolTest.java`: an answer that is
   **present but uninterpretable** produces an error saying so, rather than being read as a refusal
   (FR-007, US2-2). Today `confirmed()` returns false for anything it cannot parse, and its comment says
   so outright.
-- [ ] T018 [P] [US2] Failing test in the same file: a **declined** confirmation produces a result
+- [X] T018 [P] [US2] Failing test in the same file: a **declined** confirmation produces a result
   reporting that nothing was applied, without `isError` (FR-008, US2-3) — which is what
   `specs/007-mcp-billing-server/contracts/mcp-protocol.md` already says a decline is.
-- [ ] T019 [P] [US2] Test in `mcp-server/src/test/java/dev/l4jlab/mcp/tools/FeeAdjustmentToolTest.java`
+- [X] T019 [P] [US2] Test in `mcp-server/src/test/java/dev/l4jlab/mcp/tools/FeeAdjustmentToolTest.java`
   that an **absent** answer is still a refusal. Absent and
   uninterpretable are different: one is a decision, the other is a failure to communicate.
-- [ ] T020 [P] [US2] Failing test in
+- [X] T020 [P] [US2] Failing test in
   `mcp-server/src/topologyTest/java/dev/l4jlab/mcp/topology/ConfirmationTopologyTest.java`: a retry
   assembled **only from what the corrected contract says** applies the change (US2-1, FR-005).
 
 ### Implementation for User Story 2
 
-- [ ] T021 [US2] Correct `specs/007-mcp-billing-server/contracts/mcp-protocol.md`: write the
+- [X] T021 [US2] Correct `specs/007-mcp-billing-server/contracts/mcp-protocol.md`: write the
   confirmation retry out in full, including the MCP `ElicitResult` envelope — `{action, content}`, with
   the requested schema's fields inside `content` — and say that the flat form is read as a refusal. The contract and the server then describe the same
   exchange (FR-006), and nothing existing clients send changes, so the protocol's versioning rules are
   not engaged (FR-009, research R-004).
   **The server is right here and the contract was incomplete** (research R-004); this is the half that
   moves.
-- [ ] T022 [US2] Distinguish absent from uninterpretable in
+- [X] T022 [US2] Distinguish absent from uninterpretable in
   `mcp-server/src/main/java/dev/l4jlab/mcp/tools/FeeAdjustmentTool.java`, to make T017 and T019 pass.
-- [ ] T023 [US2] Stop flagging a decline as an error in
+- [X] T023 [US2] Stop flagging a decline as an error in
   `mcp-server/src/main/java/dev/l4jlab/mcp/tools/FeeAdjustmentTool.java`, to make T018 pass (FR-008). Here the
   **contract is right and the server moves**: a decline is the system working.
-- [ ] T024 [US2] Update the assertion in `frontend/src/mcp/confirmation.live.test.ts` that pins today's
+- [X] T024 [US2] Update the assertion in `frontend/src/mcp/confirmation.live.test.ts` that pins today's
   `isError: true` on a decline, and the console's rendering in
   `frontend/src/mcp/components/ElicitationPanel.tsx` that explains the divergence — the divergence is
   gone, and the explanation with it (FR-019's spirit: a fix removes its own workaround).
@@ -263,22 +263,22 @@ the build — which is what feature 007's build file has claimed all along.
 
 ### Tests for User Story 4
 
-- [ ] T035 [P] [US4] Confirm the failure first: run `make check-specs` and record which rows of the
+- [X] T035 [P] [US4] Confirm the failure first: run `make check-specs` and record which rows of the
   table in `specs/007-mcp-billing-server/quickstart.md` name files that do not exist. Fifty-eight of
   feature 007's baseline entries are this.
 
 ### Implementation for User Story 4
 
-- [ ] T036 [US4] Correct the reading-guide table (FR-015) in `specs/007-mcp-billing-server/quickstart.md` by
+- [X] T036 [US4] Correct the reading-guide table (FR-015) in `specs/007-mcp-billing-server/quickstart.md` by
   reading the delivered code under `mcp-server/src/main/java/dev/l4jlab/mcp/`, one row at a time. The
   delivered package holds `McpMethodHandler`, `HttpMethodGate`, `BillingTransportContextExtractor` where
   the table names `McpController`, `HeaderValidationFilter`, `RequestEnvelope`.
-- [ ] T037 [US4] Where no single file implements a listed protocol feature, say so in the table in
+- [X] T037 [US4] Where no single file implements a listed protocol feature, say so in the table in
   `specs/007-mcp-billing-server/quickstart.md` rather (FR-015, FR-016)
   than naming one arbitrarily (FR-016). This is the one item in the feature that cannot be verified
   mechanically — feature 009's check confirms a named file *exists*, not that it is where the feature
   lives, so the reading is the deliverable (research R-007).
-- [ ] T038 [US4] Note in the same table that `tasks.md` T039 records the controller as superseded by
+- [X] T038 [US4] Note in the same table that `tasks.md` T039 records the controller as superseded by
   R-014, so a reader who finds the old name in the task list is not left wondering which is current.
 
 **Checkpoint**: the table can be followed end to end.
