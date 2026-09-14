@@ -169,8 +169,23 @@ fail with an instruction rather than an unexplained error. R-017 of feature 007 
 why the first suite alone is not enough, and the spec quotes it: substituting the only real exchange
 on a path removes the only thing that can fail.
 
+**Two rules the live suite lives by**, added after the plan's own analysis pass found the first one
+missing and the second one contradicted:
+
+1. *Every request a live test makes is built and sent by `transport.ts`.* A hand-written `fetch`
+   would assert things about the server while proving nothing about the console — which is exactly
+   the failure feature 007's R-017 records, and the reason SC-008 asks for a second suite in the
+   first place. This is also why `environment: 'node'` is right: the live suite drives the console's
+   modules, it does not render them.
+2. *A missing stack fails; a missing topology overlay skips.* SC-008 requires an instruction rather
+   than an unexplained error when the system is absent, so an unreachable proxy fails with
+   `make mcp-up`. But SC-005 is conditional on the individual replicas being reachable, so a test
+   needing a named replica skips — with a message naming `make mcp-up-topology`. Neither may pass
+   vacuously.
+
 **What the seam is, and why it is not a test hook**: `targets.ts` resolves a target name to a base
-URL. In the browser that is `/mcp-dev/{target}`; in the live suite it is
+URL. **Token minting goes through it too** — the issuer's address is `resolve('proxy') + '/dev/token'`,
+never the literal browser path, or the live suite could not mint a token at all. In the browser that is `/mcp-dev/{target}`; in the live suite it is
 `http://localhost:${MCP_HTTP_PORT:-8877}`. This seam exists because targets are plural and their
 reachability is discovered at runtime (R-006) — it would exist with no tests at all. FR-003a's "may
 not require altering the console to suit it" is met because both callers supply the same kind of

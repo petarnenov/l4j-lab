@@ -15,6 +15,22 @@ Constitution Principle IV is non-negotiable for deterministic behaviour — ever
 feature is deterministic, since no model is involved anywhere in it. Each test task is written
 before the implementation it names and must fail first.
 
+### The rule every live test obeys (FR-003a, SC-008)
+
+Stated once here because it is the difference between a live suite that proves something and one that
+re-tests feature 007:
+
+1. **Every request a live test makes is built and sent by `frontend/src/mcp/transport.ts`**, using
+   `targets.ts` for the address and `usePrincipalToken`'s minting for the credential. A hand-written
+   `fetch` in a live test is forbidden — it would assert things about the server while proving
+   nothing about the console, which is the exact failure feature 007 recorded in its R-017 and which
+   this spec cites as the reason for having two suites at all.
+2. **A missing stack is a failure; a missing topology overlay is a skip.** With the proxy unreachable,
+   a live test fails with the `make mcp-up` instruction (SC-008 requires an instruction, not an
+   unexplained error). With the proxy reachable but the individual replicas unpublished, a test that
+   needs a named replica skips with a message naming `make mcp-up-topology` — SC-005 is conditional on
+   those replicas being reachable, so failing there would be wrong. Neither may pass vacuously.
+
 **Organization**: by user story, so each can be implemented and demonstrated on its own.
 
 ## Format: `[ID] [P?] [Story] Description`
@@ -47,18 +63,26 @@ default Vitest project.
 - [ ] T002 In `frontend/vite.config.ts`, exclude `**/*.live.test.ts` from the default Vitest project
   and add a resolve alias pointing at `specs/007-mcp-billing-server/contracts/tools` so the
   deterministic suite can read the committed tool declarations rather than a copy (research R-004).
-  Same file as T001, so this follows it.
-- [ ] T003 [P] Create `frontend/vitest.mcp.config.ts`: the live suite's project, selecting
-  `src/mcp/**/*.live.test.ts`, `environment: 'node'`, no MSW setup file, and no jsdom.
+  **Vitest's `exclude` replaces the default list rather than extending it**, so write
+  `exclude: [...configDefaults.exclude, '**/*.live.test.ts']` — omitting the spread pulls
+  `node_modules` and `dist` into the run. Part of FR-003a's two-suite split. Same file as T001, so
+  this follows it.
+- [ ] T003 [P] Create `frontend/vitest.mcp.config.ts`: the live suite's project (FR-003a), selecting
+  `src/mcp/**/*.live.test.ts`, `environment: 'node'`, `globals: true` to match the default project so
+  the two suites are written the same way, no MSW setup file, and no jsdom. `environment: 'node'` is
+  correct **because** every live test drives the console's own modules rather than rendering them —
+  see the rule at the head of the live tasks.
 - [ ] T004 [P] Add `test:mcp` (`vitest run --config vitest.mcp.config.ts`) and `check:dev-only`
-  scripts to `frontend/package.json`. **No dependency is added** — if one seems necessary, stop and
+  scripts to `frontend/package.json` — the two selectable suites FR-003a requires. **No dependency is
+  added** — if one seems necessary, stop and
   re-read research R-003 before adding it.
 - [ ] T005 [P] Create `frontend/scripts/check-dev-only.mjs`: run `vite build` into a temporary
   directory and exit non-zero if the console's marker string appears in any emitted file, with a
   message naming FR-001a. Follow the style of the existing `frontend/scripts/api-contract.mjs`.
 - [ ] T006 [P] In `frontend/build.gradle.kts`, register `mcpConsoleTest` (Exec `npm run test:mcp`,
   `outputs.upToDateWhen { false }`, **not** wired into `check` — it needs containers it will not
-  start) and `checkDevOnly` (Exec `npm run check:dev-only`, wired into `check`). Mirror the existing
+  start; this is the distinct Gradle task the constitution requires instead of a flag, and the second
+  half of FR-003a) and `checkDevOnly` (Exec `npm run check:dev-only`, wired into `check`). Mirror the existing
   `test`/`checkApi` task shape, including `dependsOn(npmCi)`.
 - [ ] T007 [P] Add three targets to `Makefile` under the existing "MCP billing server" and
   "Verification" groups, each with a `##` help description so it appears in `make help`:
@@ -81,10 +105,13 @@ default Vitest project.
   `Mcp-Name` mirrors `params.name` on `tools/call` and is absent otherwise, the `_meta` block matches
   [contracts/mcp-client.md](./contracts/mcp-client.md) including both declared capabilities, and ids
   are monotonic strings with a **new** id on a confirmation retry.
-- [ ] T009 [P] Write failing tests in `frontend/src/mcp/outcome.test.ts` for the four-way
+- [ ] T009 [P] Write failing tests in `frontend/src/mcp/transport.outcome.test.ts` for the four-way
   classification in [data-model.md](./data-model.md): `ok`; `tool-error` (HTTP 200, `result`,
   `isError: true`); `protocol-error` (a JSON-RPC `error`, **including `-32602` arriving at HTTP 200**,
-  which is the case that breaks any status-only classifier); `transport-error` (401).
+  which is the case that breaks any status-only classifier); and `transport-error` in **both** its
+  forms — a 401, and a request that never arrived at all, which is what a call made while the stack
+  is shutting down looks like (spec edge case). The file is named for `transport.ts` because that is
+  where the classification lives; there is no separate `outcome.ts`.
 - [ ] T010 [P] Write failing tests in `frontend/src/mcp/targets.test.ts`: the base URL for each of the
   four targets, the three reachability states, an unreachable replica carrying an `absenceReason` that
   names `make mcp-up-topology`, and an unreachable proxy being a distinct state from an unreachable
@@ -92,7 +119,9 @@ default Vitest project.
 - [ ] T011 [P] Write failing tests in `frontend/src/mcp/principals.test.ts`: the six fixture names from
   `007/contracts/token-issuer.md`, user/firm/role/advisors read from the token's `sub`, `firm_id`,
   `role`, `advisor_ids` claims, expiry taken from `exp` rather than from a failed call, and **nothing
-  written to `localStorage`** (research R-009).
+  written to `localStorage` or to any other shared store** (research R-009). That last assertion is
+  also what keeps the "two people using the console at once" edge case true: it holds only while the
+  chosen principal and its token stay in tab-local memory (research R-010).
 - [ ] T012 [P] Create `frontend/src/mcp/test/mcpHandlers.ts`: MSW handlers for `POST /mcp-dev/*/mcp`
   and `POST /mcp-dev/proxy/dev/token`, serving `tools/list` from the committed
   `specs/007-mcp-billing-server/contracts/tools/*.json` through the T002 alias. **No copied fixture**
@@ -110,8 +139,11 @@ default Vitest project.
   research R-005 describes (dev-proxy paths in the browser, absolute URLs in the live suite).
 - [ ] T015 [P] Implement `frontend/src/mcp/principals.ts` and
   `frontend/src/mcp/hooks/usePrincipalToken.ts` to make T011 pass: the six names are the only thing
-  written down; mint through `/mcp-dev/proxy/dev/token`; decode claims **without verification, for
-  display only**, with a comment saying exactly that; cache in memory; re-mint on expiry.
+  written down; decode claims **without verification, for display only**, with a comment saying
+  exactly that; cache in memory; re-mint on expiry. **The issuer's address comes from `targets.ts`**
+  — `resolve('proxy') + '/dev/token'`, never the literal string `/mcp-dev/proxy/dev/token`. That
+  literal is a browser-only path; hardcoding it would leave the live suite unable to mint a token at
+  all, since nothing rewrites the prefix outside `vite dev` (research R-005).
 - [ ] T016 Implement `frontend/src/mcp/transport.ts` to make T008 and T009 pass: build headers,
   `_meta`, and envelope; send; classify; return an `Exchange` with the `Authorization` value replaced
   by the labelled redaction research R-009 specifies and every other header and the whole body
@@ -120,8 +152,9 @@ default Vitest project.
   the proxy and `GET /health/readiness` on each replica (research R-006), distinguishing "not
   published" from "answered with an error".
 - [ ] T018 Add the console's navigation item to `frontend/src/App.tsx` behind `import.meta.env.DEV`,
-  carrying a visible development tag (FR-002) and lazily importing the console page so the guard
-  encloses the import. Change nothing else in that file.
+  alongside the two existing items (FR-001), carrying a visible development tag (FR-002) and lazily
+  importing the console page so the guard encloses the import. Change nothing else in that file —
+  FR-001 also forbids altering the behaviour of the pages already there.
 - [ ] T019 Create `frontend/src/mcp/McpConsolePage.tsx`: the page shell with its opening sentence
   saying what it is for, the named regions from
   [contracts/console-surface.md](./contracts/console-surface.md), and the marker constant
@@ -178,15 +211,20 @@ stopped, confirm the console explains itself and names `make mcp-up`.
 - [ ] T030 [US1] Implement `frontend/src/mcp/hooks/useToolCall.ts` and
   `frontend/src/mcp/components/ToolCallPanel.tsx` to make T023 pass.
 - [ ] T031 [US1] Implement `frontend/src/mcp/components/ExchangeView.tsx` rendering all four outcomes
-  from data-model, to make T024 pass.
+  from data-model, to make T024 pass — including the `transport-error` whose request never arrived,
+  which must carry an explanation naming the likely cause rather than a blank result panel (spec edge
+  case, T009).
 - [ ] T032 [US1] Compose the above into `frontend/src/mcp/McpConsolePage.tsx` so the page is usable end
   to end against a running stack.
-- [ ] T033 [P] [US1] Live test `frontend/src/mcp/discovery.live.test.ts`, with the precheck described
-  in research R-005 — probe `GET /lb-health` first and throw the `make mcp-up` instruction, wording
-  it as `mcp-server/src/topologyTest/.../TopologyFixture.java` does. Assert against the running
-  server: `server/discover` returns `supportedVersions`, capabilities and `serverInfo`; `tools/list`
-  returns the five in the documented order with annotations equal to the committed contracts; a
-  read-only `tools/call` returns `structuredContent` (SC-002, SC-008).
+- [ ] T033 [P] [US1] Live test `frontend/src/mcp/discovery.live.test.ts`, **driving `transport.ts`
+  and not a hand-written `fetch`** (see the rule above), with the precheck from research R-005 —
+  probe `GET /lb-health` first and throw the `make mcp-up` instruction, wording it as
+  `mcp-server/src/topologyTest/.../TopologyFixture.java` does. Assert against the running server:
+  `server/discover` returns `supportedVersions`, capabilities and `serverInfo`; `tools/list` returns
+  the five in the documented order with annotations equal to the committed contracts; and **each of
+  the five tools is called at least once and returns a result the console can render** — including
+  `get_billing_run_status` and `get_run_failures`, which no other task exercises by name. SC-002 says
+  *every* one of the five, and this is the only place that is checked (SC-002, SC-008).
 
 **Checkpoint**: User Story 1 is fully functional and demonstrable on its own. This is the MVP.
 
@@ -221,9 +259,11 @@ and compare; then search `firm-beta` and read the refusal.
   display it in `frontend/src/mcp/components/ExchangeView.tsx`, to make T035 and T036 pass.
 - [ ] T039 [US2] Wire the picker into `frontend/src/mcp/McpConsolePage.tsx` so the active principal's
   token is used for subsequent calls only.
-- [ ] T040 [P] [US2] Live test `frontend/src/mcp/entitlement.live.test.ts`: against the running stack,
-  the same search as `advisor-alpha-101` returns fewer runs than as `admin-alpha` and only `adv-101`'s;
-  a `firm-beta` search returns HTTP 200 with `isError: true` and no run data (SC-004).
+- [ ] T040 [P] [US2] Live test `frontend/src/mcp/entitlement.live.test.ts`, **through `transport.ts`
+  with tokens minted the way the console mints them**: the same search as `advisor-alpha-101` returns
+  fewer runs than as `admin-alpha` and only `adv-101`'s; a `firm-beta` search returns HTTP 200 with
+  `isError: true` and no run data, and the console's own classifier calls it a `tool-error` rather
+  than a `protocol-error` (SC-004, FR-011).
 
 **Checkpoint**: User Stories 1 and 2 both work independently.
 
@@ -260,11 +300,13 @@ and compare; then search `firm-beta` and read the refusal.
 - [ ] T046 [US3] Add the `input_required` branch and the retry path to
   `frontend/src/mcp/hooks/useToolCall.ts` and `frontend/src/mcp/transport.ts`, to make T042 pass.
 - [ ] T047 [US3] Wire the panel into `frontend/src/mcp/McpConsolePage.tsx`.
-- [ ] T048 [P] [US3] Live test `frontend/src/mcp/confirmation.live.test.ts`: the three-call sequence
-  against the running stack — first call applies nothing, the confirmed call applies exactly once, a
-  third with the same `operation_id` replays. Use a fresh `operation_id` per run. This test **writes
-  real data and the drift is accepted** (spec clarification); its comment must say so and name
-  `make mcp-reset`.
+- [ ] T048 [P] [US3] Live test `frontend/src/mcp/confirmation.live.test.ts`, **through `transport.ts`
+  including its retry path**: the three-call sequence against the running stack — first call applies
+  nothing, the confirmed call applies exactly once, a third with the same `operation_id` replays.
+  Assert that the retry the console builds carries `requestState` byte-for-byte and a different
+  JSON-RPC id, since that is the part a substituted server could never have refused. Use a fresh
+  `operation_id` per run. This test **writes real data and the drift is accepted** (spec
+  clarification); its comment must say so and name `make mcp-reset`.
 
 **Checkpoint**: User Stories 1, 2 and 3 all work independently.
 
@@ -309,10 +351,12 @@ replica than the one that began it.
 - [ ] T057 [US4] Wire target selection into every call in `frontend/src/mcp/McpConsolePage.tsx` and
   record `targetId` on each `Exchange`, leaving the target free between pages so a page begun on one
   replica can be continued on another.
-- [ ] T058 [P] [US4] Live test `frontend/src/mcp/topology.live.test.ts`: start, poll and cancel a run;
-  take page 1 from `mcp-a` and page 2 from `mcp-b` with `page_size: 1` and assert no overlap. When the
-  topology overlay is not running it must **skip with a message naming `make mcp-up-topology`**, never
-  fail silently or pass vacuously (SC-005, SC-008, Principle IV).
+- [ ] T058 [P] [US4] Live test `frontend/src/mcp/topology.live.test.ts`, **through `transport.ts` and
+  `targets.ts`**: start, poll and cancel a run; take page 1 from `mcp-a` and page 2 from `mcp-b` with
+  `page_size: 1` and assert no overlap. The cursor must be the one the console carried, not one lifted
+  out of the response by the test. Per rule 2 above, an unreachable **proxy** fails with
+  `make mcp-up`; unpublished **replicas** skip with a message naming `make mcp-up-topology`. Never
+  silently, never vacuously (SC-005, SC-008, Principle IV).
 
 **Checkpoint**: all four user stories are independently functional.
 
@@ -324,28 +368,32 @@ replica than the one that began it.
 demand, each refusal the protocol defines for a malformed request. It depends on the exchange view,
 so it follows the stories rather than preceding them.
 
-- [ ] T059 [P] Failing test in `frontend/src/mcp/malformed.test.ts`: each of the three builds exactly
+- [ ] T059 [P] Failing test in `frontend/src/mcp/malformed.test.ts` (FR-011a): each of the three builds exactly
   the request [contracts/malformed-requests.md](./contracts/malformed-requests.md) describes, and
   **only the one named thing is wrong** — in particular the version case keeps header and body in
   agreement, or it would produce `-32020` and silently demonstrate a different case.
-- [ ] T060 [P] Failing test in `frontend/src/mcp/components/MalformedPanel.test.tsx`: each case
+- [ ] T060 [P] Failing test in `frontend/src/mcp/components/MalformedPanel.test.tsx` (FR-011a): each case
   explains what is wrong before it is sent, is sendable in one action, marks its exchange
   `deliberate` and keeps the mark visible in the log, and shows the refusal with its code; the version
   case shows `data.supported`; and no free-form editing of headers or body exists anywhere.
-- [ ] T061 Implement `frontend/src/mcp/malformed.ts` to make T059 pass.
+- [ ] T061 Implement `frontend/src/mcp/malformed.ts` to make T059 pass (FR-011a).
 - [ ] T062 Implement `frontend/src/mcp/components/MalformedPanel.tsx` and wire it into
-  `frontend/src/mcp/McpConsolePage.tsx`, to make T060 pass.
-- [ ] T063 [P] Live test `frontend/src/mcp/malformed.live.test.ts`: each of the three produces, from
-  the running server, the HTTP status and JSON-RPC code the contract documents, and the version case
-  really carries `data.supported` (SC-003a).
+  `frontend/src/mcp/McpConsolePage.tsx`, to make T060 pass (FR-011a, SC-003a).
+- [ ] T063 [P] Live test `frontend/src/mcp/malformed.live.test.ts`, **with each request built by
+  `malformed.ts` and sent by `transport.ts`** — the point is that the console's own builders provoke
+  these refusals, not that the server can produce them. Each of the three yields, from the running
+  server, the HTTP status and JSON-RPC code the contract documents; the version case really carries
+  `data.supported`; and the console's classifier calls all three `protocol-error` (FR-011a, SC-003a).
 
 ---
 
 ## Phase 8: Polish & Cross-Cutting Concerns
 
-- [ ] T064 Prove `frontend/scripts/check-dev-only.mjs` can fail: temporarily import the console page
-  unguarded in `frontend/src/App.tsx`, confirm `npm run check:dev-only` exits non-zero, revert, and
-  confirm it passes. A check never seen to fail is not evidence (research R-002).
+- [ ] T064 Give `frontend/scripts/check-dev-only.mjs` a committed self-test rather than a one-time
+  manual proof: a `--self-test` mode that builds a tiny fixture importing the marker unguarded and
+  asserts the check rejects it, then asserts a guarded fixture passes. Wire it into the same
+  `check:dev-only` npm script so both run together. A check never seen to fail is not evidence, and a
+  proof performed once by hand leaves nothing behind for the next reader (research R-002, FR-001a).
 - [ ] T065 [P] Run `make test-frontend` and confirm every pre-existing suite under `frontend/src/`
   passes **unchanged** — `frontend/src/App.test.tsx`, `frontend/src/components/*.test.tsx`,
   `frontend/src/pages/*.test.tsx` and `frontend/src/theme/*.test.*` with no assertion edited and no

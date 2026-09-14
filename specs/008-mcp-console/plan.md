@@ -136,8 +136,11 @@ frontend/
         │   ├── ElicitationPanel.tsx   # FR-012, FR-012a, FR-012b
         │   ├── TaskWatcher.tsx        # FR-013, FR-014
         │   └── PageCursor.tsx         # FR-015
-        └── **/*.test.tsx              # deterministic suite, co-located per repo convention
-        └── **/*.live.test.ts          # live suite, excluded from the default vitest config
+        ├── test/
+        │   └── mcpHandlers.ts         # MSW handlers serving 007's committed tool contracts (R-004)
+        ├── **/*.test.ts(x)            # deterministic suite, co-located per repo convention
+        └── **/*.live.test.ts          # live suite, excluded from the default vitest config; every
+                                       # request in it is built and sent by transport.ts (R-005)
 
 Makefile                           # + mcp-up-topology, mcp-reset, test-console (R-006, R-014)
 ```
