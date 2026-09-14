@@ -180,43 +180,43 @@ stopped, confirm the console explains itself and names `make mcp-up`.
 
 ### Tests for User Story 1 (write first, confirm they fail)
 
-- [ ] T021 [P] [US1] Failing test in `frontend/src/mcp/components/ToolList.test.tsx`: the five tools
+- [X] T021 [P] [US1] Failing test in `frontend/src/mcp/components/ToolList.test.tsx`: the five tools
   in the server's order (never sorted), each showing its read-only, destructive, idempotent and
   open-world hint, with `title` and `description` verbatim (FR-007, US1-1).
-- [ ] T022 [P] [US1] Failing test in `frontend/src/mcp/schemaForm.test.tsx`, driven by the five
+- [X] T022 [P] [US1] Failing test in `frontend/src/mcp/schemaForm.test.tsx`, driven by the five
   committed `inputSchema`s: a field per property, required ones marked, `enum` as a select,
   `format: "date"` as a date picker submitting `YYYY-MM-DD`, `integer` honouring `minimum`/`maximum`,
   `default` prefilled, `description` as help text — and a keyword outside the subset rendering a
   **marked raw-JSON field rather than nothing** (FR-008, research R-003).
-- [ ] T023 [P] [US1] Failing test in `frontend/src/mcp/components/ToolCallPanel.test.tsx`: the call is
+- [X] T023 [P] [US1] Failing test in `frontend/src/mcp/components/ToolCallPanel.test.tsx`: the call is
   disabled while any required argument is empty, and empty optional fields are omitted from
   `arguments` entirely rather than sent as `""` (FR-009, data-model ToolArguments).
-- [ ] T024 [P] [US1] Failing test in `frontend/src/mcp/components/ExchangeView.test.tsx`: the
+- [X] T024 [P] [US1] Failing test in `frontend/src/mcp/components/ExchangeView.test.tsx`: the
   structured result, the request and response exactly as they travelled, the elapsed time, and the
   `Authorization` value as a labelled redaction that is visibly a redaction and not a missing header
   (FR-010, SC-003, research R-009).
-- [ ] T025 [P] [US1] Failing test in `frontend/src/mcp/components/StackOffline.test.tsx`: with the
+- [X] T025 [P] [US1] Failing test in `frontend/src/mcp/components/StackOffline.test.tsx`: with the
   proxy unreachable the console says so and names `make mcp-up`, and renders neither an empty page nor
   a generic failure (US1-4, FR-003, SC-006).
 
 ### Implementation for User Story 1
 
-- [ ] T026 [P] [US1] Implement `frontend/src/mcp/hooks/useDiscover.ts` and
+- [X] T026 [P] [US1] Implement `frontend/src/mcp/hooks/useDiscover.ts` and
   `frontend/src/mcp/hooks/useTools.ts` with TanStack Query, taking `staleTime` from the server's own
   `ttlMs` rather than a number chosen here (data-model Tool).
-- [ ] T027 [P] [US1] Implement `frontend/src/mcp/components/StackOffline.tsx` to make T025 pass.
-- [ ] T028 [US1] Implement `frontend/src/mcp/schemaForm.tsx` over the subset in research R-003, to
+- [X] T027 [P] [US1] Implement `frontend/src/mcp/components/StackOffline.tsx` to make T025 pass.
+- [X] T028 [US1] Implement `frontend/src/mcp/schemaForm.tsx` over the subset in research R-003, to
   make T022 pass.
-- [ ] T029 [US1] Implement `frontend/src/mcp/components/ToolList.tsx` to make T021 pass.
-- [ ] T030 [US1] Implement `frontend/src/mcp/hooks/useToolCall.ts` and
+- [X] T029 [US1] Implement `frontend/src/mcp/components/ToolList.tsx` to make T021 pass.
+- [X] T030 [US1] Implement `frontend/src/mcp/hooks/useToolCall.ts` and
   `frontend/src/mcp/components/ToolCallPanel.tsx` to make T023 pass.
-- [ ] T031 [US1] Implement `frontend/src/mcp/components/ExchangeView.tsx` rendering all four outcomes
+- [X] T031 [US1] Implement `frontend/src/mcp/components/ExchangeView.tsx` rendering all four outcomes
   from data-model, to make T024 pass — including the `transport-error` whose request never arrived,
   which must carry an explanation naming the likely cause rather than a blank result panel (spec edge
   case, T009).
-- [ ] T032 [US1] Compose the above into `frontend/src/mcp/McpConsolePage.tsx` so the page is usable end
+- [X] T032 [US1] Compose the above into `frontend/src/mcp/McpConsolePage.tsx` so the page is usable end
   to end against a running stack.
-- [ ] T033 [P] [US1] Live test `frontend/src/mcp/discovery.live.test.ts`, **driving `transport.ts`
+- [X] T033 [P] [US1] Live test `frontend/src/mcp/discovery.live.test.ts`, **driving `transport.ts`
   and not a hand-written `fetch`** (see the rule above), with the precheck from research R-005 —
   probe `GET /lb-health` first and throw the `make mcp-up` instruction, wording it as
   `mcp-server/src/topologyTest/.../TopologyFixture.java` does. Assert against the running server:
@@ -240,26 +240,26 @@ and compare; then search `firm-beta` and read the refusal.
 
 ### Tests for User Story 2 (write first, confirm they fail)
 
-- [ ] T034 [P] [US2] Failing test in `frontend/src/mcp/components/PrincipalPicker.test.tsx`: the six
+- [X] T034 [P] [US2] Failing test in `frontend/src/mcp/components/PrincipalPicker.test.tsx`: the six
   principals are offered; the chosen one's user, firm, role and permitted advisors are shown from the
   token's claims; nothing is minted or pasted by hand (FR-004, FR-005, US2-1).
-- [ ] T035 [P] [US2] Failing test appended to `frontend/src/mcp/components/ExchangeView.test.tsx`: a
+- [X] T035 [P] [US2] Failing test appended to `frontend/src/mcp/components/ExchangeView.test.tsx`: a
   tool failure is labelled a tool failure **and shown as a successful response carrying an error
   flag**; a protocol failure is labelled as such and shows its code. The two must not render through
   the same component (FR-011, US2-3).
-- [ ] T036 [P] [US2] Failing test in `frontend/src/mcp/McpConsolePage.principal.test.tsx`: switching
+- [X] T036 [P] [US2] Failing test in `frontend/src/mcp/McpConsolePage.principal.test.tsx`: switching
   principal affects only subsequent calls, results already on screen keep the principal they were
   obtained as, and every displayed result names it (FR-006).
 
 ### Implementation for User Story 2
 
-- [ ] T037 [US2] Implement `frontend/src/mcp/components/PrincipalPicker.tsx` to make T034 pass,
+- [X] T037 [US2] Implement `frontend/src/mcp/components/PrincipalPicker.tsx` to make T034 pass,
   including the loading state that shows the name without inventing claims (data-model Principal).
-- [ ] T038 [US2] Record `principalName` on every `Exchange` in `frontend/src/mcp/transport.ts` and
+- [X] T038 [US2] Record `principalName` on every `Exchange` in `frontend/src/mcp/transport.ts` and
   display it in `frontend/src/mcp/components/ExchangeView.tsx`, to make T035 and T036 pass.
-- [ ] T039 [US2] Wire the picker into `frontend/src/mcp/McpConsolePage.tsx` so the active principal's
+- [X] T039 [US2] Wire the picker into `frontend/src/mcp/McpConsolePage.tsx` so the active principal's
   token is used for subsequent calls only.
-- [ ] T040 [P] [US2] Live test `frontend/src/mcp/entitlement.live.test.ts`, **through `transport.ts`
+- [X] T040 [P] [US2] Live test `frontend/src/mcp/entitlement.live.test.ts`, **through `transport.ts`
   with tokens minted the way the console mints them**: the same search as `advisor-alpha-101` returns
   fewer runs than as `admin-alpha` and only `adv-101`'s; a `firm-beta` search returns HTTP 200 with
   `isError: true` and no run data, and the console's own classifier calls it a `tool-error` rather
@@ -409,7 +409,7 @@ so it follows the stories rather than preceding them.
   anything that does not behave as written — including the timing note and the troubleshooting table.
 - [ ] T069 [P] Add a short "MCP console" section to `README.md` pointing at this feature's quickstart
   and saying plainly that it is development-only and absent from the packaged build.
-- [ ] T070 [P] Create `specs/008-mcp-console/findings.md` recording the two observations about feature
+- [X] T070 [P] Create `specs/008-mcp-console/findings.md` recording the two observations about feature
   007 that this feature deliberately did not act on: `post_fee_adjustment`'s `outputSchema` carries no
   `previous_fee_bps` (research R-007), and nothing in `serverInfo` or the response headers identifies
   the answering replica (research R-011). The spec requires these be recorded, not fixed here.

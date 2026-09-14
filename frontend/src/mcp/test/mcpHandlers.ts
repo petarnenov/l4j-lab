@@ -211,8 +211,7 @@ export function mcpHandlers(options: McpHandlerOptions = {}) {
         method: string
         params?: Record<string, unknown>
       }
-      const answer = (result: unknown) =>
-        HttpResponse.json({ jsonrpc: '2.0', id: body.id, result })
+      const answer = (result: unknown) => HttpResponse.json({ jsonrpc: '2.0', id: body.id, result })
       const refuse = (code: number, message: string, status: number, data?: unknown) =>
         HttpResponse.json(
           { jsonrpc: '2.0', id: body.id, error: protocolError(code, message, data) },

@@ -32,9 +32,9 @@ describe('classifying what came back', () => {
   it('calls an unknown tool name a protocol failure even though it arrives at HTTP 200', () => {
     // The case that breaks any classifier reading only the status. 007's error table puts -32602
     // for an unknown tool at HTTP 200 deliberately.
-    expect(classify({ httpStatus: 200, body: { error: { code: -32602, message: 'unknown' } } })).toBe(
-      'protocol-error',
-    )
+    expect(
+      classify({ httpStatus: 200, body: { error: { code: -32602, message: 'unknown' } } }),
+    ).toBe('protocol-error')
   })
 
   it('calls a rejected token a transport failure', () => {

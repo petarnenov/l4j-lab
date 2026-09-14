@@ -20,7 +20,9 @@ describe('the request envelope', () => {
   })
 
   it('mirrors the method in Mcp-Method', () => {
-    expect(buildRequest({ method: 'tasks/get', params: {} }).headers['Mcp-Method']).toBe('tasks/get')
+    expect(buildRequest({ method: 'tasks/get', params: {} }).headers['Mcp-Method']).toBe(
+      'tasks/get',
+    )
   })
 
   it('sends Mcp-Name on tools/call, mirroring params.name', () => {
@@ -34,7 +36,9 @@ describe('the request envelope', () => {
   })
 
   it('omits Mcp-Name when there is no tool to name', () => {
-    expect(buildRequest({ method: 'tools/list', params: {} }).headers).not.toHaveProperty('Mcp-Name')
+    expect(buildRequest({ method: 'tools/list', params: {} }).headers).not.toHaveProperty(
+      'Mcp-Name',
+    )
   })
 
   it('carries the content type and accept the revision requires', () => {

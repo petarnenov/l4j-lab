@@ -13,7 +13,10 @@ import { type TargetResolver, devProxyTargets } from '../targets'
  * hour succeeds rather than failing once and being corrected — expiry is read from the token, not
  * discovered from a rejection.
  */
-export function usePrincipalToken(principal: PrincipalName, targets: TargetResolver = devProxyTargets) {
+export function usePrincipalToken(
+  principal: PrincipalName,
+  targets: TargetResolver = devProxyTargets,
+) {
   return useQuery<MintedToken>({
     queryKey: ['mcp', 'token', principal],
     queryFn: () => mintToken(principal, targets),

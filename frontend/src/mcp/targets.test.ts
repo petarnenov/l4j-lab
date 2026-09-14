@@ -1,11 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import {
-  TARGET_IDS,
-  absenceReason,
-  absoluteTargets,
-  devProxyTargets,
-  healthPath,
-} from './targets'
+import { TARGET_IDS, absenceReason, absoluteTargets, devProxyTargets, healthPath } from './targets'
 
 /**
  * T010: where a call can be aimed, and what the console says when it cannot be.

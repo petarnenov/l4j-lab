@@ -93,9 +93,7 @@ export function buildRequest({ method, params = {}, id }: BuildOptions): BuiltRe
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     Accept: 'application/json, text/event-stream',
-    'MCP-Protocol-Version': String(
-      body.params._meta['io.modelcontextprotocol/protocolVersion'],
-    ),
+    'MCP-Protocol-Version': String(body.params._meta['io.modelcontextprotocol/protocolVersion']),
     'Mcp-Method': body.method,
   }
   if (typeof params.name === 'string') {
@@ -229,4 +227,52 @@ export async function send(options: SendOptions): Promise<Exchange> {
     deliberate,
     networkError,
   }
+}
+
+/**
+ * Everything one call needs to know about who and where. Passed to every hook rather than pulled
+ * from a context, so a live test can assemble one without rendering anything.
+ */
+export interface McpSession {
+  target: TargetId
+  targets: TargetResolver
+  token: string
+  principalName: string
+  expiresAt?: Date
+  /** Every call is recorded, task polls included, so nothing that happened is missing from the log. */
+  record?: (exchange: Exchange) => void
+}
+
+export interface CallOptions extends BuildOptions {
+  mangle?: (built: BuiltRequest) => BuiltRequest
+  deliberate?: boolean
+}
+
+/** Sends through the session and records the exchange. The single door every request goes through. */
+export async function callMcp(session: McpSession, options: CallOptions): Promise<Exchange> {
+  const exchange = await send({ ...options, ...session })
+  session.record?.(exchange)
+  return exchange
+}
+
+/**
+ * The result of a call, or a thrown error for the two kinds of failure that are not results.
+ *
+ * A *tool* failure is a result: it is a successful response carrying a flag, and the console shows
+ * it as one. A protocol or transport failure is not, so queries built on this surface it as an
+ * error state rather than rendering a half-empty panel.
+ */
+export function resultOrThrow<T>(exchange: Exchange): T {
+  if (exchange.outcome === 'protocol-error') {
+    const error = (exchange.responseBody as JsonRpcResponse | null)?.error
+    throw new Error(`JSON-RPC ${error?.code}: ${error?.message}`)
+  }
+  if (exchange.outcome === 'transport-error') {
+    throw new Error(
+      exchange.networkError
+        ? `The request never arrived: ${exchange.networkError}`
+        : `Rejected with HTTP ${exchange.httpStatus} before the protocol was reached.`,
+    )
+  }
+  return (exchange.responseBody as JsonRpcResponse).result as T
 }

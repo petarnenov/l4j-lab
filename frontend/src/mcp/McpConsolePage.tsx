@@ -1,5 +1,20 @@
-import { Alert, Space, Typography, theme } from 'antd'
+import { Alert, Card, Col, Row, Space, Spin, Typography, theme } from 'antd'
+import { useCallback, useMemo, useState } from 'react'
+import { ExchangeLog } from './components/ExchangeLog'
+import { PrincipalPicker } from './components/PrincipalPicker'
+import { StackOffline } from './components/StackOffline'
+import { ToolCallPanel } from './components/ToolCallPanel'
+import { ToolList } from './components/ToolList'
 import { DEV_ONLY_MARKER } from './devOnlyMarker'
+import { useDiscover } from './hooks/useDiscover'
+import { usePrincipalToken } from './hooks/usePrincipalToken'
+import { proxyIsDown, useReachableTargets } from './hooks/useReachableTargets'
+import { useTools } from './hooks/useTools'
+import { useToolCall } from './hooks/useToolCall'
+import type { PrincipalName } from './principals'
+import { devProxyTargets } from './targets'
+import type { Exchange, McpSession } from './transport'
+import type { TargetId } from './targets'
 
 /**
  * The MCP console (feature 008).
@@ -19,6 +34,40 @@ import { DEV_ONLY_MARKER } from './devOnlyMarker'
  */
 export default function McpConsolePage() {
   const { token } = theme.useToken()
+  const targets = devProxyTargets
+
+  const [principal, setPrincipal] = useState<PrincipalName>('admin-alpha')
+  const [target] = useState<TargetId>('proxy')
+  const [selectedTool, setSelectedTool] = useState<string | null>(null)
+  const [exchanges, setExchanges] = useState<Exchange[]>([])
+
+  const record = useCallback((exchange: Exchange) => {
+    setExchanges((previous) => [exchange, ...previous])
+  }, [])
+
+  const reachability = useReachableTargets(targets)
+  const credential = usePrincipalToken(principal, targets)
+
+  const session = useMemo<McpSession | null>(
+    () =>
+      credential.data
+        ? {
+            target,
+            targets,
+            token: credential.data.token,
+            principalName: principal,
+            expiresAt: credential.data.claims.expiresAt,
+            record,
+          }
+        : null,
+    [credential.data, principal, record, target, targets],
+  )
+
+  const discover = useDiscover(session)
+  const tools = useTools(session)
+  const call = useToolCall(session)
+
+  const tool = tools.data?.tools.find((candidate) => candidate.name === selectedTool) ?? null
 
   return (
     <div data-dev-only={DEV_ONLY_MARKER}>
@@ -26,23 +75,114 @@ export default function McpConsolePage() {
         MCP console
       </Typography.Title>
       <Typography.Paragraph type="secondary" style={{ maxWidth: '68ch' }}>
-        A development tool for driving the MCP billing server by hand and watching the protocol while
-        it happens. Everything here shows the exact JSON-RPC that travelled, so a tool failure and a
-        protocol failure can be told apart. It is not part of the product these pages otherwise
-        serve.
+        A development tool for driving the MCP billing server by hand and watching the protocol
+        while it happens. Everything here shows the exact JSON-RPC that travelled, so a tool failure
+        and a protocol failure can be told apart. It is not part of the product these pages
+        otherwise serve.
       </Typography.Paragraph>
 
       <Alert
         type="info"
         showIcon
         style={{ marginBottom: token.marginLG }}
-        message="Development only"
+        title="Development only"
         description="This page is absent from the packaged build, and the token issuer it depends on does not exist outside development."
       />
 
-      <Space direction="vertical" size="large" style={{ display: 'flex' }}>
-        {/* Regions are composed in T032 (US1) onward; each is a named landmark. */}
-      </Space>
+      {proxyIsDown(reachability.data) ? (
+        <StackOffline />
+      ) : (
+        <Space orientation="vertical" size="large" style={{ display: 'flex' }}>
+          {/* FR-006: a change here affects only subsequent calls. Exchanges already in the log
+              keep the principal they were obtained as, because each records its own. */}
+          <PrincipalPicker
+            value={principal}
+            onChange={setPrincipal}
+            claims={credential.data?.claims ?? null}
+          />
+
+          <section aria-labelledby="server-heading">
+            <Typography.Title id="server-heading" level={2} style={{ fontSize: token.fontSizeLG }}>
+              The server
+            </Typography.Title>
+            {discover.isPending && <Spin />}
+            {discover.isError && (
+              <Alert type="error" showIcon title={(discover.error as Error).message} />
+            )}
+            {discover.data && (
+              <Card size="small">
+                <Space orientation="vertical" size={4} style={{ display: 'flex' }}>
+                  <Typography.Text>
+                    <code>{discover.data._meta?.['io.modelcontextprotocol/serverInfo']?.name}</code>{' '}
+                    version{' '}
+                    <code>
+                      {discover.data._meta?.['io.modelcontextprotocol/serverInfo']?.version}
+                    </code>
+                  </Typography.Text>
+                  <Typography.Text type="secondary">
+                    Speaks: <code>{discover.data.supportedVersions.join(', ')}</code>
+                  </Typography.Text>
+                  {discover.data.instructions && (
+                    <Typography.Text type="secondary">{discover.data.instructions}</Typography.Text>
+                  )}
+                </Space>
+              </Card>
+            )}
+          </section>
+
+          <Row gutter={[token.marginLG, token.marginLG]}>
+            <Col xs={24} lg={11}>
+              <section aria-labelledby="tools-heading">
+                <Typography.Title
+                  id="tools-heading"
+                  level={2}
+                  style={{ fontSize: token.fontSizeLG }}
+                >
+                  Tools
+                </Typography.Title>
+                {tools.isPending && <Spin />}
+                {tools.isError && (
+                  <Alert type="error" showIcon title={(tools.error as Error).message} />
+                )}
+                {tools.data && (
+                  <ToolList
+                    tools={tools.data.tools}
+                    selected={selectedTool}
+                    onSelect={setSelectedTool}
+                  />
+                )}
+              </section>
+            </Col>
+
+            <Col xs={24} lg={13}>
+              <section aria-labelledby="call-heading">
+                <Typography.Title
+                  id="call-heading"
+                  level={2}
+                  style={{ fontSize: token.fontSizeLG }}
+                >
+                  Call
+                </Typography.Title>
+                {tool ? (
+                  <Card size="small">
+                    <ToolCallPanel
+                      tool={tool}
+                      pending={call.isPending}
+                      onCall={(args) => call.mutate({ name: tool.name, args })}
+                    />
+                  </Card>
+                ) : (
+                  <Typography.Text type="secondary">
+                    Choose a tool to see the arguments it declares.
+                  </Typography.Text>
+                )}
+              </section>
+            </Col>
+          </Row>
+
+          <ExchangeLog exchanges={exchanges} />
+        </Space>
+      )}
     </div>
   )
 }
