@@ -140,21 +140,66 @@ principal differs, it has expired, or the digest does not match the retried argu
 Written out because the first version of this section was not, and a client built from it did the
 opposite of what it asked. Corrected by feature 010; see its finding F-005.
 
+**The two blocks below are executed by a test, exactly as written.**
+`ConfirmationTopologyTest` reads this file, takes the JSON out of these two fences, substitutes only
+`<OPERATION_ID>` and `<REQUEST_STATE>`, and sends them at the running server. If an edit here stops
+working, the build fails. The contract was wrong last time because nothing ran it.
+
+Headers are the ones every request needs (see above): `Mcp-Method: tools/call`,
+`Mcp-Name: post_fee_adjustment`, `MCP-Protocol-Version: 2026-07-28`, and the bearer token.
+
+First, the call that proposes the change:
+
+<!-- executable: confirmation-first-call -->
 ```json
 {
   "jsonrpc": "2.0",
-  "id": "a-different-id-from-the-first-call",
+  "id": "propose-1",
   "method": "tools/call",
   "params": {
     "name": "post_fee_adjustment",
-    "arguments": { "…the same arguments the first call sent…" },
+    "arguments": {
+      "operation_id": "<OPERATION_ID>",
+      "account_id": "acc-0101",
+      "delta_bps": 15,
+      "effective_date": "2026-10-01"
+    },
+    "_meta": {
+      "io.modelcontextprotocol/protocolVersion": "2026-07-28",
+      "io.modelcontextprotocol/clientCapabilities": { "elicitation": {} }
+    }
+  }
+}
+```
+
+It answers `resultType: "input_required"` with the elicitation shown above and a `requestState`.
+Then, the retry that applies it — `<REQUEST_STATE>` is that value, echoed byte for byte:
+
+<!-- executable: confirmation-retry -->
+```json
+{
+  "jsonrpc": "2.0",
+  "id": "confirm-1",
+  "method": "tools/call",
+  "params": {
+    "name": "post_fee_adjustment",
+    "arguments": {
+      "operation_id": "<OPERATION_ID>",
+      "account_id": "acc-0101",
+      "delta_bps": 15,
+      "effective_date": "2026-10-01"
+    },
     "inputResponses": {
       "confirm_adjustment": {
         "action": "accept",
         "content": { "confirmed": true }
       }
     },
-    "requestState": "<echoed byte-for-byte>"
+    "requestState": "<REQUEST_STATE>",
+    "_meta": {
+      "io.modelcontextprotocol/protocolVersion": "2026-07-28",
+      "io.modelcontextprotocol/clientCapabilities": { "elicitation": {} }
+    }
   }
 }
 ```

@@ -6,10 +6,8 @@
     "additionalProperties" : false,
     "properties" : {
       "limit" : {
-        "description" : "Maximum households to return, from 1 to 50. Defaults to 50.",
+        "description" : "Maximum households to return. Defaults to 50. A larger value is clamped to 50 rather than refused.",
         "default" : 50,
-        "maximum" : 50,
-        "minimum" : 1,
         "type" : "integer"
       },
       "run_id" : {

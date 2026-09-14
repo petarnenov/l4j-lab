@@ -36,6 +36,33 @@ class FeeAdjustmentTest extends LegacyApiTestBase {
         assertThat(feeOf("acc-0101")).isEqualTo(applied.newFeeBps());
     }
 
+    /**
+     * Feature 010: a fee cannot go below zero, and saying so is this service's job.
+     *
+     * <p>The rule was enforced only by the table's {@code CHECK (current_fee_bps >= 0)}. The
+     * adjustment row was inserted, the UPDATE then failed, and the constraint violation left here as
+     * HTTP 500 — which the MCP server reports as <em>"the billing system is unavailable. Do not
+     * retry; report this and stop."</em> The system was available and the request was simply not
+     * applicable. A caller following that instruction would escalate a mistyped delta as an outage.
+     *
+     * <p>It is a `409`, which the MCP server already renders as "that request does not apply to this
+     * record in its current state". The same shape as finding F-006, met in a different place.
+     */
+    @Test
+    void anAdjustmentBelowZeroIsRefusedRatherThanCrashing() {
+        int before = feeOf("acc-0101");
+
+        HttpClientResponseException refused = assertThrows(HttpClientResponseException.class,
+            () -> apply("acc-0101", -(before + 1), "too far", TestKeys.ADMIN_ALPHA));
+
+        assertThat(refused.getStatus().getCode()).isEqualTo(409);
+        // The reason travels in the body, which is where a caller reads it.
+        assertThat(refused.getResponse().getBody(String.class).orElse(""))
+            .contains("below zero");
+        // And nothing was written: the row and the balance move together or not at all.
+        assertThat(feeOf("acc-0101")).isEqualTo(before);
+    }
+
     @Test
     void aNegativeAdjustmentLowersTheFee() {
         int before = feeOf("acc-0102");

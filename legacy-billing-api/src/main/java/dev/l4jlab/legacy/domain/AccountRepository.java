@@ -24,6 +24,10 @@ public interface AccountRepository extends CrudRepository<AccountRecord, String>
         """, nativeQuery = true)
     Optional<String> findFirmIdOfAccount(String accountId);
 
+    @Query(value = "SELECT current_fee_bps FROM legacy_billing.account WHERE account_id = :accountId",
+        nativeQuery = true)
+    Optional<Integer> currentFeeBps(String accountId);
+
     @Query(value = "UPDATE legacy_billing.account SET current_fee_bps = current_fee_bps + :deltaBps "
         + "WHERE account_id = :accountId RETURNING current_fee_bps", nativeQuery = true)
     Optional<Integer> applyDelta(String accountId, int deltaBps);

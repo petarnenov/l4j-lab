@@ -47,16 +47,17 @@ class ArgumentValidationTest extends McpServerTestBase {
     }
 
     @Test
-    @DisplayName("a page size above the declared maximum is refused, not silently clamped")
-    void aPageSizeAboveTheDeclaredMaximumIsRefused() {
-        // The tool clamps internally, which is right for a value it chose to accept. But the
-        // declaration says maximum 20, and quietly accepting 100 makes the declaration untrue.
+    @DisplayName("a clamped argument is not refused, because no bound is declared for it")
+    void aClampedArgumentIsNotRefused() {
+        // The other direction of FR-013, and the one feature 010 got wrong first. `page_size` and
+        // `limit` are clamped by requirement (007 FR-017, FR-019), so the declaration carries no
+        // `maximum` for them — a bound the server does not honour must not be declared. Refusing
+        // here would be enforcing a constraint that is not there, which is the same kind of
+        // disagreement between document and behaviour, just pointing the other way.
         Map<String, Object> result = call("search_billing_runs",
             Map.of("firm_id", "firm-alpha", "page_size", 100));
 
-        assertThat(result).containsEntry("isError", true);
-        assertThat(textOf(result)).contains("page_size");
-        assertThat(textOf(result)).contains("20");
+        assertThat(result.get("isError")).isNotEqualTo(true);
     }
 
     @Test

@@ -145,10 +145,22 @@ sort ahead of the seeded rows:
 Both pass on a fresh volume and fail on a used one, so the suite's verdict depends on how many times
 it has been run before — which is not a property of the code it tests.
 
-Left as feature 007's to fix, and recorded here rather than repaired in passing: making a red test
-green by rewriting its assertion is the move this whole feature exists to argue against, and the
-right repair is to give the suite its own data or reset the volume, which is a change to how 007 is
-verified rather than a correction of a claim.
+**Fixed after all, and not by rewriting the assertions to agree.** The paragraph above said this was
+007's to fix, on the grounds that making a red test green by editing it is what this feature argues
+against. That reasoning was half right: editing a test to *accept different behaviour* destroys its
+claim, but both of these tests were asserting something narrower than the property they were named
+for, and the narrower thing happened to be true only on a fresh volume.
+
+| test | asserted | the property it is named for |
+|---|---|---|
+| `aFirmAdminAndOpsBothSeeTheWholeFirm` | both advisors appear on **the first page** | a firm administrator reaches both advisors |
+| `aCursorFromOneReplicaContinuesTheSameSearchOnAnother` | the search fits in **exactly two pages**, which sum to the total | a cursor minted by one replica continues the search on another |
+
+Page composition was never the subject of either. The first now asks for each advisor directly; the
+second walks the whole search, taking every page from a different replica, and makes the stronger
+claim the old arithmetic was reaching for — no run seen twice, and the pages sum to the caller's own
+total, however many there are. Both now pass on a used volume, which was checked by running the suite
+twice in a row and letting the first pass create the data the second ran against.
 
 **Run `make mcp-reset` before `make mcp-verify` if the two rows above are the failures you see.**
 
@@ -185,3 +197,64 @@ expensive: it is what let 106 differences accumulate unremarked.
 ellipsis, which the check skips. Writing them out added 11 checked claims and turned G-006 from a
 thing someone had to notice into a thing the build fails on. Recorded under G-006 as well, because
 that is where someone will look.
+
+---
+
+## H-007: restoring a contract without reading what it contradicted
+
+Feature 010's own mistake, recorded because it is the feature's subject matter committed by the
+feature itself.
+
+F-001 said the server had lost keywords the committed contracts carried — among them
+`page_size: {minimum: 1, maximum: 20}`. They were restored to the declaration and, per FR-013,
+enforced: a declared constraint is a validated constraint. So `page_size: 100` became a tool error.
+
+Feature 007's specification says, in its edge cases:
+
+> A page size argument above the cap must be clamped to the cap, not rejected silently.
+
+`data-model.md` lists the same thing as a requirement, and `tasks.md` T069 tested for it. The
+committed contract's `maximum: 20` had been wrong since 007 — it was one more thing declared twice by
+hand and disagreeing with itself, which is F-001's actual subject. Restoring it faithfully restored
+the disagreement.
+
+**The rule has two directions, and only one of them is obvious.** *Do not declare what you do not
+enforce* is the half everyone states. *Do not enforce what you have not declared* is the half that
+bites when you are repairing a contract you did not write: the keyword looked like evidence of what
+the server should do, and it was evidence of what a past feature had got wrong.
+
+Caught by feature 007's own test, which failed the moment the enforcement was added — the test
+feature 010 then edited to match the new behaviour before checking which of the two was right. The
+edit was reverted. The lesson is not about page sizes: **a test that fails when you change behaviour
+is making a claim, and rewriting it to agree with you destroys the claim.**
+
+---
+
+## H-008: a business rule enforced only by a CHECK constraint
+
+Found by the third instance of H-005, and worth more than the test that found it.
+
+`legacy_billing.account` declares `CHECK (current_fee_bps >= 0)`. Nothing in the API checked it. An
+adjustment that would take a fee below zero inserted its row, failed on the `UPDATE`, and left the
+service as **HTTP 500** — which `LegacyErrorTranslator` renders, correctly for a 500, as:
+
+> The billing system is unavailable. Do not retry; report this and stop.
+
+The billing system was available. The request was not applicable. A caller that followed that
+instruction would escalate a mistyped delta as an outage, and the one thing the message tells a model
+to do — stop and report — is the wrong thing to do about a typo.
+
+**This is finding F-006's shape in a different place**: an internal failure wearing a message about
+something else, because nobody chose what the answer should be and the default chose for them. F-006
+was a `NullPointerException` arriving as *"message must not be empty"*; this is a constraint violation
+arriving as *"the system is unavailable"*.
+
+Now a `409`, which the MCP server already renders as *"that request does not apply to this record in
+its current state"* — a sentence a caller can act on. The insert and the balance still move together
+or not at all.
+
+**How it stayed hidden**: the fee only reaches zero after the topology suite has taken 10 bps off the
+same account a dozen times. The scenario that found it now raises the fee before lowering it, so it
+nets to zero and leaves the account as it found it — a test that changes the world it measures
+eventually measures its own history.
+

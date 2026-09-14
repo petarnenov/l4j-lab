@@ -42,8 +42,22 @@ public final class ToolArgumentConstraints {
                              Integer minimum, Integer maximum, Object defaultValue,
                              Integer minLength, Integer maxLength) {
 
-        static Constraint integer(int minimum, int maximum, int defaultValue) {
-            return new Constraint("integer", null, null, minimum, maximum, defaultValue, null, null);
+        /**
+         * An integer the server <em>clamps</em> rather than refuses.
+         *
+         * <p>No {@code minimum} and no {@code maximum}: feature 007's specification requires a page
+         * size above the cap to be *"clamped to the cap, not rejected silently"* (FR-017, and the
+         * same for {@code get_run_failures} under FR-019). A JSON Schema {@code maximum} says values
+         * above it are invalid, so declaring one and then clamping would be a bound the server does
+         * not honour — FR-013's rule, in the direction that is easier to get wrong. The bound lives
+         * in the description, where it is a statement about behaviour rather than a constraint.
+         *
+         * <p>The committed contracts carried {@code minimum} and {@code maximum} and feature 010
+         * restored them to the declaration before noticing they contradicted 007's own requirement.
+         * They are gone from both now.
+         */
+        static Constraint clampedInteger(int defaultValue) {
+            return new Constraint("integer", null, null, null, null, defaultValue, null, null);
         }
 
         static Constraint integer() {
@@ -101,9 +115,9 @@ public final class ToolArgumentConstraints {
             "status", Constraint.oneOf(RUN_STATUSES),
             "started_from", Constraint.date(),
             "started_to", Constraint.date(),
-            "page_size", Constraint.integer(1, 20, 20)),
+            "page_size", Constraint.clampedInteger(20)),
         "get_run_failures", Map.of(
-            "limit", Constraint.integer(1, 50, 50)),
+            "limit", Constraint.clampedInteger(50)),
         "post_fee_adjustment", Map.of(
             "operation_id", Constraint.text(8, 128),
             "delta_bps", Constraint.integer(),

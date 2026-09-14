@@ -42,11 +42,31 @@ describe('fields derived from the declared input shape', () => {
   })
 
   it('honours an integer bound the server declared', () => {
+    // Asserted against a schema written here rather than against `page_size`, which used to carry
+    // `minimum: 1, maximum: 20` and no longer does: feature 007 requires a page size above the cap
+    // to be clamped, so declaring a bound the server does not enforce would be a lie in the
+    // declaration (feature 010, finding H-007). The form's behaviour is the subject of this test,
+    // and it is unchanged — so it is tested directly instead of through a schema that stopped
+    // exercising it.
+    const bounded = {
+      type: 'object' as const,
+      properties: { retries: { type: 'integer', minimum: 1, maximum: 5 } },
+    }
+    renderWithQuery(<SchemaForm schema={bounded} values={{}} onChange={vi.fn()} />)
+
+    const retries = screen.getByLabelText(/^retries/)
+    expect(retries).toHaveAttribute('aria-valuemin', '1')
+    expect(retries).toHaveAttribute('aria-valuemax', '5')
+  })
+
+  it('leaves an integer unbounded when the server declares no bound', () => {
+    // The other half, and the one that matters for `page_size`: the console must not invent a
+    // maximum the declaration does not carry. A client that refused 100 locally would be enforcing
+    // a rule the server deliberately does not have.
     renderWithQuery(<SchemaForm schema={search.inputSchema} values={{}} onChange={vi.fn()} />)
 
     const pageSize = screen.getByLabelText(/^page_size/)
-    expect(pageSize).toHaveAttribute('aria-valuemin', '1')
-    expect(pageSize).toHaveAttribute('aria-valuemax', '20')
+    expect(pageSize).not.toHaveAttribute('aria-valuemax')
   })
 
   it('prefills a declared default', () => {

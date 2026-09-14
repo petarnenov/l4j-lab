@@ -111,16 +111,17 @@ class ToolDeclarationContractTest extends McpServerTestBase {
         assertThat(field(search, "page_size"))
             .as("integer, not widened to number")
             .containsEntry("type", "integer")
-            .containsEntry("minimum", 1)
-            .containsEntry("maximum", 20)
             .containsEntry("default", 20);
+        // No `maximum`, deliberately: 007 FR-017 requires the value to be clamped, and a bound the
+        // server does not honour must not be declared. Asserted as an absence so restoring it
+        // requires deciding to, rather than happening.
+        assertThat(field(search, "page_size")).doesNotContainKey("maximum");
 
         Map<String, Object> failures = properties(served.get("get_run_failures"));
         assertThat(field(failures, "limit"))
             .containsEntry("type", "integer")
-            .containsEntry("minimum", 1)
-            .containsEntry("maximum", 50)
             .containsEntry("default", 50);
+        assertThat(field(failures, "limit")).doesNotContainKey("maximum");
 
         Map<String, Object> adjustment = properties(served.get("post_fee_adjustment"));
         assertThat(field(adjustment, "operation_id"))

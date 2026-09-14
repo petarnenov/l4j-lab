@@ -137,7 +137,7 @@ public class BillingRunTools {
         @Nullable String startedFrom,
         @ToolArg(name = "started_to", description = "Optional. Only runs started on or before this date.")
         @Nullable String startedTo,
-        @ToolArg(name = "page_size", description = "Runs per page, from 1 to 20. Defaults to 20.")
+        @ToolArg(name = "page_size", description = "Runs per page. Defaults to 20. A larger value is clamped to 20 rather than refused.")
         @Nullable Integer pageSize,
         @ToolArg(name = "cursor", description = "Opaque cursor from a previous result. Do not construct or modify it.")
         @Nullable String cursor,
@@ -206,7 +206,7 @@ public class BillingRunTools {
             openWorldHint = true))
     public RunFailuresResult getRunFailures(
         @ToolArg(name = "run_id", description = "The failed run to inspect.") String runId,
-        @ToolArg(name = "limit", description = "Maximum households to return, from 1 to 50. Defaults to 50.")
+        @ToolArg(name = "limit", description = "Maximum households to return. Defaults to 50. A larger value is clamped to 50 rather than refused.")
         @Nullable Integer limit,
         McpTransportContext transport) {
 

@@ -62,6 +62,19 @@ public class FeeAdjustmentController {
             throw new HttpStatusException(HttpStatus.BAD_REQUEST, "delta_bps must not be zero");
         }
 
+        // A fee cannot go below zero — the account table says so with a CHECK constraint, and until
+        // feature 010 that constraint was the only thing enforcing it. The insert went in, the UPDATE
+        // failed, and the violation surfaced as HTTP 500, which the MCP server reported as "the
+        // billing system is unavailable. Do not retry." The system was available and the request was
+        // simply not applicable: a caller told to stop and report it would have escalated a typo.
+        // The same shape as finding F-006 — an internal failure wearing an unavailability message.
+        int current = accounts.currentFeeBps(body.accountId())
+            .orElseThrow(() -> new HttpStatusException(HttpStatus.FORBIDDEN, "Not entitled"));
+        if (current + body.deltaBps() < 0) {
+            throw new HttpStatusException(HttpStatus.CONFLICT,
+                "That adjustment would take the fee below zero");
+        }
+
         String referenceId = "adj-" + UUID.randomUUID().toString().substring(0, 12);
         Instant now = Instant.now(clock);
         jdbc.prepareStatement("""

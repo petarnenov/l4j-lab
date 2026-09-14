@@ -142,12 +142,26 @@ source and the committed JSON is generated from it — and no dependency was add
 the mechanism differs from what R-002 predicted, and it is recorded here rather than left as a
 surprise for whoever reads the annotation and wonders why it is bare.
 
-**Nothing was left unenforced** (T031). Every keyword that is declared is checked: enumeration
-membership, `YYYY-MM-DD` dates, integrality, numeric bounds, and string lengths. One is worth naming
-because it changes behaviour: `page_size` above 20 used to be **clamped silently**, and is now
-refused. Clamping is a reasonable thing to do with a value you have chosen to accept — but the
-declaration says `maximum: 20`, and accepting 100 anyway is the declaration being untrue again, one
-level down.
+**Nothing is declared that is not enforced** (T031). Every keyword the declaration carries is
+checked: enumeration membership, `YYYY-MM-DD` dates, integrality, and string lengths.
+
+**And the rule runs in both directions — which this feature got wrong first.** `page_size` and
+`limit` were given back their `minimum` and `maximum` because the committed contracts carried them,
+and then enforced, so `page_size: 100` became a refusal. That contradicted feature 007's own edge
+case:
+
+> A page size argument above the cap must be clamped to the cap, not rejected silently.
+
+The bound was wrong **in the contract**, not the behaviour in the server. Restoring a contract
+without reading what it contradicts is how a repair becomes a regression, and F-001 is exactly a
+finding about contracts that were not read. The bounds are gone from the declaration and from the
+generated files; clamping is restored; the cap is stated in each argument's description, where it is
+a statement about behaviour rather than a constraint the server does not honour. The contract test
+asserts the **absence** of `maximum`, so putting it back requires deciding to.
+
+What this costs: a client reading the declaration cannot mechanically reject `page_size: 100` before
+sending it. That is what 007 chose, and for a model-facing tool it is the kinder choice — a caller
+that asks for more than it may have gets the page rather than an error to recover from.
 
 **What the generated contracts cannot capture, and why it does not matter**: `outputSchema` carries
 `$id` and `$schema` from micronaut-json-schema, which the hand-written contracts never had. They are

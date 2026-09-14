@@ -18,10 +18,8 @@
         "type" : "string"
       },
       "page_size" : {
-        "description" : "Runs per page, from 1 to 20. Defaults to 20.",
+        "description" : "Runs per page. Defaults to 20. A larger value is clamped to 20 rather than refused.",
         "default" : 20,
-        "maximum" : 20,
-        "minimum" : 1,
         "type" : "integer"
       },
       "started_from" : {

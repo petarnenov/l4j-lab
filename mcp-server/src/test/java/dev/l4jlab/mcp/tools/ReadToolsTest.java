@@ -63,24 +63,25 @@ class ReadToolsTest extends McpServerTestBase {
     }
 
     /**
-     * Feature 010, T031 (FR-013): this used to assert the opposite, and the change is deliberate.
+     * Feature 007 FR-017, restored after feature 010 briefly broke it.
      *
-     * <p>The declaration says {@code "maximum": 20}. Accepting 100 and quietly returning 20 makes
-     * that keyword untrue — which is finding F-001 again, one level down: a contract saying one thing
-     * and the server doing another. Clamping is a reasonable thing to do with a value you have chosen
-     * to accept; it is not a reasonable thing to do with a value you have declared invalid.
+     * <p>010 restored {@code minimum} and {@code maximum} to the declaration — they were in the
+     * committed contract — and then enforced them, which turned this into a refusal. That
+     * contradicted 007's own edge case: *"A page size argument above the cap must be clamped to the
+     * cap, not rejected silently."* The bound was wrong in the contract, not the behaviour in the
+     * server, and restoring a contract without reading what it contradicted is how a repair becomes
+     * a regression.
      *
-     * <p>The caller is told the bound and can ask again. The internal clamp stays as a floor under
-     * the arithmetic, but nothing now reaches it from outside.
+     * <p>The declaration no longer carries a {@code maximum}. What it carries is a description
+     * saying the value is clamped, which is a statement about behaviour rather than a constraint the
+     * server does not honour.
      */
     @Test
-    void aPageSizeAboveTheDeclaredMaximumIsRefusedRatherThanClampedSilently() {
-        Map<String, Object> result = call("search_billing_runs",
+    void aPageSizeAboveTheCapIsClampedRatherThanRefused() {
+        Map<String, Object> result = callStructured("search_billing_runs",
             Map.of("firm_id", "firm-alpha", "page_size", 100));
 
-        assertThat(result).containsEntry("isError", true);
-        assertThat(textOf(result)).contains("page_size");
-        assertThat(textOf(result)).contains("20");
+        assertThat((List<?>) result.get("runs")).hasSize(20);
     }
 
     @Test

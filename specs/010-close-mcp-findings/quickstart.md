@@ -167,6 +167,19 @@ What *was* done, and what it is worth:
   `content.confirmed`, so a client that reads the document wrongly finds out immediately instead of
   believing it declined. This is the safety net under SC-002 rather than a substitute for it.
 
+**What changed after this was first written.** The contract had no example of the *request* at all —
+it showed the response to the first call, then a retry whose `arguments` were an ellipsis reading
+*"the same arguments the first call sent"*. An implementer had to assemble both calls from the tool's
+`inputSchema` and hope. Both are now written out in full, with real values, and marked
+`<!-- executable: … -->`. `ConfirmationTopologyTest` **reads the markdown**, lifts the JSON out of
+those two fences, substitutes only `<OPERATION_ID>` and `<REQUEST_STATE>`, and sends it at the
+running server.
+
+So the document is executed rather than paraphrased, and an edit to it that stops working fails the
+build. That closes the half of F-005 that was mechanical — the example is now known to be correct
+rather than believed to be. It does not close SC-002, which is about whether the **prose** is clear
+to someone reading it cold, and no test can answer that.
+
 **To close it**: hand someone `contracts/mcp-protocol.md`, nothing else, and ask them to apply a fee
 change. One attempt. Record the result here.
 

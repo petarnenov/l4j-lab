@@ -2,6 +2,8 @@ package dev.l4jlab.mcp.topology;
 
 import org.junit.jupiter.api.Test;
 
+import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -22,28 +24,52 @@ class CrossReplicaTest extends TopologyFixture {
 
     // ---------- US1-5, US1-6: a cursor minted by one replica, read by another ----------
 
+    /**
+     * The property feature 007 exists to demonstrate: a cursor is signed and self-contained, so any
+     * replica can continue a search another began. No shared table is consulted (research R-009).
+     *
+     * <p>Feature 010 H-005: this used to assume the search fitted in exactly two pages — it asserted
+     * the second page was the last and that the two pages summed to the total. Every pass of this
+     * suite starts more billing runs, so once enough had accumulated there was a third page and the
+     * arithmetic stopped holding. The suite was green on a fresh volume and red on a used one, which
+     * is a verdict about how often it had been run.
+     *
+     * <p>It now walks the whole search, taking each page from a different replica, and makes the
+     * stronger claim the old arithmetic was reaching for: every page is continued elsewhere, no run
+     * appears twice, and what comes back is the caller's whole total — however many pages that is.
+     */
     @Test
     void aCursorFromOneReplicaContinuesTheSameSearchOnAnother() {
         String token = tokenFor("admin-alpha");
+        URI[] replicas = {replicaA, replicaB, replicaC};
 
-        Map<String, Object> first = structured(callTool(replicaA, "search_billing_runs", """
+        Map<String, Object> page = structured(callTool(replicas[0], "search_billing_runs", """
             {"firm_id":"firm-alpha"}""", token));
+        int total = ((Number) page.get("total_match_count")).intValue();
+        assertThat(page).containsEntry("truncated", true);
 
-        assertThat(first).containsEntry("truncated", true);
-        assertThat((String) first.get("next_cursor")).isNotBlank();
+        List<String> seen = new ArrayList<>(runIds(page));
+        int hops = 0;
+        while (Boolean.TRUE.equals(page.get("truncated"))) {
+            String cursor = (String) page.get("next_cursor");
+            assertThat(cursor).as("a truncated page must carry a cursor").isNotBlank();
 
-        Map<String, Object> second = structured(callTool(replicaB, "search_billing_runs", """
-            {"firm_id":"firm-alpha","cursor":"%s"}""".formatted(first.get("next_cursor")), token));
+            hops++;
+            // A different replica every hop, so no page is ever continued by the one that minted it.
+            page = structured(callTool(replicas[hops % replicas.length], "search_billing_runs", """
+                {"firm_id":"firm-alpha","cursor":"%s"}""".formatted(cursor), token));
 
-        List<String> firstIds = runIds(first);
-        List<String> secondIds = runIds(second);
+            List<String> ids = runIds(page);
+            assertThat(ids).as("hop %s returned nothing", hops).isNotEmpty();
+            assertThat(ids).as("hop %s repeated a run", hops).doesNotContainAnyElementsOf(seen);
+            seen.addAll(ids);
 
-        // No shared table was consulted: the cursor is signed and self-contained, and every replica
-        // shares the key (research.md R-009).
-        assertThat(secondIds).isNotEmpty().doesNotContainAnyElementsOf(firstIds);
-        assertThat(second).containsEntry("truncated", false);
-        assertThat(firstIds.size() + secondIds.size())
-            .isEqualTo(((Number) first.get("total_match_count")).intValue());
+            assertThat(hops).as("paging did not terminate").isLessThan(100);
+        }
+
+        assertThat(hops).as("the search must span more than one replica to prove anything")
+            .isGreaterThanOrEqualTo(1);
+        assertThat(seen).hasSize(total);
     }
 
     @Test
