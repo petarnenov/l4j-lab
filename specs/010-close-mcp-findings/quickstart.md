@@ -79,9 +79,20 @@ finding closed, and that change is the evidence.
 make check-specs                    # feature 009's drift check
 ```
 
-Each closed finding has a baseline entry in `scripts/spec-drift/baseline.json`. **Remove it** rather
-than leaving it: an entry that no longer matches real drift is reported as stale and fails the check,
-which is how that baseline is designed to shrink.
+**Corrected at T046: none of the seven findings had a baseline entry.** This paragraph used to say
+each of them did, and it was written from an assumption rather than from the file. The two records
+track different things — `scripts/spec-drift/baseline.json` holds *path claims in specification
+documents*, while these findings are about *server behaviour*, which that check does not look at. The
+201 entries belong to features 001 through 007 naming classes their implementations no longer have.
+
+So FR-020 resolves to an empty set, and that is reported rather than quietly skipped. What was
+verified instead is that the mechanism works: a deliberately stale entry was added, `make check-specs`
+**failed** with it and passed when it was removed. An obligation with nothing to do and an obligation
+nobody checked look identical in a report; this one was checked.
+
+The one thing that did change here went the other way — writing feature 007's reading-guide paths out
+in full added **11 claims** the check had never seen, because the abbreviated `mcp-server/.../` form
+is invisible to it. The baseline did not shrink; the coverage grew.
 
 Then mark each finding closed where it was recorded, in
 [`specs/008-mcp-console/findings.md`](../008-mcp-console/findings.md) and
@@ -135,4 +146,27 @@ the tautology a generated oracle invites. What caught it was
 `theDeclarationsCarryTheKeywordsTheContractsAlwaysClaimed`, which names `maximum: 50` outright and
 reads only what the server serves. A generated contract needs a check that does not come from the
 generator, or it proves nothing. Both were reverted after the demonstration.
+
+## SC-002, and what is honestly unverified (T052)
+
+SC-002 asks that someone who has not read the server implement the confirmation retry from
+`specs/007-mcp-billing-server/contracts/mcp-protocol.md` alone and apply a fee change on the first
+attempt. **That has not been done, and it is recorded as unverified rather than marked done.**
+
+The whole of finding F-005 is that the contract read convincingly and was wrong. The people who could
+run this check — the ones who wrote the correction — are exactly the ones whose reading proves
+nothing, because they know the answer. A self-administered comprehension test is not a test.
+
+What *was* done, and what it is worth:
+
+- `ConfirmationTopologyTest.aRetryBuiltOnlyFromTheContractAppliesTheChange` builds the retry from the
+  corrected contract's example and nothing else, against the running stack, and the change is applied.
+  It proves the example is correct. It does not prove the prose around it is clear, which is the half
+  that failed last time.
+- The flat shape the old contract implied is now answered with a diagnostic naming
+  `content.confirmed`, so a client that reads the document wrongly finds out immediately instead of
+  believing it declined. This is the safety net under SC-002 rather than a substitute for it.
+
+**To close it**: hand someone `contracts/mcp-protocol.md`, nothing else, and ask them to apply a fee
+change. One attempt. Record the result here.
 

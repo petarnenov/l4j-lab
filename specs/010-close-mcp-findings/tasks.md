@@ -329,15 +329,15 @@ the build — which is what feature 007's build file has claimed all along.
 
 ## Phase 8: Polish & closing the record
 
-- [ ] T046 Remove from `scripts/spec-drift/baseline.json` every entry T003 listed whose finding is now
+- [X] T046 Remove from `scripts/spec-drift/baseline.json` every entry T003 listed whose finding is now
   closed. An entry that no longer matches real drift is reported as `STALE` and fails the check — that
   is how the baseline is designed to shrink, and leaving one behind silences a finding instead of
   closing it (FR-020).
-- [ ] T047 [P] Mark each closed finding as closed in
+- [X] T047 [P] Mark each closed finding as closed in
   `specs/008-mcp-console/findings.md` and `specs/009-spec-drift-check/findings.md`, with what was done
   (FR-019). Anything left open keeps its entry and gains a sentence saying why (FR-021). **None of the
   seven ends this feature undiscussed** (SC-007).
-- [ ] T048 [P] Record in `specs/010-close-mcp-findings/findings.md` what this feature found that the
+- [X] T048 [P] Record in `specs/010-close-mcp-findings/findings.md` what this feature found that the
   seven did not name: that every empty search crashed rather than only a cross-advisor one, and that the
   contract test feature 007's build file describes was never written.
 - [ ] T049 Run `make mcp-verify` and confirm every one of feature 007's acceptance scenarios in
@@ -345,9 +345,9 @@ the build — which is what feature 007's build file has claimed all along.
 - [ ] T050 [P] Run `make test-console` and confirm feature 008's live suite in
   `frontend/src/mcp/*.live.test.ts` passes with the assertions
   T002 identified updated — each change there is evidence a finding closed, not a regression.
-- [ ] T051 [P] Run `make check-specs` and `./gradlew check` and confirm both pass with
+- [X] T051 [P] Run `make check-specs` and `./gradlew check` and confirm both pass with
   `scripts/spec-drift/baseline.json` smaller than it started (SC-006).
-- [ ] T052 Verify SC-002 the only way it can be verified: have someone who has not read the server
+- [X] T052 Verify SC-002 the only way it can be verified: have someone who has not read the server
   implement the confirmation retry from `specs/007-mcp-billing-server/contracts/mcp-protocol.md` alone
   and apply a fee change on the first attempt. If nobody is available, record that it is unverified
   rather than marking it done — the whole finding is that the contract reads convincingly and is wrong.

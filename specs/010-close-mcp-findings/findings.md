@@ -151,3 +151,31 @@ right repair is to give the suite its own data or reset the volume, which is a c
 verified rather than a correction of a claim.
 
 **Run `make mcp-reset` before `make mcp-verify` if the two rows above are the failures you see.**
+
+---
+
+## H-006: what this feature found that the seven findings did not name
+
+Recorded because each was invisible from where the original finding was written, and each is the same
+mistake: a claim nobody could check.
+
+**F-006 was not about entitlement.** It was recorded as *"a cross-advisor search returns HTTP 500"*.
+Every search whose result set was empty returned 500 — a date range with no runs in it, a status
+nobody used, anything. The cross-advisor case was simply the first one someone tried. The finding
+named the symptom it happened to meet, and a repair scoped to it would have fixed one query and left
+the rest crashing. See H-004 for the three levels it turned out to be.
+
+**F-001 was 106 differences, not 18.** Feature 008 compared what it knew to look for, from a console
+that could only see what it rendered. The contract test compares everything, and the number it
+produced was the first thing this feature delivered.
+
+**The contract test feature 007's build file describes was never written.** Its comment reads *"a
+contract test asserts the generated schema matches the committed JSON, so Principle III's ordering
+holds and drift fails the build."* The contracts were copied into `build/resources/test/contracts/`
+and nothing read them. That is the third instance of the pattern in H-003's table, and the most
+expensive: it is what let 106 differences accumulate unremarked.
+
+**Feature 009's check could not see feature 007's reading guide.** The guide wrote its paths with an
+ellipsis, which the check skips. Writing them out added 11 checked claims and turned G-006 from a
+thing someone had to notice into a thing the build fails on. Recorded under G-006 as well, because
+that is where someone will look.

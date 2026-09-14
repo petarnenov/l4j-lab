@@ -149,7 +149,13 @@ The one place to look for each 2026-07-28 feature:
 Everything the MCP Java SDK provides is imported; the table below is the list of things it
 does not. Each row is a 2026-07-28 delta with an open upstream issue (`research.md` R-003).
 
-**Corrected by feature 010 (finding G-006, FR-015).** Eight of the twelve rows below named files
+**Corrected by feature 010 (finding G-006, FR-015).** The paths are written out in full, and that is
+part of the repair: the abbreviated `mcp-server/.../protocol/X.java` form this table used is invisible
+to feature 009's drift check, which resolves real paths and skips anything it cannot. A table of
+nonexistent files sat beside a check designed to catch exactly that, and the check could not see it.
+Written out, every row below is now verified by `make check-specs`.
+
+ Eight of the twelve rows below named files
 that were never written: the table was filled in from the plan and never re-read against what was
 delivered. `research.md` R-014 superseded the controller and much of the package was renamed during
 implementation, and nothing carried that back here. A reading guide whose files do not exist is worse
@@ -158,18 +164,18 @@ than the table. Every path below was opened before it was written down.
 
 | Feature | Where |
 |---|---|
-| Stateless requests, per-request `_meta` | `mcp-server/.../protocol/RequestContext.java` — the per-request state — assembled by `protocol/BillingTransportContextExtractor.java` (#1011) |
-| Header-based routing and validation | `mcp-server/.../protocol/McpRequestGate.java`, with `protocol/HttpMethodGate.java` for the `405` on non-`POST` |
-| `server/discover` | `mcp-server/.../protocol/McpMethodHandler.java` (#1011) — **not a file of its own**; it is one branch of the method dispatch |
-| Cacheable list results | `mcp-server/.../protocol/McpMethodHandler.java` (#1009) — `ttlMs` and `cacheScope` are set alongside the `tools/list` branch |
-| Server-minted handles (cursors) | `mcp-server/.../protocol/CursorCodec.java` |
-| Multi Round-Trip Requests | `mcp-server/.../tools/FeeAdjustmentTool.java` + `protocol/RequestStateCodec.java`, with the `input_required` result shaped by `protocol/InputRequired.java` and `protocol/InputRequiredMapper.java` |
-| Tasks extension | `mcp-server/.../tasks/` (#1013) |
-| `resultType` on every result | `mcp-server/.../protocol/JsonRpcResponseSerializer.java` (#1011) — every result shape is written here, which is why there is no envelope type |
-| Dispatch on Micronaut, not the SDK's servlet transport | `mcp-server/.../protocol/McpMethodHandler.java` (FR-029) — **`McpController` was never written**: `research.md` R-014 replaced it with the SDK's own endpoint plus these beans. `tasks.md` T039 still records the controller, and this row is the answer to anyone who finds that name and wonders which is current. |
-| Protocol vs tool error split | **No single file.** The split is a pattern, not a class: a tool throws `protocol/ToolFailure.java` (or `InputRequired`, `TaskCreated`, `NothingApplied`), a matching `*Mapper` turns it into an `McpError`, `protocol/ToolErrorStatusFilter.java` restores HTTP 200 for tool-level outcomes, and `protocol/UnexpectedFailureMapper.java` catches everything else. Naming one of them would be arbitrary and would hide the other four. |
-| Token exchange, never forwarding | `mcp-server/.../security/TokenExchangeClient.java` |
-| Audit and trace propagation | `mcp-server/.../audit/` |
+| Stateless requests, per-request `_meta` | `mcp-server/src/main/java/dev/l4jlab/mcp/protocol/RequestContext.java` — the per-request state — assembled by `mcp-server/src/main/java/dev/l4jlab/mcp/protocol/BillingTransportContextExtractor.java` (#1011) |
+| Header-based routing and validation | `mcp-server/src/main/java/dev/l4jlab/mcp/protocol/McpRequestGate.java`, with `mcp-server/src/main/java/dev/l4jlab/mcp/protocol/HttpMethodGate.java` for the `405` on non-`POST` |
+| `server/discover` | `mcp-server/src/main/java/dev/l4jlab/mcp/protocol/McpMethodHandler.java` (#1011) — **not a file of its own**; it is one branch of the method dispatch |
+| Cacheable list results | `mcp-server/src/main/java/dev/l4jlab/mcp/protocol/McpMethodHandler.java` (#1009) — `ttlMs` and `cacheScope` are set alongside the `tools/list` branch |
+| Server-minted handles (cursors) | `mcp-server/src/main/java/dev/l4jlab/mcp/protocol/CursorCodec.java` |
+| Multi Round-Trip Requests | `mcp-server/src/main/java/dev/l4jlab/mcp/tools/FeeAdjustmentTool.java` + `mcp-server/src/main/java/dev/l4jlab/mcp/protocol/RequestStateCodec.java`, with the `input_required` result shaped by `mcp-server/src/main/java/dev/l4jlab/mcp/protocol/InputRequired.java` and `mcp-server/src/main/java/dev/l4jlab/mcp/protocol/InputRequiredMapper.java` |
+| Tasks extension | `mcp-server/src/main/java/dev/l4jlab/mcp/tasks/` (#1013) |
+| `resultType` on every result | `mcp-server/src/main/java/dev/l4jlab/mcp/protocol/JsonRpcResponseSerializer.java` (#1011) — every result shape is written here, which is why there is no envelope type |
+| Dispatch on Micronaut, not the SDK's servlet transport | `mcp-server/src/main/java/dev/l4jlab/mcp/protocol/McpMethodHandler.java` (FR-029) — **`McpController` was never written**: `research.md` R-014 replaced it with the SDK's own endpoint plus these beans. `tasks.md` T039 still records the controller, and this row is the answer to anyone who finds that name and wonders which is current. |
+| Protocol vs tool error split | **No single file.** The split is a pattern, not a class: a tool throws `mcp-server/src/main/java/dev/l4jlab/mcp/protocol/ToolFailure.java` (or `InputRequired`, `TaskCreated`, `NothingApplied`), a matching `*Mapper` turns it into an `McpError`, `mcp-server/src/main/java/dev/l4jlab/mcp/protocol/ToolErrorStatusFilter.java` restores HTTP 200 for tool-level outcomes, and `mcp-server/src/main/java/dev/l4jlab/mcp/protocol/UnexpectedFailureMapper.java` catches everything else. Naming one of them would be arbitrary and would hide the other four. |
+| Token exchange, never forwarding | `mcp-server/src/main/java/dev/l4jlab/mcp/security/TokenExchangeClient.java` |
+| Audit and trace propagation | `mcp-server/src/main/java/dev/l4jlab/mcp/audit/` |
 
 ## Troubleshooting
 

@@ -122,6 +122,19 @@ carries a reason and prints on every run; anything new fails.
 
 ## G-006: feature 007's reading guide points at classes that were never written
 
+**CLOSED by feature 010** (2026-09-15). Eight of the twelve rows named files that were never written:
+research R-014 superseded the controller and much of the protocol package was renamed during
+implementation, and nothing carried that back. Every path in the table was opened before it was
+written down; the two features with no single home — `server/discover` and the protocol-versus-tool
+error split — now say so rather than naming a file arbitrarily.
+
+**And the reason this check could not catch it.** The table wrote its paths as
+`mcp-server/.../protocol/RequestEnvelope.java`. The ellipsis form is invisible to this check, which
+resolves real paths and skips what it cannot — so a table of nonexistent files sat beside a check
+designed to catch exactly that, and the check counted zero claims from it. The paths are written out
+in full now: 11 more claims checked, and breaking one fails `make check-specs`. A check that cannot
+see a document's claims is indistinguishable from a document with none.
+
 **The largest single finding, and the most useful.** Feature 007's quickstart carries a table headed
 *"Reading the code against the spec (SC-004)"* — the one place to look for each 2026-07-28 feature.
 Of the twelve files it names, most do not exist:
