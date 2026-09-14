@@ -195,3 +195,58 @@ pair cannot both be right.
 
 **How it was found.** The live suite, on its first run. A stub would have accepted whatever shape
 this console sent, because this console would have written the stub.
+
+---
+
+## F-006: a cross-advisor search returns HTTP 500 and an internal error message
+
+**Severity**: the highest here. It is a defect, not a documentation gap, and it violates three
+things feature 007 states about itself.
+
+**Reproduction**, against a stack started with `make mcp-up`:
+
+```
+principal advisor-alpha-101, search_billing_runs { firm_id: firm-alpha, advisor_id: adv-102 }
+→ HTTP 500
+→ {"code": -32603, "message": "message must not be empty"}
+```
+
+`adv-102` is a different advisor **inside the caller's own firm**. An unknown advisor id
+(`adv-does-not-exist`) produces exactly the same answer, so this is the code path and not the
+entitlement decision.
+
+**What it should be.** The cross-*firm* refusal is handled correctly and is what the contract
+describes:
+
+| Request | Answer |
+|---|---|
+| `firm_id: firm-beta` (another firm) | HTTP 200, `isError: true` — correct |
+| `advisor_id: adv-102` (another advisor, same firm) | **HTTP 500, `-32603`** |
+| `advisor_id: adv-101` (own advisor) | HTTP 200, results — correct |
+
+**Three things it contradicts**, all of them feature 007's own:
+
+1. `contracts/mcp-protocol.md`'s error table maps a legacy 403 to *"200, tool: `isError`, no access"*.
+   This is 500.
+2. `-32603` appears nowhere in that table. Every code it lists is `-32020`, `-32021`, `-32022`,
+   `-32602`, `-32601`, `-32700`.
+3. SC-006 requires that no internal detail reach a caller. *"message must not be empty"* is a
+   validation complaint from constructing the result, not a sentence written for anyone to read.
+
+**Likely cause**, from the shape of the message: the advisor-scope refusal builds a tool error whose
+text is empty, and the SDK's `CallToolResult`/`TextContent` rejects an empty string — so the refusal
+throws on its way out and is caught by the generic handler. The fix is one sentence of refusal text
+on that path, plus the same guard the cross-firm path already has.
+
+**Why 007's own suite does not catch it.** Its acceptance scenarios cover the cross-firm case
+(US1-3, US1-4) and the *narrower view* an advisor gets when it searches without a filter (US1-1,
+US1-2). Nothing asks an advisor to filter by an advisor it may not act for — the one combination
+that reaches this path.
+
+**How it was found.** The console's live suite, while trying to assert entitlement in a way that
+would not break as the seeded data drifted. Pinned by two tests asserting the behaviour *as it is*,
+so that correcting the server fails them and the finding gets closed rather than forgotten.
+
+**In the console**, this renders as what it is: a protocol failure with code `-32603` at HTTP 500,
+next to the cross-firm refusal rendered as a tool failure at HTTP 200. Putting the two on the same
+screen is precisely what this console was built to make possible.

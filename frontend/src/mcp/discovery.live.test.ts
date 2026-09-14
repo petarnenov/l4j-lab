@@ -245,7 +245,7 @@ describe('discovery and the tool list, against the running stack', () => {
         delta_bps: 5,
         effective_date: '2026-10-01',
       },
-      start_billing_run: { firm_id: 'firm-alpha', period: '2026-09' },
+      start_billing_run: { firm_id: 'firm-alpha', executed_by_advisor_id: 'adv-101' },
     }
 
     for (const tool of list.tools) {

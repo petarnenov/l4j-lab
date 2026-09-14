@@ -2,7 +2,11 @@ import { Alert, Card, Col, Row, Space, Spin, Typography, theme } from 'antd'
 import { useCallback, useMemo, useState } from 'react'
 import { ElicitationPanel } from './components/ElicitationPanel'
 import { ExchangeLog } from './components/ExchangeLog'
+import { MalformedPanel } from './components/MalformedPanel'
+import { PageCursor, type SearchPage } from './components/PageCursor'
 import { PrincipalPicker } from './components/PrincipalPicker'
+import { TargetPicker } from './components/TargetPicker'
+import { TaskWatcher } from './components/TaskWatcher'
 import { StackOffline } from './components/StackOffline'
 import { ToolCallPanel } from './components/ToolCallPanel'
 import { ToolList } from './components/ToolList'
@@ -11,11 +15,21 @@ import { useDiscover } from './hooks/useDiscover'
 import { usePrincipalToken } from './hooks/usePrincipalToken'
 import { proxyIsDown, useReachableTargets } from './hooks/useReachableTargets'
 import { useTools } from './hooks/useTools'
+import { cancelTask, useTask } from './hooks/useTask'
+import { callMcp } from './transport'
 import { useToolCall, useToolRetry } from './hooks/useToolCall'
+import type { MalformedRequest } from './malformed'
 import type { PrincipalName } from './principals'
 import { devProxyTargets } from './targets'
 import type { Exchange, McpSession } from './transport'
-import type { CompleteResult, InputRequiredResult, JsonRpcResponse, ToolCallResult } from './wire'
+import type {
+  CompleteResult,
+  InputRequiredResult,
+  JsonRpcResponse,
+  TaskResult,
+  ToolCallResult,
+} from './wire'
+import { isTerminalTask } from './wire'
 import type { TargetId } from './targets'
 
 /**
@@ -39,7 +53,7 @@ export default function McpConsolePage() {
   const targets = devProxyTargets
 
   const [principal, setPrincipal] = useState<PrincipalName>('admin-alpha')
-  const [target] = useState<TargetId>('proxy')
+  const [target, setTarget] = useState<TargetId>('proxy')
   const [selectedTool, setSelectedTool] = useState<string | null>(null)
   const [exchanges, setExchanges] = useState<Exchange[]>([])
   // The outstanding question, and the arguments it was asked about: the server verifies its sealed
@@ -51,6 +65,12 @@ export default function McpConsolePage() {
   } | null>(null)
   const [applied, setApplied] = useState<CompleteResult | null>(null)
   const [declined, setDeclined] = useState(false)
+  const [handle, setHandle] = useState<TaskResult | null>(null)
+  const [cancelling, setCancelling] = useState(false)
+  const [cancelAcknowledged, setCancelAcknowledged] = useState(false)
+  // Pages stack rather than replace, so the absence of overlap between them is visible (SC-005).
+  const [pages, setPages] = useState<SearchPage[]>([])
+  const [searchArgs, setSearchArgs] = useState<Record<string, unknown> | null>(null)
 
   const record = useCallback((exchange: Exchange) => {
     setExchanges((previous) => [exchange, ...previous])
@@ -84,26 +104,106 @@ export default function McpConsolePage() {
   const readResult = (exchange: Exchange) =>
     (exchange.responseBody as JsonRpcResponse | null)?.result as ToolCallResult | undefined
 
+  const absorb = (
+    name: string,
+    args: Record<string, unknown>,
+    result: ToolCallResult | undefined,
+  ) => {
+    if (!result) return
+    if (result.resultType === 'input_required') {
+      setAsked({ result, toolName: name, args })
+      return
+    }
+    if (result.resultType === 'task') {
+      // FR-013: shown at once, before any poll. The handle is the whole point of this shape.
+      setHandle(result)
+      return
+    }
+    if (result.resultType === 'complete' && !result.isError) {
+      if (name === 'search_billing_runs' && result.structuredContent?.runs) {
+        const structured = result.structuredContent as unknown as {
+          runs: SearchPage['runs']
+          total_match_count: number
+          truncated: boolean
+          next_cursor?: string
+          refine_hint?: string
+        }
+        const page: SearchPage = {
+          targetId: target,
+          runs: structured.runs,
+          totalMatchCount: structured.total_match_count,
+          truncated: structured.truncated,
+          nextCursor: structured.next_cursor,
+          refineHint: structured.refine_hint,
+        }
+        setPages((previous) => (args.cursor ? [...previous, page] : [page]))
+        setSearchArgs(args)
+        return
+      }
+      setApplied(result)
+    }
+  }
+
   const onCall = (name: string, args: Record<string, unknown>) => {
     setAsked(null)
     setApplied(null)
     setDeclined(false)
+    if (name !== 'search_billing_runs') setPages([])
+    if (name === 'start_billing_run') {
+      setHandle(null)
+      setCancelAcknowledged(false)
+    }
     call.mutate(
       { name, args },
-      {
-        onSuccess: (exchange) => {
-          const result = readResult(exchange)
-          if (result?.resultType === 'input_required') {
-            setAsked({ result, toolName: name, args })
-          } else if (result?.resultType === 'complete' && !result.isError) {
-            setApplied(result)
-          }
-        },
-      },
+      { onSuccess: (exchange) => absorb(name, args, readResult(exchange)) },
     )
   }
 
+  // FR-011a. Sent through the same transport as everything else, with the one thing that is wrong
+  // applied by the catalogue's own mangle — so the request is otherwise exactly what the console
+  // would have built, and the refusal is about the named defect and nothing else.
+  const [sendingMalformed, setSendingMalformed] = useState(false)
+  const onMalformed = async (request: MalformedRequest) => {
+    if (!session) return
+    setSendingMalformed(true)
+    try {
+      await callMcp(session, {
+        method: request.method,
+        params: request.params,
+        mangle: request.mangle,
+        deliberate: true,
+      })
+    } finally {
+      setSendingMalformed(false)
+    }
+  }
+
+  const onNextPage = (cursor: string) => {
+    // FR-015: the cursor travels with the request, and nothing needs copying. The target is left
+    // free between pages, which is how the cross-replica continuation is demonstrated (US4-4).
+    const args = { ...(searchArgs ?? {}), cursor }
+    call.mutate(
+      { name: 'search_billing_runs', args },
+      { onSuccess: (exchange) => absorb('search_billing_runs', args, readResult(exchange)) },
+    )
+  }
+
+  const task = useTask(session, handle)
+  const liveTask = task.data ?? handle
   const tool = tools.data?.tools.find((candidate) => candidate.name === selectedTool) ?? null
+
+  const onCancel = async (taskId: string) => {
+    if (!session) return
+    setCancelling(true)
+    try {
+      await cancelTask(session, taskId)
+      // Acknowledged is not the same as stopped: work already in a final state keeps its status,
+      // and the server accepts the request anyway (007 FR-031).
+      setCancelAcknowledged(isTerminalTask(liveTask?.status))
+    } finally {
+      setCancelling(false)
+    }
+  }
 
   return (
     <div data-dev-only={DEV_ONLY_MARKER}>
@@ -136,6 +236,8 @@ export default function McpConsolePage() {
             onChange={setPrincipal}
             claims={credential.data?.claims ?? null}
           />
+
+          <TargetPicker targets={reachability.data ?? []} value={target} onChange={setTarget} />
 
           <section aria-labelledby="server-heading">
             <Typography.Title id="server-heading" level={2} style={{ fontSize: token.fontSizeLG }}>
@@ -216,6 +318,29 @@ export default function McpConsolePage() {
             </Col>
           </Row>
 
+          {pages.length > 0 && (
+            <section aria-labelledby="pages-heading">
+              <Typography.Title id="pages-heading" level={2} style={{ fontSize: token.fontSizeLG }}>
+                Search pages
+              </Typography.Title>
+              <PageCursor pages={pages} onNextPage={onNextPage} pending={call.isPending} />
+            </section>
+          )}
+
+          {liveTask && (
+            <section aria-labelledby="task-heading">
+              <Typography.Title id="task-heading" level={2} style={{ fontSize: token.fontSizeLG }}>
+                Long operation
+              </Typography.Title>
+              <TaskWatcher
+                task={liveTask}
+                onCancel={onCancel}
+                cancelling={cancelling}
+                cancelAcknowledged={cancelAcknowledged}
+              />
+            </section>
+          )}
+
           {(asked || applied) && (
             <section aria-labelledby="round-trip-heading">
               <Typography.Title
@@ -252,6 +377,17 @@ export default function McpConsolePage() {
               />
             </section>
           )}
+
+          <section aria-labelledby="malformed-heading">
+            <Typography.Title
+              id="malformed-heading"
+              level={2}
+              style={{ fontSize: token.fontSizeLG }}
+            >
+              Deliberate refusals
+            </Typography.Title>
+            <MalformedPanel onSend={onMalformed} pending={sendingMalformed} />
+          </section>
 
           <ExchangeLog exchanges={exchanges} />
         </Space>

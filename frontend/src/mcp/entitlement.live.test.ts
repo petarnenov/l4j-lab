@@ -10,11 +10,28 @@ import { type McpSession, callMcp } from './transport'
  * owns the data and enforces the rules, and a stub would be enforcing whatever this file asked it
  * to. Here the refusal is the system's own.
  */
-function runs(exchange: { responseBody: unknown }): Array<{ executed_by_advisor_id: string }> {
-  const body = exchange.responseBody as {
-    result: { structuredContent: { runs: Array<{ executed_by_advisor_id: string }> } }
-  }
-  return body.result.structuredContent.runs
+interface SearchResult {
+  runs: Array<{ executed_by_advisor_id: string }>
+  total_match_count: number
+}
+
+function searchResult(exchange: { responseBody: unknown }): SearchResult {
+  return (exchange.responseBody as { result: { structuredContent: SearchResult } }).result
+    .structuredContent
+}
+
+function runs(exchange: { responseBody: unknown }) {
+  return searchResult(exchange).runs
+}
+
+async function filterByAdvisor(session: McpSession, advisorId: string) {
+  return callMcp(session, {
+    method: 'tools/call',
+    params: {
+      name: 'search_billing_runs',
+      arguments: { firm_id: 'firm-alpha', advisor_id: advisorId, page_size: 5 },
+    },
+  })
 }
 
 async function search(session: McpSession, firmId: string) {
@@ -40,7 +57,11 @@ describe('identity decides what is visible', () => {
 
     expect(asAdvisor.outcome).toBe('ok')
     expect(asAdmin.outcome).toBe('ok')
-    expect(runs(asAdvisor).length).toBeLessThan(runs(asAdmin).length)
+    // Compared on the total, not on the page: a page is capped at twenty, and the seeded data
+    // grows every time the long-operation suite starts a run, so two full pages would tie.
+    expect(searchResult(asAdvisor).total_match_count).toBeLessThan(
+      searchResult(asAdmin).total_match_count,
+    )
   })
 
   it('shows an advisor only its own advisor runs', async () => {
@@ -52,11 +73,41 @@ describe('identity decides what is visible', () => {
     }
   })
 
-  it('shows a firm administrator both advisors', async () => {
-    const asAdmin = await search(admin, 'firm-alpha')
-    const advisors = new Set(runs(asAdmin).map((run) => run.executed_by_advisor_id))
+  it('lets a firm administrator reach the other advisor', async () => {
+    // Asked as a filter rather than by counting advisors on page one. The seeded data drifts as
+    // the console is used — the long-operation suite starts runs for adv-101 — so a page of twenty
+    // is no longer guaranteed to contain both. The entitlement question is not about page shape.
+    const adminSeesOther = await filterByAdvisor(admin, 'adv-102')
 
-    expect(advisors.size).toBeGreaterThan(1)
+    expect(adminSeesOther.outcome).toBe('ok')
+    expect(searchResult(adminSeesOther).total_match_count).toBeGreaterThan(0)
+  })
+
+  /**
+   * Finding F-006, pinned. An advisor asking for another advisor's runs — inside its own firm —
+   * gets HTTP 500 and JSON-RPC -32603 "message must not be empty", instead of the tool error the
+   * cross-firm path correctly returns.
+   *
+   * -32603 is not in 007's error mapping table at all, the status contradicts its rule that an
+   * entitlement refusal is a tool failure at HTTP 200, and the message is an internal validation
+   * complaint, which SC-006 says must never reach a caller.
+   *
+   * Asserted as it behaves rather than as it should, so the console's rendering is tested against
+   * reality. When the server is fixed this fails, and that is the notification.
+   */
+  it('still answers a cross-advisor search with an internal error (F-006)', async () => {
+    const refused = await filterByAdvisor(advisor, 'adv-102')
+
+    expect(refused.httpStatus).toBe(500)
+    expect(refused.outcome).toBe('protocol-error')
+    expect((refused.responseBody as { error: { code: number } }).error.code).toBe(-32603)
+  })
+
+  it('answers an unknown advisor the same way, so it is the path and not the entitlement (F-006)', async () => {
+    const unknown = await filterByAdvisor(advisor, 'adv-does-not-exist')
+
+    expect(unknown.httpStatus).toBe(500)
+    expect((unknown.responseBody as { error: { code: number } }).error.code).toBe(-32603)
   })
 
   it('refuses another firm as a tool failure, not a protocol failure', async () => {

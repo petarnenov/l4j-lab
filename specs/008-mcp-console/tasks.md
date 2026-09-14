@@ -322,18 +322,18 @@ replica than the one that began it.
 
 ### Tests for User Story 4 (write first, confirm they fail)
 
-- [ ] T049 [P] [US4] Failing test in `frontend/src/mcp/components/TaskWatcher.test.tsx`: the handle is
+- [X] T049 [P] [US4] Failing test in `frontend/src/mcp/components/TaskWatcher.test.tsx`: the handle is
   shown from the first result **before any poll**; polling uses the server's `pollIntervalMs` and no
   other number; it stops at each terminal state (FR-013, US4-1).
-- [ ] T050 [P] [US4] Failing test appended to `frontend/src/mcp/components/TaskWatcher.test.tsx`: cancellation is offered while non-terminal and
+- [X] T050 [P] [US4] Failing test appended to `frontend/src/mcp/components/TaskWatcher.test.tsx`: cancellation is offered while non-terminal and
   drives the task to `cancelled`; cancelling an already-terminal task is acknowledged and **not**
   shown as an error (FR-014, US4-2, 007 FR-031).
-- [ ] T051 [P] [US4] Failing test in `frontend/src/mcp/components/TargetPicker.test.tsx`: the proxy is
+- [X] T051 [P] [US4] Failing test in `frontend/src/mcp/components/TargetPicker.test.tsx`: the proxy is
   always offered; reachable replicas are selectable; unreachable ones are disabled with a reason
   naming `make mcp-up-topology`; all three unreachable is presented as normal and not as a fault; and
   a result obtained through the proxy says a replica answered without claiming which (FR-016, FR-017,
   US4-5, research R-011).
-- [ ] T052 [P] [US4] Failing test in `frontend/src/mcp/components/PageCursor.test.tsx`: the next page
+- [X] T052 [P] [US4] Failing test in `frontend/src/mcp/components/PageCursor.test.tsx`: the next page
   re-sends the same arguments with `cursor` filled from `next_cursor` and nothing typed by hand; pages
   stack rather than replace, so absence of overlap is visible; `total_match_count` and the server's
   `refine_hint` are shown; an expired or foreign cursor renders as the server's tool error and not as
@@ -341,17 +341,17 @@ replica than the one that began it.
 
 ### Implementation for User Story 4
 
-- [ ] T053 [P] [US4] Implement `frontend/src/mcp/hooks/useTask.ts` using TanStack Query's
+- [X] T053 [P] [US4] Implement `frontend/src/mcp/hooks/useTask.ts` using TanStack Query's
   `refetchInterval` — server state stays in the query cache and is not copied into a second store
   (stack constraints, research R-008).
-- [ ] T054 [US4] Implement `frontend/src/mcp/components/TaskWatcher.tsx` to make T049 and T050 pass,
+- [X] T054 [US4] Implement `frontend/src/mcp/components/TaskWatcher.tsx` to make T049 and T050 pass,
   recording each poll as its own `Exchange` so a poll landing on another replica is visible in the log.
-- [ ] T055 [P] [US4] Implement `frontend/src/mcp/components/TargetPicker.tsx` to make T051 pass.
-- [ ] T056 [P] [US4] Implement `frontend/src/mcp/components/PageCursor.tsx` to make T052 pass.
-- [ ] T057 [US4] Wire target selection into every call in `frontend/src/mcp/McpConsolePage.tsx` and
+- [X] T055 [P] [US4] Implement `frontend/src/mcp/components/TargetPicker.tsx` to make T051 pass.
+- [X] T056 [P] [US4] Implement `frontend/src/mcp/components/PageCursor.tsx` to make T052 pass.
+- [X] T057 [US4] Wire target selection into every call in `frontend/src/mcp/McpConsolePage.tsx` and
   record `targetId` on each `Exchange`, leaving the target free between pages so a page begun on one
   replica can be continued on another.
-- [ ] T058 [P] [US4] Live test `frontend/src/mcp/topology.live.test.ts`, **through `transport.ts` and
+- [X] T058 [P] [US4] Live test `frontend/src/mcp/topology.live.test.ts`, **through `transport.ts` and
   `targets.ts`**: start, poll and cancel a run; take page 1 from `mcp-a` and page 2 from `mcp-b` with
   `page_size: 1` and assert no overlap. The cursor must be the one the console carried, not one lifted
   out of the response by the test. Per rule 2 above, an unreachable **proxy** fails with
@@ -368,18 +368,18 @@ replica than the one that began it.
 demand, each refusal the protocol defines for a malformed request. It depends on the exchange view,
 so it follows the stories rather than preceding them.
 
-- [ ] T059 [P] Failing test in `frontend/src/mcp/malformed.test.ts` (FR-011a): each of the three builds exactly
+- [X] T059 [P] Failing test in `frontend/src/mcp/malformed.test.ts` (FR-011a): each of the three builds exactly
   the request [contracts/malformed-requests.md](./contracts/malformed-requests.md) describes, and
   **only the one named thing is wrong** — in particular the version case keeps header and body in
   agreement, or it would produce `-32020` and silently demonstrate a different case.
-- [ ] T060 [P] Failing test in `frontend/src/mcp/components/MalformedPanel.test.tsx` (FR-011a): each case
+- [X] T060 [P] Failing test in `frontend/src/mcp/components/MalformedPanel.test.tsx` (FR-011a): each case
   explains what is wrong before it is sent, is sendable in one action, marks its exchange
   `deliberate` and keeps the mark visible in the log, and shows the refusal with its code; the version
   case shows `data.supported`; and no free-form editing of headers or body exists anywhere.
-- [ ] T061 Implement `frontend/src/mcp/malformed.ts` to make T059 pass (FR-011a).
-- [ ] T062 Implement `frontend/src/mcp/components/MalformedPanel.tsx` and wire it into
+- [X] T061 Implement `frontend/src/mcp/malformed.ts` to make T059 pass (FR-011a).
+- [X] T062 Implement `frontend/src/mcp/components/MalformedPanel.tsx` and wire it into
   `frontend/src/mcp/McpConsolePage.tsx`, to make T060 pass (FR-011a, SC-003a).
-- [ ] T063 [P] Live test `frontend/src/mcp/malformed.live.test.ts`, **with each request built by
+- [X] T063 [P] Live test `frontend/src/mcp/malformed.live.test.ts`, **with each request built by
   `malformed.ts` and sent by `transport.ts`** — the point is that the console's own builders provoke
   these refusals, not that the server can produce them. Each of the three yields, from the running
   server, the HTTP status and JSON-RPC code the contract documents; the version case really carries
