@@ -138,33 +138,33 @@ failure; put it back and watch it pass.
 
 ### Tests for User Story 1 (write first, confirm they fail)
 
-- [ ] T017 [P] [US1] Failing tests in `scripts/spec-drift/claims.paths.test.mjs` for path extraction
+- [X] T017 [P] [US1] Failing tests in `scripts/spec-drift/claims.paths.test.mjs` for path extraction
   per the grammar: inline-code paths, filenames inside a fenced file tree resolved against the tree's
   root, and the exclusions — bare words, paths inside URLs, prose that merely mentions a filename
   without marking it as code (FR-006), and any path with a placeholder segment (`<name>`, `{id}`, `…`). Driven by this repository's real documents, so an extraction that stops
   matching fails here.
-- [ ] T018 [P] [US1] Failing tests in `scripts/spec-drift/verify.paths.test.mjs`: a named path that
+- [X] T018 [P] [US1] Failing tests in `scripts/spec-drift/verify.paths.test.mjs`: a named path that
   exists `holds`; one that does not is `broken` and carries its document and line (FR-001, FR-011).
-- [ ] T019 [P] [US1] Failing tests appended to `scripts/spec-drift/verify.paths.test.mjs` for the
+- [X] T019 [P] [US1] Failing tests appended to `scripts/spec-drift/verify.paths.test.mjs` for the
   other direction (FR-002): a file directly beneath a directory whose tree line carries `[complete]`,
   named by no document of that feature, is `broken`; a file beneath an unmarked directory is not.
   The case this is built from is real — feature 008 delivered
   `frontend/src/mcp/components/ExchangeLog.tsx` and its plan's tree never mentioned it — and so is the
   reason for the marker: inferring completeness from a named directory demanded that same plan account
   for `node_modules` and `package-lock.json` (research R-009).
-- [ ] T020 [P] [US1] Failing test in `scripts/spec-drift/verify.paths.test.mjs` that a feature which is
+- [X] T020 [P] [US1] Failing test in `scripts/spec-drift/verify.paths.test.mjs` that a feature which is
   **not** implemented is not held to its paths (US1-5, FR-007): a plan written before its code is supposed to name files that do not exist.
 
 ### Implementation for User Story 1
 
-- [ ] T021 [US1] Implement path extraction in `scripts/spec-drift/claims.mjs` to make T017 pass.
-- [ ] T022 [US1] Implement path verification in `scripts/spec-drift/verify.mjs` to make T018 and T020
+- [X] T021 [US1] Implement path extraction in `scripts/spec-drift/claims.mjs` to make T017 pass.
+- [X] T022 [US1] Implement path verification in `scripts/spec-drift/verify.mjs` to make T018 and T020
   pass.
-- [ ] T023 [US1] Implement marked-directory completeness in `scripts/spec-drift/verify.mjs` to make
+- [X] T023 [US1] Implement marked-directory completeness in `scripts/spec-drift/verify.mjs` to make
   T019 pass, bounded as the grammar bounds it: only `[complete]` directories are inventories, and
   because no existing feature carries the marker, FR-002 applies to nothing written before this check.
   The report must say so rather than let a reader assume wider cover.
-- [ ] T024 [US1] Register the kind in `scripts/spec-drift/check.mjs`, confirm the five acceptance
+- [X] T024 [US1] Register the kind in `scripts/spec-drift/check.mjs`, confirm the five acceptance
   scenarios by hand against the real repository, and record whatever path drift it finds in
   `scripts/spec-drift/baseline.json` with a reason each. Recording as you go means every story ends
   with an honest number rather than deferring one large reckoning to the end (C5).

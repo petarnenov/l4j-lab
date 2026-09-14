@@ -8,6 +8,8 @@
  * Contract: specs/009-spec-drift-check/contracts/claim-grammar.md.
  */
 
+import { inlineCode } from './scanner.mjs'
+
 /**
  * What this check does not attempt, declared once. `report.mjs` prints this list and must not keep
  * its own copy — a second hand-written list of the boundary would be exactly the drift this whole
@@ -42,4 +44,140 @@ export function statusClaims(feature) {
       feature: feature.id,
     },
   ]
+}
+
+const GENERATED_EARLY = /(^|\/)(node_modules|build|dist|out|\.gradle|\.cache|target|META-INF)(\/|$)/
+
+/** A path that names nothing real: an illustration with a hole in it. */
+const PLACEHOLDER = /[<>{}]|\u2026|\*/
+const EXTENSIONS = /\.(ts|tsx|mjs|js|java|kts|json|yaml|yml|md|sql|sh)$/
+
+/**
+ * What separates a path claim from something merely path-shaped.
+ *
+ * The first draft accepted anything containing a slash, and measuring it against this repository
+ * produced 278 reports of which most were noise: HTTP endpoints (`/api/catalog`, `/health/readiness`),
+ * a GitHub Action reference (`actions/setup-node`), globs (`frontend/**`), and bare filenames like
+ * `package.json` that exist half a dozen times over. A check that reports that much noise is one
+ * nobody reads, which is the failure mode research R-002 names.
+ */
+function looksLikePath(text) {
+  if (PLACEHOLDER.test(text)) return false
+  if (GENERATED_EARLY.test(text)) return false
+  if (/^[a-z]+:\/\//i.test(text)) return false
+  if (/\s/.test(text)) return false
+  // A leading slash is an HTTP path, not a repository path. Nothing in this repository is addressed
+  // from the filesystem root, and every document that writes one means a URL.
+  if (text.startsWith('/')) return false
+  // A name with no directory part is too ambiguous to hold anyone to: `package.json` exists five
+  // times over, and a document naming it is not promising which.
+  if (!text.includes('/')) return false
+  // A single-segment directory — `agent/`, `domain/`, `dist/` — is almost always a package or a
+  // build output being described, not a path being claimed. Two segments is the point at which a
+  // document is pointing somewhere rather than naming a concept.
+  if (text.endsWith('/') && text.replace(/\/$/, '').split('/').length < 2) return false
+  return EXTENSIONS.test(text) || text.endsWith('/')
+}
+
+/**
+ * Paths whose absence means nothing: build outputs and installed dependencies. A document naming
+ * `frontend/build/` is describing something generated, not promising a committed file, and failing a
+ * clean checkout for it would teach people to ignore this check.
+ */
+const GENERATED = /(^|\/)(node_modules|build|dist|out|\.gradle|\.cache|target)(\/|$)/
+
+export function isGenerated(text) {
+  return GENERATED.test(text)
+}
+
+/**
+ * A fenced file tree describes real files, so its lines are claims — unlike a markdown link inside a
+ * fence, which is literal text a reader cannot follow. Same delimiter, opposite meanings; the
+ * grammar says why.
+ *
+ * Depth comes from the position of the tree marker: these trees indent four characters per level.
+ */
+function treePaths(lines) {
+  const found = []
+  const stack = []
+  let root = null
+  for (const { line, text, inFence } of lines) {
+    if (!inFence) {
+      root = null
+      stack.length = 0
+      continue
+    }
+    const bare = text.split('#')[0].trimEnd()
+    // A blank line ends a tree section. These documents put two trees in one fence, separated by a
+    // blank line, and without this every entry after the gap is joined to the first tree's root —
+    // which is how `.github/workflows/build.gradle.kts` appeared out of nowhere.
+    if (bare.trim().length === 0) {
+      root = null
+      stack.length = 0
+      continue
+    }
+
+    const branch = /^([\s\u2502]*)[\u251c\u2514][\u2500-]{1,2}\s*(.+)$/.exec(bare)
+    if (!branch) {
+      // A line with no tree marker at all: the root of the tree, if it looks like a directory.
+      // A tree root is a structural question, not a claim: `backend/` is one segment and would fail
+      // looksLikePath, but it still roots everything indented under it. Conflating the two left a
+      // stale root in place and produced `.github/workflows/build.gradle.kts`, a path from two
+      // different parts of one tree.
+      const candidate = bare.trim()
+      if (/^[\w.@/-]+\/$/.test(candidate)) {
+        root = candidate.replace(/\/$/, '')
+        stack.length = 0
+      }
+      continue
+    }
+    const depth = Math.floor(branch[1].length / 4)
+    const name = branch[2].trim()
+    stack.length = depth
+    stack[depth] = name.replace(/\/$/, '')
+    const joined = [root, ...stack.slice(0, depth + 1)].filter(Boolean).join('/')
+    if (!looksLikePath(joined)) continue
+    found.push({ line, subject: name.endsWith('/') ? `${joined}/` : joined, lineText: text })
+  }
+  return found
+}
+
+/** Paths a document claims exist: inline code spans, and the lines of a fenced file tree. */
+export function pathClaims({ document, lines, feature }) {
+  const claims = []
+  for (const { line, text, inFence } of lines) {
+    if (inFence) continue
+    for (const span of inlineCode(text)) {
+      if (!looksLikePath(span)) continue
+      claims.push({ kind: 'path', document, line, raw: span, subject: span, feature: feature.id, lineText: text })
+    }
+  }
+  for (const entry of treePaths(lines)) {
+    claims.push({
+      kind: 'path',
+      document,
+      line: entry.line,
+      raw: entry.subject,
+      subject: entry.subject,
+      feature: feature.id,
+      lineText: entry.lineText,
+    })
+  }
+  return claims
+}
+
+/** Directory lines carrying the completeness marker, with the directory they refer to. */
+export function completeDirectories(lines) {
+  const marked = []
+  for (const entry of treePaths(lines)) {
+    if (/\[complete\]/.test(entry.lineText)) {
+      marked.push({ line: entry.line, directory: entry.subject.replace(/\/$/, ''), lineText: entry.lineText })
+    }
+  }
+  for (const { line, text, inFence } of lines) {
+    if (!inFence || !/\[complete\]/.test(text)) continue
+    const bare = text.split('#')[0].trim()
+    if (/^[\w./-]+\/$/.test(bare)) marked.push({ line, directory: bare.replace(/\/$/, ''), lineText: text })
+  }
+  return marked
 }

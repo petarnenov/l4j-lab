@@ -13,12 +13,12 @@ import { readFileSync } from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
 import { loadBaseline, matchBaseline, validateBaseline } from './baseline.mjs'
-import { NOT_CHECKED, statusClaims } from './claims.mjs'
+import { NOT_CHECKED, pathClaims, statusClaims } from './claims.mjs'
 import { exemptionOn } from './exemptions.mjs'
 import { ROOT, loadFeatures } from './features.mjs'
 import { printReport } from './report.mjs'
 import { scan } from './scanner.mjs'
-import { verifyStatus } from './verify.mjs'
+import { completenessClaims, verifyPath, verifyStatus } from './verify.mjs'
 
 const BASELINE_PATH = path.join(ROOT, 'scripts/spec-drift/baseline.json')
 
@@ -27,21 +27,29 @@ const BASELINE_PATH = path.join(ROOT, 'scripts/spec-drift/baseline.json')
  * `status` kind is different and runs per feature rather than per document, because it is about the
  * feature's own declaration rather than about anything in the text.
  */
-const DOCUMENT_KINDS = []
+const DOCUMENT_KINDS = [{ name: 'path', extract: pathClaims, verify: verifyPath }]
 
 function read(relative) {
   return readFileSync(path.join(ROOT, relative), 'utf8')
 }
 
 function claimsFor(feature) {
+  const scanned = feature.documents.map((document) => ({ document, lines: scan(read(document)) }))
   const claims = []
-  for (const document of feature.documents) {
-    const lines = scan(read(document))
+  for (const { document, lines } of scanned) {
     for (const kind of DOCUMENT_KINDS) {
       claims.push(...kind.extract({ document, lines, feature }))
     }
   }
-  return claims
+
+  // Completeness needs every path the feature mentions anywhere, not just the one document: a file
+  // named in a quickstart is accounted for even when a plan's tree omits it.
+  const named = new Set(claims.filter((c) => c.kind === 'path').map((c) => c.subject))
+  const missing = []
+  for (const { document, lines } of scanned) {
+    missing.push(...completenessClaims({ document, lines, feature, named }))
+  }
+  return { claims, missing }
 }
 
 export function run() {
@@ -72,9 +80,16 @@ export function run() {
   // Everything else applies only once a feature declares itself implemented. Before that its plan is
   // supposed to describe files that do not exist yet — that is what writing one first means.
   for (const feature of features.filter((f) => f.implemented)) {
-    for (const claim of claimsFor(feature)) {
+    const { claims, missing } = claimsFor(feature)
+    for (const claim of claims) {
       checked[claim.kind] += 1
       record(claim, verifyClaim(claim))
+    }
+    // Already carrying their own `why`: these are not claims that failed verification but files the
+    // documents never accounted for.
+    for (const claim of missing) {
+      checked[claim.kind] += 1
+      record(claim, { verdict: 'broken', why: claim.why })
     }
   }
 
@@ -129,8 +144,10 @@ export function run() {
   }
 }
 
-function verifyClaim() {
-  throw new Error('no document claim kind is registered yet')
+function verifyClaim(claim) {
+  const kind = DOCUMENT_KINDS.find((k) => k.name === claim.kind)
+  if (!kind) throw new Error(`no verifier registered for claim kind "${claim.kind}"`)
+  return kind.verify(claim)
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
