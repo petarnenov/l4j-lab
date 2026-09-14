@@ -172,7 +172,7 @@ reset: ## Stop the stack and DELETE stored runs and pulled models (asks first)
 
 ##@ Verification
 
-.PHONY: check test test-backend test-frontend test-console test-live check-api
+.PHONY: check test test-backend test-frontend test-console test-live check-api check-specs
 
 # check, test, and check-api reach :frontend:* tasks, so Node.js is checked up front rather than after the
 # backend suite has run for minutes (FR-015).
@@ -199,6 +199,10 @@ test-console: ## Run the MCP console's live tests against the running MCP stack 
 test-live: ## Run the live model tests against the configured provider (skips when none)
 	@$(SCRIPTS)/require.sh java
 	$(GRADLEW) :backend:liveTest
+
+check-specs: ## Check that the specification documents still describe the code (feature 009)
+	@$(SCRIPTS)/require.sh java node
+	$(GRADLEW) specDrift
 
 check-api: ## Check that the frontend's API types match the backend
 	@$(SCRIPTS)/require.sh java node npm
