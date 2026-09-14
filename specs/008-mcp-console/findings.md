@@ -153,3 +153,45 @@ which is worth more than either disagreeing with the code.
 
 **Not a problem for this console**, which renders `structuredContent` rather than validating it —
 and which is why it took a client that compares the two to notice.
+
+---
+
+## F-005: the confirmation retry's shape is under-specified, and a contract-following client is silently understood as "no"
+
+**Severity**: high. A client built from the contract alone sends a confirmation the server reads as a
+refusal, and nothing tells it so.
+
+**What the contract says.** `007/contracts/mcp-protocol.md`: *"The retry carries
+`params.inputResponses.confirm_adjustment` and echoes `params.requestState`, with a different
+JSON-RPC `id`."* The elicitation it answers declares
+`requestedSchema: { properties: { confirmed: { type: "boolean" } }, required: ["confirmed"] }`.
+
+Read together, those say: send `{ "confirm_adjustment": { "confirmed": true } }`.
+
+**What the server requires.** `FeeAdjustmentTool.confirmed()` reads
+`inputResponses.confirm_adjustment.content.confirmed` — the MCP `ElicitResult` envelope,
+`{ action, content }`, with the requested schema's fields inside `content`:
+
+```json
+{ "confirm_adjustment": { "action": "accept", "content": { "confirmed": true } } }
+```
+
+The server is right and the contract is incomplete: `ElicitResult` is the protocol's own shape. But
+the method comment is *"True only for an explicit `confirmed: true`; anything else is a refusal"*,
+and a refusal is exactly what the contract-shaped payload produces — **a successful-looking response
+saying the change was not applied, for a client that asked for it to be applied.** There is no
+diagnostic. This console was built from the contract and hit it on the first live run.
+
+**A second divergence, in the same area.** The contract says *"A `confirmed: false` response is
+answered with a tool result saying the change was not applied — **not an error**."* The server
+returns that result with `isError: true`. The console therefore shows a declined change as "nothing
+was applied" while its exchange log classifies it, correctly, as the tool failure the server said it
+was — and names this divergence rather than tidying either half away.
+
+**What a fix would look like** (not done here): state the `ElicitResult` envelope in
+`mcp-protocol.md`'s retry example, and drop `isError` from the declined result — or amend the
+contract to say the decline *is* an error, if that is the intent. Either resolves it; the current
+pair cannot both be right.
+
+**How it was found.** The live suite, on its first run. A stub would have accepted whatever shape
+this console sent, because this console would have written the stub.

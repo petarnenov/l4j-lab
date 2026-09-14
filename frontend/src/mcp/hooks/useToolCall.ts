@@ -1,5 +1,11 @@
 import { useMutation } from '@tanstack/react-query'
-import { type Exchange, type McpSession, callMcp } from '../transport'
+import {
+  type Exchange,
+  type McpSession,
+  type RetryOptions,
+  callMcp,
+  retryParams,
+} from '../transport'
 
 /**
  * Calling a tool.
@@ -12,5 +18,19 @@ export function useToolCall(session: McpSession | null) {
   return useMutation<Exchange, Error, { name: string; args: Record<string, unknown> }>({
     mutationFn: ({ name, args }) =>
       callMcp(session!, { method: 'tools/call', params: { name, arguments: args } }),
+  })
+}
+
+/**
+ * The second call of a Multi Round-Trip Request (FR-012).
+ *
+ * A separate mutation rather than a flag on the first, because they are genuinely different
+ * requests: this one repeats the arguments, carries the answer, echoes the state the server issued,
+ * and takes a new JSON-RPC id. Folding them together would hide the very thing US3 exists to show.
+ */
+export function useToolRetry(session: McpSession | null) {
+  return useMutation<Exchange, Error, RetryOptions>({
+    mutationFn: (options) =>
+      callMcp(session!, { method: 'tools/call', params: retryParams(options) }),
   })
 }

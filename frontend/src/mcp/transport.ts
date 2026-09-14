@@ -102,6 +102,54 @@ export function buildRequest({ method, params = {}, id }: BuildOptions): BuiltRe
   return { headers, body }
 }
 
+export interface RetryOptions {
+  name: string
+  args: Record<string, unknown>
+  /** The key the server asked under, e.g. `confirm_adjustment`. Not chosen by the console. */
+  key: string
+  confirmed: boolean
+  /** Opaque. Echoed exactly as received; never constructed, decoded, or edited. */
+  requestState: string
+}
+
+/**
+ * The second call of the Multi Round-Trip Request (FR-012).
+ *
+ * It repeats the arguments because the server verifies its sealed digest against them, echoes
+ * `requestState` untouched, and takes a **new** JSON-RPC id — 007's contract requires the id to
+ * differ, and the exchange log shows both so that difference is visible rather than asserted.
+ */
+export function retryParams({
+  name,
+  args,
+  key,
+  confirmed,
+  requestState,
+}: RetryOptions): Record<string, unknown> {
+  return {
+    name,
+    arguments: args,
+    /**
+     * The MCP `ElicitResult` envelope: `{ action, content }`, with the requested schema's fields
+     * inside `content`. Not `{ confirmed }` directly, which is what 007's protocol contract reads
+     * as if it said — it names `params.inputResponses.confirm_adjustment` and stops there, and the
+     * elicitation's `requestedSchema` is `{ confirmed: boolean }`, so the flat shape looks right.
+     *
+     * The server reads `content.confirmed` and treats anything else as a refusal, so a client
+     * following the contract alone sends a confirmation that is silently understood as "no".
+     * Recorded as finding F-005; caught by the live suite, invisible to any stub.
+     */
+    inputResponses: {
+      [key]: { action: confirmed ? 'accept' : 'decline', content: { confirmed } },
+    },
+    requestState,
+  }
+}
+
+export function buildRetryRequest(options: RetryOptions): BuiltRequest {
+  return buildRequest({ method: 'tools/call', params: retryParams(options) })
+}
+
 /**
  * The classification FR-011 requires, derived from the response rather than from the HTTP status
  * alone. The status is not enough on its own: 007's error table puts -32602 for an unknown tool

@@ -1,5 +1,6 @@
 import { Alert, Card, Col, Row, Space, Spin, Typography, theme } from 'antd'
 import { useCallback, useMemo, useState } from 'react'
+import { ElicitationPanel } from './components/ElicitationPanel'
 import { ExchangeLog } from './components/ExchangeLog'
 import { PrincipalPicker } from './components/PrincipalPicker'
 import { StackOffline } from './components/StackOffline'
@@ -10,10 +11,11 @@ import { useDiscover } from './hooks/useDiscover'
 import { usePrincipalToken } from './hooks/usePrincipalToken'
 import { proxyIsDown, useReachableTargets } from './hooks/useReachableTargets'
 import { useTools } from './hooks/useTools'
-import { useToolCall } from './hooks/useToolCall'
+import { useToolCall, useToolRetry } from './hooks/useToolCall'
 import type { PrincipalName } from './principals'
 import { devProxyTargets } from './targets'
 import type { Exchange, McpSession } from './transport'
+import type { CompleteResult, InputRequiredResult, JsonRpcResponse, ToolCallResult } from './wire'
 import type { TargetId } from './targets'
 
 /**
@@ -40,6 +42,15 @@ export default function McpConsolePage() {
   const [target] = useState<TargetId>('proxy')
   const [selectedTool, setSelectedTool] = useState<string | null>(null)
   const [exchanges, setExchanges] = useState<Exchange[]>([])
+  // The outstanding question, and the arguments it was asked about: the server verifies its sealed
+  // digest against them, so the retry must repeat exactly what the first call sent.
+  const [asked, setAsked] = useState<{
+    result: InputRequiredResult
+    toolName: string
+    args: Record<string, unknown>
+  } | null>(null)
+  const [applied, setApplied] = useState<CompleteResult | null>(null)
+  const [declined, setDeclined] = useState(false)
 
   const record = useCallback((exchange: Exchange) => {
     setExchanges((previous) => [exchange, ...previous])
@@ -66,6 +77,31 @@ export default function McpConsolePage() {
   const discover = useDiscover(session)
   const tools = useTools(session)
   const call = useToolCall(session)
+  const retry = useToolRetry(session)
+
+  // A union, not an intersection: the three result shapes are discriminated by resultType and a
+  // value is exactly one of them.
+  const readResult = (exchange: Exchange) =>
+    (exchange.responseBody as JsonRpcResponse | null)?.result as ToolCallResult | undefined
+
+  const onCall = (name: string, args: Record<string, unknown>) => {
+    setAsked(null)
+    setApplied(null)
+    setDeclined(false)
+    call.mutate(
+      { name, args },
+      {
+        onSuccess: (exchange) => {
+          const result = readResult(exchange)
+          if (result?.resultType === 'input_required') {
+            setAsked({ result, toolName: name, args })
+          } else if (result?.resultType === 'complete' && !result.isError) {
+            setApplied(result)
+          }
+        },
+      },
+    )
+  }
 
   const tool = tools.data?.tools.find((candidate) => candidate.name === selectedTool) ?? null
 
@@ -168,7 +204,7 @@ export default function McpConsolePage() {
                     <ToolCallPanel
                       tool={tool}
                       pending={call.isPending}
-                      onCall={(args) => call.mutate({ name: tool.name, args })}
+                      onCall={(args) => onCall(tool.name, args)}
                     />
                   </Card>
                 ) : (
@@ -179,6 +215,43 @@ export default function McpConsolePage() {
               </section>
             </Col>
           </Row>
+
+          {(asked || applied) && (
+            <section aria-labelledby="round-trip-heading">
+              <Typography.Title
+                id="round-trip-heading"
+                level={2}
+                style={{ fontSize: token.fontSizeLG }}
+              >
+                {asked ? 'The server asked before acting' : 'Applied'}
+              </Typography.Title>
+              <ElicitationPanel
+                asked={asked?.result ?? null}
+                applied={applied}
+                declined={declined}
+                pending={retry.isPending}
+                onAnswer={(answer) =>
+                  retry.mutate(
+                    {
+                      name: asked!.toolName,
+                      args: asked!.args,
+                      key: answer.key,
+                      confirmed: answer.confirmed,
+                      requestState: answer.requestState,
+                    },
+                    {
+                      onSuccess: (exchange) => {
+                        const result = readResult(exchange)
+                        setAsked(null)
+                        setDeclined(!answer.confirmed)
+                        if (result?.resultType === 'complete') setApplied(result)
+                      },
+                    },
+                  )
+                }
+              />
+            </section>
+          )}
 
           <ExchangeLog exchanges={exchanges} />
         </Space>

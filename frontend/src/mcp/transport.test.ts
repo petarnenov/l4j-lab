@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest'
-import { PROTOCOL_VERSION, buildRequest, nextJsonRpcId, redactAuthorization } from './transport'
+import {
+  PROTOCOL_VERSION,
+  buildRequest,
+  buildRetryRequest,
+  nextJsonRpcId,
+  redactAuthorization,
+} from './transport'
 
 /**
  * T008: the envelope the console puts on the wire.
@@ -121,5 +127,83 @@ describe('the bearer token', () => {
     expect(redacted['Mcp-Method']).toBe('tools/call')
     expect(redacted['Mcp-Name']).toBe('search_billing_runs')
     expect(redacted['MCP-Protocol-Version']).toBe(PROTOCOL_VERSION)
+  })
+})
+
+/**
+ * T042 (FR-012). The confirmation retry: the console echoes the state the server issued, untouched,
+ * and uses a new JSON-RPC id. It never constructs, decodes, or edits that state — the tool
+ * descriptions say "do not construct or modify it", and a console demonstrating the protocol while
+ * doing the opposite would be teaching the wrong lesson.
+ */
+describe('the confirmation retry', () => {
+  it('carries the answer under the key the server asked it under', () => {
+    const { body } = buildRetryRequest({
+      name: 'post_fee_adjustment',
+      args: { operation_id: 'op-12345678' },
+      key: 'confirm_adjustment',
+      confirmed: true,
+      requestState: 'opaque-sealed-payload',
+    })
+
+    // The MCP ElicitResult envelope, not a bare { confirmed }: the server reads content.confirmed
+    // and treats anything else as a refusal (finding F-005).
+    expect(body.params.inputResponses).toEqual({
+      confirm_adjustment: { action: 'accept', content: { confirmed: true } },
+    })
+  })
+
+  it('echoes the request state byte-for-byte', () => {
+    const state = 'AEAD:v1:abc.def-ghi_jkl=='
+    const { body } = buildRetryRequest({
+      name: 'post_fee_adjustment',
+      args: {},
+      key: 'confirm_adjustment',
+      confirmed: true,
+      requestState: state,
+    })
+
+    expect(body.params.requestState).toBe(state)
+  })
+
+  it('repeats the arguments, because the server verifies the digest against them', () => {
+    const args = { operation_id: 'op-12345678', account_id: 'acc-0101', delta_bps: 15 }
+    const { body } = buildRetryRequest({
+      name: 'post_fee_adjustment',
+      args,
+      key: 'confirm_adjustment',
+      confirmed: true,
+      requestState: 'state',
+    })
+
+    expect(body.params.arguments).toEqual(args)
+  })
+
+  it('uses a different id from any call before it', () => {
+    const first = buildRequest({ method: 'tools/call', params: { name: 'post_fee_adjustment' } })
+    const retry = buildRetryRequest({
+      name: 'post_fee_adjustment',
+      args: {},
+      key: 'confirm_adjustment',
+      confirmed: true,
+      requestState: 'state',
+    })
+
+    expect(retry.body.id).not.toBe(first.body.id)
+  })
+
+  it('carries a declined answer the same way, because declining is an answer', () => {
+    const { body } = buildRetryRequest({
+      name: 'post_fee_adjustment',
+      args: {},
+      key: 'confirm_adjustment',
+      confirmed: false,
+      requestState: 'state',
+    })
+
+    expect(body.params.inputResponses.confirm_adjustment).toEqual({
+      action: 'decline',
+      content: { confirmed: false },
+    })
   })
 })

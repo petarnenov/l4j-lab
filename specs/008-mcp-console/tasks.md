@@ -277,30 +277,30 @@ and compare; then search `firm-beta` and read the refusal.
 
 ### Tests for User Story 3 (write first, confirm they fail)
 
-- [ ] T041 [P] [US3] Failing test in `frontend/src/mcp/components/ElicitationPanel.test.tsx`: an
+- [X] T041 [P] [US3] Failing test in `frontend/src/mcp/components/ElicitationPanel.test.tsx`: an
   `input_required` result shows the server's `message` **verbatim**, states that nothing has been
   applied, and renders no result panel (FR-012, US3-1).
-- [ ] T042 [P] [US3] Failing test in `frontend/src/mcp/transport.test.ts` for the retry: it carries
+- [X] T042 [P] [US3] Failing test in `frontend/src/mcp/transport.test.ts` for the retry: it carries
   `params.inputResponses.<key>`, echoes `params.requestState` byte-for-byte, and uses a **different**
   JSON-RPC id — and the console never constructs, decodes, or edits `requestState`
   ([contracts/mcp-client.md](./contracts/mcp-client.md)).
-- [ ] T043 [P] [US3] Failing test appended to
+- [X] T043 [P] [US3] Failing test appended to
   `frontend/src/mcp/components/ElicitationPanel.test.tsx`: an applied change shows
   `legacy_reference_id` (US3-2) and the fee before, computed as `new_fee_bps - delta_bps`, against
   after (FR-012a, research R-007); `replayed: true` shows the original result and says nothing
   happened a second time (US3-3); `confirmed: false` shows that nothing was applied and is **not**
   rendered as an error (US3-4).
-- [ ] T044 [P] [US3] Failing test appended to `frontend/src/mcp/components/ElicitationPanel.test.tsx`: no undo control exists anywhere in the panel, and
+- [X] T044 [P] [US3] Failing test appended to `frontend/src/mcp/components/ElicitationPanel.test.tsx`: no undo control exists anywhere in the panel, and
   `make mcp-reset` is named with the one-sentence reason from FR-012b (US3-6).
 
 ### Implementation for User Story 3
 
-- [ ] T045 [US3] Implement `frontend/src/mcp/components/ElicitationPanel.tsx` to make T041, T043 and
+- [X] T045 [US3] Implement `frontend/src/mcp/components/ElicitationPanel.tsx` to make T041, T043 and
   T044 pass, reusing `schemaForm.tsx` for the elicitation's `requestedSchema`.
-- [ ] T046 [US3] Add the `input_required` branch and the retry path to
+- [X] T046 [US3] Add the `input_required` branch and the retry path to
   `frontend/src/mcp/hooks/useToolCall.ts` and `frontend/src/mcp/transport.ts`, to make T042 pass.
-- [ ] T047 [US3] Wire the panel into `frontend/src/mcp/McpConsolePage.tsx`.
-- [ ] T048 [P] [US3] Live test `frontend/src/mcp/confirmation.live.test.ts`, **through `transport.ts`
+- [X] T047 [US3] Wire the panel into `frontend/src/mcp/McpConsolePage.tsx`.
+- [X] T048 [P] [US3] Live test `frontend/src/mcp/confirmation.live.test.ts`, **through `transport.ts`
   including its retry path**: the three-call sequence against the running stack — first call applies
   nothing, the confirmed call applies exactly once, a third with the same `operation_id` replays.
   Assert that the retry the console builds carries `requestState` byte-for-byte and a different
