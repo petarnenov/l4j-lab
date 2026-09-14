@@ -1,0 +1,56 @@
+# The MCP billing server and the two services around it (feature 007).
+#
+# Their deterministic suites had never run in continuous integration. `backend.yml` runs
+# `:backend:check`; `contract.yml` runs the frontend's API checks; nothing named mcp-server,
+# legacy-billing-api or token-issuer — three modules and an entire feature's tests, never once
+# executed here (feature 010, finding H-003).
+#
+# No containers, no credential, no network: these are the deterministic halves of feature 007's split,
+# and `topologyTest` — the half that needs a running stack — stays out of CI deliberately, as
+# `make mcp-verify` does.
+name: mcp
+
+on:
+  push:
+    paths:
+      - mcp-server/**
+      - legacy-billing-api/**
+      - token-issuer/**
+      - specs/007-mcp-billing-server/contracts/**
+      - settings.gradle.kts
+      - gradle/**
+      - gradlew
+      - gradlew.bat
+      - .github/workflows/mcp.yml
+  pull_request:
+    paths:
+      - mcp-server/**
+      - legacy-billing-api/**
+      - token-issuer/**
+      - specs/007-mcp-billing-server/contracts/**
+      - settings.gradle.kts
+      - gradle/**
+      - gradlew
+      - gradlew.bat
+      - .github/workflows/mcp.yml
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 25
+
+      - uses: gradle/actions/setup-gradle@v6
+
+      # The committed tool contracts are on this path, which is why they trigger the workflow: a
+      # change to one of them must be checked against what the server declares.
+      - name: Deterministic suites
+        run: ./gradlew :mcp-server:test :legacy-billing-api:test :token-issuer:test

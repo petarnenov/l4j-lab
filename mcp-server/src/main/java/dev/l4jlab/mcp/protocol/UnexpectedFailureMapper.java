@@ -45,10 +45,18 @@ public class UnexpectedFailureMapper implements McpErrorExceptionMapper<RuntimeE
 
     @Override
     public boolean canMap(Class<? extends Throwable> clazz) {
-        // ToolFailure has its own mapper and keeps its actionable sentence. This is only for what
-        // nobody wrote a message for.
+        // Only what nobody wrote a message for.
+        //
+        // The first version of this returned true for every RuntimeException except ToolFailure, and
+        // that was badly wrong: McpError extends RuntimeException, and the SDK raises it for things
+        // that are not failures at all — an elicitation the tool is asking for, a task that does not
+        // exist, a request state that did not validate. Intercepting those replaced fifteen carefully
+        // written sentences with one generic one, and turned a green suite red.
+        //
+        // The lesson is worth the comment: a catch-all at a boundary catches the control flow too.
         return RuntimeException.class.isAssignableFrom(clazz)
-            && !ToolFailure.class.isAssignableFrom(clazz);
+            && !ToolFailure.class.isAssignableFrom(clazz)
+            && !McpError.class.isAssignableFrom(clazz);
     }
 
     @Override

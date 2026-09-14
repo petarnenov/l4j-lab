@@ -43,25 +43,45 @@ written from a definition.
 
 ---
 
-## H-003: feature 007's test suite is failing on `main`, and has never run in CI
+## H-003: three modules' tests had never run in CI — and the first half of this finding was wrong
 
-Found while running `:mcp-server:test` for the first time in this feature. On a pristine checkout of
-`main`, four tests fail:
+**Recorded, then corrected within the hour.** Both halves are kept, because the correction is the more
+useful of the two.
 
-```
-AuditTest > anExecutedAdjustmentNamesWhoConfirmedItAndWhatTheRecordCalledIt
-RequestEnvelopeTest > capabilitiesDeclaredOnOneRequestDoNotCarryToTheNext
-TasksTest > cancellingAFinishedRunIsAcknowledgedAndChangesNothing
-TasksTest > pollingReportsProgressAndThenTheFinalResult
-```
+### What was claimed, and was false
 
-**No CI workflow runs them.** `backend.yml` runs `:backend:check`; `contract.yml` runs
-`:frontend:checkApi :frontend:checkVersion`. Nothing names `mcp-server`, `legacy-billing-api` or
-`token-issuer` — three modules, an entire feature's deterministic suite, never once executed by
-continuous integration.
+That four of feature 007's tests fail on a pristine `main`. They do not. `:mcp-server:test` was green
+at the commit before this feature, verified by running it in a detached worktree at that commit.
 
-**This is the third instance of one shape in this repository**, and the pattern is now worth stating
-as a rule rather than as three coincidences:
+**The failures were mine.** `UnexpectedFailureMapper` — added by this feature for FR-002 — declared
+`canMap` true for every `RuntimeException` except `ToolFailure`. But `McpError extends
+RuntimeException`, and the SDK raises it for things that are not failures at all: an elicitation the
+tool is asking for, a task that does not exist, a request state that did not validate. The mapper
+intercepted fifteen carefully written sentences and replaced them all with one generic one.
+
+**How the wrong conclusion survived a check.** The check was `git stash`, and the mapper was a new
+**untracked** file, which `git stash` leaves in place. The tests failed identically before and after,
+so they read as pre-existing. `git stash -u`, or a worktree at the parent commit, would have said
+otherwise in ten seconds.
+
+The lesson is not about git. It is that **"I verified it" is only as good as what the verification
+actually removed** — the same shape as everything else in this file, arriving from the inside this
+time.
+
+*A catch-all at a boundary catches the control flow too.* `canMap` now excludes `McpError`, and says
+why in place.
+
+### What was claimed, and is true
+
+**No CI workflow runs any of the three modules.** `backend.yml` runs `:backend:check`; `contract.yml`
+runs the frontend's API checks; nothing names `mcp-server`, `legacy-billing-api` or `token-issuer`.
+Feature 007's entire deterministic suite — the one that was green, and that this feature briefly broke
+without anything noticing — had never been executed by continuous integration.
+
+**Fixed** by `.github/workflows/mcp.yml`. Had it existed, the regression above would have been caught
+by a machine instead of by a developer looking for something else.
+
+**This is still the third instance of one shape**, and the correction does not soften it:
 
 | | What was silently unexamined | How it looked |
 |---|---|---|
@@ -69,14 +89,7 @@ as a rule rather than as three coincidences:
 | 009 G-007 | the drift check itself | green, because nothing invoked it |
 | **010 H-003** | three modules' entire test suites | green, because nothing invoked them |
 
-**A check that is not run and a check that finds nothing are indistinguishable from outside.** Every
-time this repository has looked, it has found another. The only defence that has worked is asking what
-a pass actually covered — which is why feature 009 prints its claim counts, and why this finding exists
-at all.
-
-**Not fixed here.** Adding the three modules to CI is a workflow change, not one of the seven findings,
-and the four failures need diagnosing before they are made visible — a CI job that starts red teaches
-people to ignore it. Both belong in their own change, and this is the record that it is needed.
+A check that is not run and a check that finds nothing are indistinguishable from outside.
 
 ---
 
