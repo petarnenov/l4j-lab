@@ -221,6 +221,48 @@ or 5432, which `make dev` and `compose.yaml` already use: all three setups are m
 Details in [`mcp-server/README.md`](mcp-server/README.md); specification and research in
 [`specs/007-mcp-billing-server/`](specs/007-mcp-billing-server/).
 
+## MCP console (feature 008)
+
+A page in the development frontend for driving that server by hand and watching the protocol while it
+happens: the five tools with their declared behaviours, argument fields built from each tool's
+declared input shape, the exact JSON-RPC that travelled beside the readable result, the confirmation
+round trip, the handle-and-poll task, and three prepared malformed requests that produce a refusal in
+one action.
+
+```bash
+make mcp-up-topology   # the MCP stack, with each replica published as well
+make dev-frontend      # then open http://localhost:5173 and choose "MCP console"
+```
+
+`make mcp-up` is enough for most of it; the overlay is what lets a call be aimed at `mcp-a`, `mcp-b`
+or `mcp-c` by name, which is how the cross-replica properties are demonstrated. Without it the
+console offers the proxy alone and says why.
+
+**Development only, and structurally so.** The console is imported behind `import.meta.env.DEV`, so
+`vite build` eliminates it; `npm run check:dev-only` builds for production and fails if it survives,
+and that check carries a self-test proving it can fail. The token issuer it depends on returns `404`
+outside development anyway, so a packaged console would have nothing to authenticate with.
+
+The browser never addresses the MCP stack: the Vite dev server forwards `/mcp-dev/{proxy,a,b,c}` to
+the ports Compose publishes, reading the same variables with the same defaults. That keeps the
+request same-origin — no CORS change to feature 007 — and keeps the two Compose networks apart.
+
+```bash
+make test-console      # the live suite, against a running stack
+```
+
+Two suites, split by task: `make test-frontend` runs with no network and no credential, and
+`make test-console` exercises the console against the real system. It fails with an instruction
+naming `make mcp-up` rather than an unexplained error when the stack is absent.
+
+**The live suite found six things about feature 007** that the deterministic one structurally could
+not — a `tools/list` that drops eighteen schema keywords it claims to serve verbatim, a confirmation
+retry whose documented shape the server reads as a refusal, and an entitlement path that answers
+HTTP 500. They are recorded, not fixed: that server is out of scope for this feature. See
+[`specs/008-mcp-console/findings.md`](specs/008-mcp-console/findings.md).
+
+Specification and research in [`specs/008-mcp-console/`](specs/008-mcp-console/).
+
 ### Configuration
 
 Every setting is an environment variable with a documented default.
@@ -237,6 +279,7 @@ Every setting is an environment variable with a documented default.
 | `MCP_TOOLS_TTL_MS` | `300000` | `ttlMs` on `tools/list` and `server/discover` |
 | `LEGACY_RUN_DURATION_MS` | unset | Unset means a random 30–90s, which is what the requirement specifies. `make mcp-verify` sets it low so the acceptance suite does not wait a run out |
 | `DATASOURCE_URL`, `DATASOURCE_USER`, `DATASOURCE_PASSWORD` | as `compose.yaml` | Reused rather than renamed |
+| `MCP_REPLICA_A_PORT`, `MCP_REPLICA_B_PORT`, `MCP_REPLICA_C_PORT` | `8881`, `8882`, `8883` | Published only by `make mcp-up-topology`. The console and the acceptance suite read the same names |
 
 The two keys are the only settings that must match across replicas, and both fail at startup outside
 development rather than at first use.

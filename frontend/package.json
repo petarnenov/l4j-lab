@@ -11,8 +11,10 @@
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "test": "vitest run",
+    "test:mcp": "vitest run --config vitest.mcp.config.ts",
     "test:watch": "vitest",
     "lint": "eslint .",
+    "check:dev-only": "node scripts/check-dev-only.mjs",
     "format": "prettier --write .",
     "generate:api": "node scripts/api-contract.mjs generate",
     "check:api": "node scripts/api-contract.mjs check"
