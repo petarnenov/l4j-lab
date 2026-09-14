@@ -13,12 +13,26 @@ import { readFileSync } from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
 import { loadBaseline, matchBaseline, validateBaseline } from './baseline.mjs'
-import { NOT_CHECKED, pathClaims, statusClaims } from './claims.mjs'
+import {
+  NOT_CHECKED,
+  commandClaims,
+  pathClaims,
+  referenceClaims,
+  requirementClaims,
+  statusClaims,
+} from './claims.mjs'
 import { exemptionOn } from './exemptions.mjs'
 import { ROOT, loadFeatures } from './features.mjs'
 import { printReport } from './report.mjs'
 import { scan } from './scanner.mjs'
-import { completenessClaims, verifyPath, verifyStatus } from './verify.mjs'
+import {
+  completenessClaims,
+  verifyCommand,
+  verifyPath,
+  verifyReference,
+  verifyRequirement,
+  verifyStatus,
+} from './verify.mjs'
 
 const BASELINE_PATH = path.join(ROOT, 'scripts/spec-drift/baseline.json')
 
@@ -27,7 +41,12 @@ const BASELINE_PATH = path.join(ROOT, 'scripts/spec-drift/baseline.json')
  * `status` kind is different and runs per feature rather than per document, because it is about the
  * feature's own declaration rather than about anything in the text.
  */
-const DOCUMENT_KINDS = [{ name: 'path', extract: pathClaims, verify: verifyPath }]
+const DOCUMENT_KINDS = [
+  { name: 'path', extract: pathClaims, verify: verifyPath },
+  { name: 'command', extract: commandClaims, verify: verifyCommand },
+  { name: 'requirement', extract: requirementClaims, verify: verifyRequirement },
+  { name: 'reference', extract: referenceClaims, verify: verifyReference },
+]
 
 function read(relative) {
   return readFileSync(path.join(ROOT, relative), 'utf8')
@@ -81,9 +100,15 @@ export function run() {
   // supposed to describe files that do not exist yet — that is what writing one first means.
   for (const feature of features.filter((f) => f.implemented)) {
     const { claims, missing } = claimsFor(feature)
+    let tasksText = null
+    try {
+      tasksText = read(`${feature.directory}/tasks.md`)
+    } catch {
+      tasksText = null
+    }
     for (const claim of claims) {
       checked[claim.kind] += 1
-      record(claim, verifyClaim(claim))
+      record(claim, verifyClaim(claim, { tasksText }))
     }
     // Already carrying their own `why`: these are not claims that failed verification but files the
     // documents never accounted for.
@@ -144,10 +169,10 @@ export function run() {
   }
 }
 
-function verifyClaim(claim) {
+function verifyClaim(claim, context) {
   const kind = DOCUMENT_KINDS.find((k) => k.name === claim.kind)
   if (!kind) throw new Error(`no verifier registered for claim kind "${claim.kind}"`)
-  return kind.verify(claim)
+  return kind.verify(claim, context)
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {

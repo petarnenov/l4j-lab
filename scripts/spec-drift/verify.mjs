@@ -1,4 +1,4 @@
-import { existsSync, readdirSync, statSync } from 'node:fs'
+import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs'
 import path from 'node:path'
 import { completeDirectories } from './claims.mjs'
 import { ROOT } from './features.mjs'
@@ -145,4 +145,102 @@ export function completenessClaims({ document, lines, feature, named }) {
     }
   }
   return claims
+}
+
+/**
+ * The three manifests, read as text (FR-010).
+ *
+ * Nothing is executed, not even to list Gradle tasks: `./gradlew tasks` configures every project,
+ * which is a side effect and a wait for a question about existence.
+ */
+let manifests = null
+function readManifests() {
+  if (manifests) return manifests
+  const makeTargets = new Set()
+  for (const line of readFileSync(path.join(ROOT, 'Makefile'), 'utf8').split('\n')) {
+    const target = /^([a-zA-Z0-9_-]+):/.exec(line)
+    if (target) makeTargets.add(target[1])
+  }
+
+  const npmScripts = new Set()
+  // Tasks the Gradle plugins this build applies contribute, which no build file names in text. The
+  // `java` and `application` plugins add most of these; `base` adds the lifecycle ones. Listed rather
+  // than discovered because discovering them means running Gradle, and FR-010 forbids executing what
+  // is being checked. The cost is that a typo matching one of these names would be missed.
+  const gradleTasks = new Set([
+    'build', 'check', 'test', 'clean', 'assemble', 'classes', 'testClasses', 'jar', 'javadoc',
+    'run', 'installDist', 'distZip', 'distTar', 'processResources', 'processTestResources',
+    'compileJava', 'compileTestJava', 'wrapper', 'tasks', 'projects', 'dependencies',
+  ])
+  for (const relative of repositoryIndex()) {
+    if (relative.endsWith('package.json') && !relative.includes('node_modules')) {
+      try {
+        const json = JSON.parse(readFileSync(path.join(ROOT, relative), 'utf8'))
+        for (const name of Object.keys(json.scripts ?? {})) npmScripts.add(name)
+      } catch {
+        // A package.json that will not parse is the JSON's problem, not this check's.
+      }
+    }
+    if (relative.endsWith('build.gradle.kts')) {
+      const text = readFileSync(path.join(ROOT, relative), 'utf8')
+      for (const m of text.matchAll(/tasks\.register(?:<[^>]+>)?\(\s*"([\w:.-]+)"/g)) gradleTasks.add(m[1])
+      for (const m of text.matchAll(/val\s+(\w+)\s+by\s+tasks\.registering/g)) gradleTasks.add(m[1])
+      for (const m of text.matchAll(/tasks\.named(?:<[^>]+>)?\(\s*"([\w:.-]+)"/g)) gradleTasks.add(m[1])
+    }
+  }
+  manifests = { makeTargets, npmScripts, gradleTasks }
+  return manifests
+}
+
+export function verifyCommand(claim) {
+  const { makeTargets, npmScripts, gradleTasks } = readManifests()
+  const [tool, ...rest] = claim.subject.split(/\s+/)
+
+  if (tool === 'make') {
+    return makeTargets.has(rest[0])
+      ? holds()
+      : broken(`the Makefile declares no target named "${rest[0]}"`)
+  }
+  if (tool === 'npm') {
+    const script = rest[1]
+    return npmScripts.has(script)
+      ? holds()
+      : broken(`no package.json in this repository declares a script named "${script}"`)
+  }
+  const task = rest[0].replace(/^.*:/, '')
+  return gradleTasks.has(task) || gradleTasks.has(rest[0])
+    ? holds()
+    : broken(
+        `no build file registers a task named "${task}". Build files are read as text, so a task ` +
+          'registered dynamically is missed rather than falsely reported — the grammar states that limit',
+      )
+}
+
+/**
+ * FR-004. Coverage is about whether anyone planned for a requirement, not whether the work is
+ * finished: a requirement cited only by a task left deliberately open is still accounted for.
+ * Feature 008's SC-001 is the live example — it needs a person who has never seen the page.
+ */
+export function verifyRequirement(claim, { tasksText }) {
+  // A feature with no task list is a different problem, and the status claim already reports it.
+  // Repeating it once per requirement would bury the one report that matters under twenty copies.
+  if (!tasksText) return holds()
+  const cited = new RegExp(`\\b${claim.subject}\\b`).test(tasksText)
+  return cited
+    ? holds()
+    : broken(`declared in the specification, and no task in tasks.md cites it`)
+}
+
+/**
+ * FR-005, FR-009. Resolved from the document's own directory, because that is where the link was
+ * written — resolving from anywhere else would make the verdict depend on where the check was
+ * started. Nothing external is fetched; the extractor never offers one.
+ */
+export function verifyReference(claim) {
+  const target = claim.subject.split('#')[0]
+  if (target.length === 0) return holds()
+  const resolved = path.join(ROOT, path.posix.dirname(claim.document), target)
+  return existsSync(resolved)
+    ? holds()
+    : broken(`the link points at ${claim.subject}, which does not exist beside ${claim.document}`)
 }

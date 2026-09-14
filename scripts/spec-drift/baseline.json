@@ -2,79 +2,451 @@
   {
     "document": "specs/001-financial-agent-chain/spec.md",
     "subject": "Approved, 2026-09-12. Planning and task generation are complete against",
-    "reason": "the status field of a feature that predates this check. Three implemented features still declare themselves drafts and two say Approved; correcting them is a maintainer decision recorded in specs/009-spec-drift-check/findings.md, not something this feature may do to a past record. Until it is made, these features' documents are not held to their code.",
+    "reason": "the status field of a feature that predates this check. Three implemented features still declare themselves drafts and two say Approved; correcting them is a maintainer decision recorded in specs/009-spec-drift-check/findings.md, not something this feature may do to a past record. Until it is made, these features are not held to their code.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/002-corporate-ui-redesign/spec.md",
     "subject": "Approved, 2026-09-12. Planning and task generation are complete against",
-    "reason": "the status field of a feature that predates this check. Three implemented features still declare themselves drafts and two say Approved; correcting them is a maintainer decision recorded in specs/009-spec-drift-check/findings.md, not something this feature may do to a past record. Until it is made, these features' documents are not held to their code.",
+    "reason": "the status field of a feature that predates this check. Three implemented features still declare themselves drafts and two say Approved; correcting them is a maintainer decision recorded in specs/009-spec-drift-check/findings.md, not something this feature may do to a past record. Until it is made, these features are not held to their code.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/005-langchain4j-declarative-migration/spec.md",
     "subject": "Implemented, 2026-09-13. All 46 tasks complete. Provider mode verified: cloud (gpt-oss:120b), through the containerized stack and the live model test. Local mode not exercised.",
-    "reason": "a migration document necessarily names what it replaced: feature 005 deleted this class when it moved the chain onto LangChain4j agentic orchestration, so the path is absent by design. The grammar has no mechanical way to tell 'names a file that should exist' from 'names the file it removed', and the inline marker that would say so cannot be added to a past feature's record.",
+    "reason": "the status field of a feature that predates this check. Three implemented features still declare themselves drafts and two say Approved; correcting them is a maintainer decision recorded in specs/009-spec-drift-check/findings.md, not something this feature may do to a past record. Until it is made, these features are not held to their code.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/006-makefile-entrypoint/spec.md",
     "subject": "Draft",
-    "reason": "the status field of a feature that predates this check. Three implemented features still declare themselves drafts and two say Approved; correcting them is a maintainer decision recorded in specs/009-spec-drift-check/findings.md, not something this feature may do to a past record. Until it is made, these features' documents are not held to their code.",
+    "reason": "the status field of a feature that predates this check. Three implemented features still declare themselves drafts and two say Approved; correcting them is a maintainer decision recorded in specs/009-spec-drift-check/findings.md, not something this feature may do to a past record. Until it is made, these features are not held to their code.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/007-mcp-billing-server/spec.md",
     "subject": "Draft",
-    "reason": "the status field of a feature that predates this check. Three implemented features still declare themselves drafts and two say Approved; correcting them is a maintainer decision recorded in specs/009-spec-drift-check/findings.md, not something this feature may do to a past record. Until it is made, these features' documents are not held to their code.",
+    "reason": "the status field of a feature that predates this check. Three implemented features still declare themselves drafts and two say Approved; correcting them is a maintainer decision recorded in specs/009-spec-drift-check/findings.md, not something this feature may do to a past record. Until it is made, these features are not held to their code.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/008-mcp-console/spec.md",
     "subject": "Draft",
-    "reason": "the status field of a feature that predates this check. Three implemented features still declare themselves drafts and two say Approved; correcting them is a maintainer decision recorded in specs/009-spec-drift-check/findings.md, not something this feature may do to a past record. Until it is made, these features' documents are not held to their code.",
+    "reason": "the status field of a feature that predates this check. Three implemented features still declare themselves drafts and two say Approved; correcting them is a maintainer decision recorded in specs/009-spec-drift-check/findings.md, not something this feature may do to a past record. Until it is made, these features are not held to their code.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/003-monorepo-integration/research.md",
     "subject": "contracts/openapi.yml",
-    "reason": "names a contract file that was never created under that name; feature 003's own research refers to it in passing. A past feature's record may not be edited by this one.",
+    "reason": "a migration document necessarily names what it replaced: feature 005 deleted this class when it moved the chain onto LangChain4j agentic orchestration, so the path is absent by design. The grammar cannot tell 'names a file that should exist' from 'names the file it removed', and the inline marker that would say so cannot be added to a past record.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/003-monorepo-integration/spec.md",
+    "subject": "FR-001",
+    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/003-monorepo-integration/spec.md",
+    "subject": "FR-002",
+    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/003-monorepo-integration/spec.md",
+    "subject": "FR-003",
+    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/003-monorepo-integration/spec.md",
+    "subject": "FR-004",
+    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/003-monorepo-integration/spec.md",
+    "subject": "FR-005",
+    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/003-monorepo-integration/spec.md",
+    "subject": "FR-007",
+    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/003-monorepo-integration/spec.md",
+    "subject": "FR-009",
+    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/003-monorepo-integration/spec.md",
+    "subject": "FR-010",
+    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/003-monorepo-integration/spec.md",
+    "subject": "FR-011",
+    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/003-monorepo-integration/spec.md",
+    "subject": "FR-012",
+    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/003-monorepo-integration/spec.md",
+    "subject": "FR-013",
+    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/003-monorepo-integration/spec.md",
+    "subject": "FR-014",
+    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/003-monorepo-integration/spec.md",
+    "subject": "FR-015",
+    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/003-monorepo-integration/spec.md",
+    "subject": "FR-016",
+    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/003-monorepo-integration/spec.md",
+    "subject": "FR-017",
+    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/003-monorepo-integration/spec.md",
+    "subject": "FR-018",
+    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/003-monorepo-integration/spec.md",
+    "subject": "SC-001",
+    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/003-monorepo-integration/spec.md",
+    "subject": "SC-002",
+    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/003-monorepo-integration/spec.md",
+    "subject": "SC-003",
+    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/003-monorepo-integration/spec.md",
+    "subject": "SC-004",
+    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/003-monorepo-integration/spec.md",
+    "subject": "SC-005",
+    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/003-monorepo-integration/spec.md",
+    "subject": "SC-006",
+    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/004-containerized-deployment/spec.md",
+    "subject": "FR-001",
+    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/004-containerized-deployment/spec.md",
+    "subject": "FR-002",
+    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/004-containerized-deployment/spec.md",
+    "subject": "FR-003",
+    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/004-containerized-deployment/spec.md",
+    "subject": "FR-005",
+    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/004-containerized-deployment/spec.md",
+    "subject": "FR-006",
+    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/004-containerized-deployment/spec.md",
+    "subject": "FR-008",
+    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/004-containerized-deployment/spec.md",
+    "subject": "FR-009",
+    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/004-containerized-deployment/spec.md",
+    "subject": "FR-015",
+    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/004-containerized-deployment/spec.md",
+    "subject": "FR-017",
+    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/004-containerized-deployment/spec.md",
+    "subject": "FR-020",
+    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/004-containerized-deployment/spec.md",
+    "subject": "FR-023",
+    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/004-containerized-deployment/spec.md",
+    "subject": "FR-025",
+    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/004-containerized-deployment/spec.md",
+    "subject": "SC-001",
+    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/004-containerized-deployment/spec.md",
+    "subject": "SC-002",
+    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/004-containerized-deployment/spec.md",
+    "subject": "SC-003",
+    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/004-containerized-deployment/spec.md",
+    "subject": "SC-004",
+    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/004-containerized-deployment/spec.md",
+    "subject": "SC-005",
+    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/004-containerized-deployment/spec.md",
+    "subject": "SC-007",
+    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/005-langchain4j-declarative-migration/plan.md",
     "subject": "backend/src/main/java/dev/l4jlab/chain/core/ChainRunner.java",
-    "reason": "a migration document necessarily names what it replaced: feature 005 deleted this class when it moved the chain onto LangChain4j agentic orchestration, so the path is absent by design. The grammar has no mechanical way to tell 'names a file that should exist' from 'names the file it removed', and the inline marker that would say so cannot be added to a past feature's record.",
+    "reason": "a migration document necessarily names what it replaced: feature 005 deleted this class when it moved the chain onto LangChain4j agentic orchestration, so the path is absent by design. The grammar cannot tell 'names a file that should exist' from 'names the file it removed', and the inline marker that would say so cannot be added to a past record.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/005-langchain4j-declarative-migration/plan.md",
     "subject": "backend/src/main/java/dev/l4jlab/chain/core/ChainNode.java",
-    "reason": "a migration document necessarily names what it replaced: feature 005 deleted this class when it moved the chain onto LangChain4j agentic orchestration, so the path is absent by design. The grammar has no mechanical way to tell 'names a file that should exist' from 'names the file it removed', and the inline marker that would say so cannot be added to a past feature's record.",
+    "reason": "a migration document necessarily names what it replaced: feature 005 deleted this class when it moved the chain onto LangChain4j agentic orchestration, so the path is absent by design. The grammar cannot tell 'names a file that should exist' from 'names the file it removed', and the inline marker that would say so cannot be added to a past record.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/005-langchain4j-declarative-migration/plan.md",
     "subject": "backend/src/main/java/dev/l4jlab/chain/node/SummarizeNode.java",
-    "reason": "a migration document necessarily names what it replaced: feature 005 deleted this class when it moved the chain onto LangChain4j agentic orchestration, so the path is absent by design. The grammar has no mechanical way to tell 'names a file that should exist' from 'names the file it removed', and the inline marker that would say so cannot be added to a past feature's record.",
+    "reason": "a migration document necessarily names what it replaced: feature 005 deleted this class when it moved the chain onto LangChain4j agentic orchestration, so the path is absent by design. The grammar cannot tell 'names a file that should exist' from 'names the file it removed', and the inline marker that would say so cannot be added to a past record.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/005-langchain4j-declarative-migration/plan.md",
     "subject": "backend/src/liveTest/java/dev/l4jlab/chain/live/SummarizeNodeLiveTest.java",
-    "reason": "a migration document necessarily names what it replaced: feature 005 deleted this class when it moved the chain onto LangChain4j agentic orchestration, so the path is absent by design. The grammar has no mechanical way to tell 'names a file that should exist' from 'names the file it removed', and the inline marker that would say so cannot be added to a past feature's record.",
+    "reason": "a migration document necessarily names what it replaced: feature 005 deleted this class when it moved the chain onto LangChain4j agentic orchestration, so the path is absent by design. The grammar cannot tell 'names a file that should exist' from 'names the file it removed', and the inline marker that would say so cannot be added to a past record.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/005-langchain4j-declarative-migration/spec.md",
+    "subject": "FR-001",
+    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/005-langchain4j-declarative-migration/spec.md",
+    "subject": "FR-004",
+    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/005-langchain4j-declarative-migration/spec.md",
+    "subject": "FR-005",
+    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/005-langchain4j-declarative-migration/spec.md",
+    "subject": "FR-006",
+    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/005-langchain4j-declarative-migration/spec.md",
+    "subject": "FR-007",
+    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/005-langchain4j-declarative-migration/spec.md",
+    "subject": "FR-008",
+    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/005-langchain4j-declarative-migration/spec.md",
+    "subject": "FR-009",
+    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/005-langchain4j-declarative-migration/spec.md",
+    "subject": "FR-010",
+    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/005-langchain4j-declarative-migration/spec.md",
+    "subject": "FR-012",
+    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/005-langchain4j-declarative-migration/spec.md",
+    "subject": "FR-013",
+    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/005-langchain4j-declarative-migration/spec.md",
+    "subject": "FR-014",
+    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/005-langchain4j-declarative-migration/spec.md",
+    "subject": "FR-015",
+    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/005-langchain4j-declarative-migration/spec.md",
+    "subject": "FR-016",
+    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/005-langchain4j-declarative-migration/spec.md",
+    "subject": "FR-017",
+    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/005-langchain4j-declarative-migration/spec.md",
+    "subject": "FR-018",
+    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/005-langchain4j-declarative-migration/spec.md",
+    "subject": "FR-020",
+    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/005-langchain4j-declarative-migration/spec.md",
+    "subject": "FR-021",
+    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/005-langchain4j-declarative-migration/spec.md",
+    "subject": "FR-022",
+    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/005-langchain4j-declarative-migration/spec.md",
+    "subject": "FR-023",
+    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/005-langchain4j-declarative-migration/spec.md",
+    "subject": "SC-001",
+    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/005-langchain4j-declarative-migration/spec.md",
+    "subject": "SC-003",
+    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
+    "recorded": "2026-09-14"
+  },
+  {
+    "document": "specs/005-langchain4j-declarative-migration/spec.md",
+    "subject": "SC-007",
+    "reason": "features 003 to 005 predate the convention of citing requirement identifiers in task descriptions, which features 007 onward follow. Their tasks cover the work; they simply do not name what they cover. Adding citations would mean rewriting three past task lists, which this feature may not do.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/005-langchain4j-declarative-migration/tasks.md",
     "subject": "node/SummarizeNode.java",
-    "reason": "a migration document necessarily names what it replaced: feature 005 deleted this class when it moved the chain onto LangChain4j agentic orchestration, so the path is absent by design. The grammar has no mechanical way to tell 'names a file that should exist' from 'names the file it removed', and the inline marker that would say so cannot be added to a past feature's record.",
+    "reason": "a migration document necessarily names what it replaced: feature 005 deleted this class when it moved the chain onto LangChain4j agentic orchestration, so the path is absent by design. The grammar cannot tell 'names a file that should exist' from 'names the file it removed', and the inline marker that would say so cannot be added to a past record.",
     "recorded": "2026-09-14"
   },
   {
     "document": "specs/005-langchain4j-declarative-migration/tasks.md",
     "subject": "agent/RunTraceListener.java",
-    "reason": "a migration document necessarily names what it replaced: feature 005 deleted this class when it moved the chain onto LangChain4j agentic orchestration, so the path is absent by design. The grammar has no mechanical way to tell 'names a file that should exist' from 'names the file it removed', and the inline marker that would say so cannot be added to a past feature's record.",
+    "reason": "a migration document necessarily names what it replaced: feature 005 deleted this class when it moved the chain onto LangChain4j agentic orchestration, so the path is absent by design. The grammar cannot tell 'names a file that should exist' from 'names the file it removed', and the inline marker that would say so cannot be added to a past record.",
     "recorded": "2026-09-14"
   }
 ]

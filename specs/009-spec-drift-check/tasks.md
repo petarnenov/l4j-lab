@@ -182,25 +182,25 @@ changes the economics — until a document can fail, keeping it true depends on 
 
 ### Tests for User Story 2 (write first, confirm they fail)
 
-- [ ] T025 [P] [US2] Failing tests in `scripts/spec-drift/claims.commands.test.mjs`: `make <target>`,
+- [X] T025 [P] [US2] Failing tests in `scripts/spec-drift/claims.commands.test.mjs`: `make <target>`,
   `npm run <script>` and `./gradlew <task>` are extracted from fenced blocks and inline code (FR-003);
   **nothing else is** — `docker`, `curl`, `git`, `node` and `jq` are the reader's machine, not this
   project's promise (research R-004).
-- [ ] T026 [P] [US2] Failing tests in `scripts/spec-drift/verify.commands.test.mjs`: targets are read
+- [X] T026 [P] [US2] Failing tests in `scripts/spec-drift/verify.commands.test.mjs`: targets are read
   from `Makefile`, scripts from every `package.json`, tasks from every `build.gradle.kts` **as text**;
   a renamed command is `broken`; and nothing is ever executed (FR-010, US2-3).
-- [ ] T027 [P] [US2] Failing test in `scripts/spec-drift/verify.commands.test.mjs` that a Gradle task
+- [X] T027 [P] [US2] Failing test in `scripts/spec-drift/verify.commands.test.mjs` that a Gradle task
   registered dynamically is missed rather than
   falsely reported, which the grammar states outright — a check that overclaims its own reach is
   worse than one with a stated limit.
 
 ### Implementation for User Story 2
 
-- [ ] T028 [US2] Implement command extraction in `scripts/spec-drift/claims.mjs`.
-- [ ] T029 [US2] Implement command verification in `scripts/spec-drift/verify.mjs`, reading the three
+- [X] T028 [US2] Implement command extraction in `scripts/spec-drift/claims.mjs`.
+- [X] T029 [US2] Implement command verification in `scripts/spec-drift/verify.mjs`, reading the three
   manifests as text. No process is started, not even to list tasks: `./gradlew tasks` would configure
   every project, which is a side effect for a question about existence.
-- [ ] T030 [US2] Register the kind in `scripts/spec-drift/check.mjs`, confirm US2's three scenarios,
+- [X] T030 [US2] Register the kind in `scripts/spec-drift/check.mjs`, confirm US2's three scenarios,
   and record any command drift found in `scripts/spec-drift/baseline.json`.
 
 **Checkpoint**: the two P1 stories both work, and the drift with the sharpest edge for a reader —
@@ -216,10 +216,10 @@ a command that no longer exists — now fails the build.
 
 ### Tests for User Story 3 (write first, confirm they fail)
 
-- [ ] T031 [P] [US3] Failing tests in `scripts/spec-drift/claims.requirements.test.mjs`: `**FR-nnn**`
+- [X] T031 [P] [US3] Failing tests in `scripts/spec-drift/claims.requirements.test.mjs`: `**FR-nnn**`
   and `**SC-nnn**` are extracted from `spec.md` only, in the bold form the template uses, and a
   mention of an identifier in any other document is not a separate claim.
-- [ ] T032 [P] [US3] Failing tests in `scripts/spec-drift/verify.requirements.test.mjs`: an
+- [X] T032 [P] [US3] Failing tests in `scripts/spec-drift/verify.requirements.test.mjs`: an
   identifier cited by no task in that feature's `tasks.md` is `broken` (FR-004); a task citing no
   requirement outside a setup or maintenance phase is reported (US3-2); and a requirement recorded as
   deliberately unmet is not a failure (US3-3) — feature 008's `SC-001` is the live example, left open
@@ -227,8 +227,8 @@ a command that no longer exists — now fails the build.
 
 ### Implementation for User Story 3
 
-- [ ] T033 [US3] Implement requirement extraction in `scripts/spec-drift/claims.mjs` to make T031 pass.
-- [ ] T033a [US3] Implement requirement verification in `scripts/spec-drift/verify.mjs` to make T032
+- [X] T033 [US3] Implement requirement extraction in `scripts/spec-drift/claims.mjs` to make T031 pass.
+- [X] T033a [US3] Implement requirement verification in `scripts/spec-drift/verify.mjs` to make T032
   pass, register the kind in `scripts/spec-drift/check.mjs`, and record any drift found in
   `scripts/spec-drift/baseline.json`.
 
@@ -245,17 +245,17 @@ document that went stale, but one that was never finished.
 
 ### Tests for User Story 4 (write first, confirm they fail)
 
-- [ ] T034 [P] [US4] Failing tests in `scripts/spec-drift/claims.references.test.mjs` (FR-005): relative
+- [X] T034 [P] [US4] Failing tests in `scripts/spec-drift/claims.references.test.mjs` (FR-005): relative
   markdown links outside a fence are claims; `http:`, `https:`, `mailto:` and same-file anchors are
   not; and a link inside a fence is not, because rendered markdown makes it literal text rather than
   something a reader can follow.
-- [ ] T035 [P] [US4] Failing tests in `scripts/spec-drift/verify.references.test.mjs`: a link to a
+- [X] T035 [P] [US4] Failing tests in `scripts/spec-drift/verify.references.test.mjs`: a link to a
   moved file is `broken` naming both ends (US4-1); nothing external is fetched (US4-2, FR-009).
 
 ### Implementation for User Story 4
 
-- [ ] T036 [US4] Implement reference extraction in `scripts/spec-drift/claims.mjs` to make T034 pass.
-- [ ] T036a [US4] Implement reference verification in `scripts/spec-drift/verify.mjs` to make T035
+- [X] T036 [US4] Implement reference extraction in `scripts/spec-drift/claims.mjs` to make T034 pass.
+- [X] T036a [US4] Implement reference verification in `scripts/spec-drift/verify.mjs` to make T035
   pass, register the kind in `scripts/spec-drift/check.mjs`, and record any drift found in
   `scripts/spec-drift/baseline.json`.
 
@@ -265,39 +265,39 @@ document that went stale, but one that was never finished.
 
 ## Phase 7: Polish & the first honest run
 
-- [ ] T037 Run `make check-specs` across the whole repository and record the total in
+- [X] T037 Run `make check-specs` across the whole repository and record the total in
   `specs/009-spec-drift-check/findings.md` (SC-002: someone must be able to learn which documents
   broke without reading any of them). Each story recorded its own drift as it went, so this is the
   reckoning rather than the discovery — and the number is this feature's first real deliverable,
   whatever it turns out to be.
-- [ ] T038 Review every entry accumulated in `scripts/spec-drift/baseline.json` during the four
+- [X] T038 Review every entry accumulated in `scripts/spec-drift/baseline.json` during the four
   stories: each has a reason and a date, none is a blanket exclusion, and anything fixable *within
   this feature's scope* was fixed rather than recorded. Drift inside a past feature's record stays
   baselined — editing that record is out of scope, and that is what FR-016 means by checking every
   implemented feature without repairing the ones that predate the check.
-- [ ] T039 Append to [findings.md](./findings.md) whatever T037 surfaces beyond the three already
+- [X] T039 Append to [findings.md](./findings.md) whatever T037 surfaces beyond the three already
   recorded, so the drift is findable from the specification and not only from a build log.
-- [ ] T040 [P] Verify SC-001 against the real corpus, driving `scripts/spec-drift/check.mjs` by hand: reintroduce the three structural drifts feature 008 hit — the
+- [X] T040 [P] Verify SC-001 against the real corpus, driving `scripts/spec-drift/check.mjs` by hand: reintroduce the three structural drifts feature 008 hit — the
   test file named for a source file that did not exist, three delivered modules absent from a plan's
   tree, and three requirements cited by no task — and confirm the check catches each. A check for a problem that has happened twice should be measured against what
   actually happened, not against invented cases.
-- [ ] T040a [P] Verify SC-001a using `scripts/spec-drift/report.mjs`'s output: the four items from
+- [X] T040a [P] Verify SC-001a using `scripts/spec-drift/report.mjs`'s output: the four items from
   feature 008 this check cannot catch — two counts written in prose, a root-level file no file tree
   covers, and a build script added without being documented — pass silently, and the "not checked"
   line is what tells a reader why. A check whose limits are discoverable only by experiment has not
   stated them.
-- [ ] T041 [P] Verify SC-004 and FR-006 by reading `scripts/spec-drift/report.mjs`'s output cold, and
+- [X] T041 [P] Verify SC-004 and FR-006 by reading `scripts/spec-drift/report.mjs`'s output cold, and
   by changing a document's prose to something false and confirming the check passes: someone who has not built this should be
   able to state what it does not cover from the report alone.
-- [ ] T042 [P] Confirm SC-003 and SC-006 by timing `./gradlew specDrift` (declared in the root
+- [X] T042 [P] Confirm SC-003 and SC-006 by timing `./gradlew specDrift` (declared in the root
   `build.gradle.kts`) and running it with the network disabled.
-- [ ] T043 Wire `specDrift` into the root `check` in `build.gradle.kts`. This is where FR-008 is
+- [X] T043 Wire `specDrift` into the root `check` in `build.gradle.kts`. This is where FR-008 is
   actually satisfied — from here the check is part of ordinary verification rather than a command to
   remember. Deferred to now on purpose: before a baseline existed it would have left the build red
   through every user story.
-- [ ] T043a [P] Add a short section to `README.md` naming `make check-specs`, what it checks, and —
+- [X] T043a [P] Add a short section to `README.md` naming `make check-specs`, what it checks, and —
   with equal prominence — what it does not.
-- [ ] T044 Re-run `./gradlew check` from the root `build.gradle.kts` lifecycle and confirm nothing
+- [X] T044 Re-run `./gradlew check` from the root `build.gradle.kts` lifecycle and confirm nothing
   else regressed, including the frontend's 266 deterministic tests.
 
 ---

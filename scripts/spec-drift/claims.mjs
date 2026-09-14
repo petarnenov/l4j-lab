@@ -49,7 +49,7 @@ export function statusClaims(feature) {
 const GENERATED_EARLY = /(^|\/)(node_modules|build|dist|out|\.gradle|\.cache|target|META-INF)(\/|$)/
 
 /** A path that names nothing real: an illustration with a hole in it. */
-const PLACEHOLDER = /[<>{}]|\u2026|\*/
+const PLACEHOLDER = /[<>{}]|\u2026|\.\.\.|\*/
 const EXTENSIONS = /\.(ts|tsx|mjs|js|java|kts|json|yaml|yml|md|sql|sh)$/
 
 /**
@@ -180,4 +180,96 @@ export function completeDirectories(lines) {
     if (/^[\w./-]+\/$/.test(bare)) marked.push({ line, directory: bare.replace(/\/$/, ''), lineText: text })
   }
   return marked
+}
+
+/**
+ * Commands this project defines (FR-003, research R-004).
+ *
+ * Three prefixes and no others. `docker`, `curl`, `git` and the rest describe the reader's machine;
+ * failing a build because someone's container runtime is absent is not drift.
+ */
+const COMMAND = /^(make\s+[\w:.-]+|npm\s+run\s+[\w:.-]+|\.\/gradlew\s+[\w:.-]+)$/
+
+export function commandClaims({ document, lines, feature }) {
+  const claims = []
+  const add = (line, text, subject) =>
+    claims.push({ kind: 'command', document, line, raw: subject, subject, feature: feature.id, lineText: text })
+
+  for (const { line, text, inFence } of lines) {
+    if (inFence) {
+      // A quickstart puts its commands in a fenced block, one per line. A leading variable
+      // assignment means the line is demonstrating configuration, not naming a target.
+      const bare = text.split('#')[0].trim()
+      if (COMMAND.test(bare)) add(line, text, bare)
+      continue
+    }
+    for (const span of inlineCode(text)) {
+      const bare = span.trim()
+      if (COMMAND.test(bare)) add(line, text, bare)
+    }
+  }
+  return claims
+}
+
+/**
+ * Requirement identifiers, declared (FR-004).
+ *
+ * Only in spec.md, and only in the bold form the template uses. Other documents refer to
+ * requirements constantly, and a reference is not a second promise to keep.
+ */
+const DECLARED = /^\s*-\s+\*\*((?:FR|SC)-\d+[a-z]?)\*\*/
+
+export function requirementClaims({ document, lines, feature }) {
+  if (!document.endsWith('/spec.md')) return []
+  const claims = []
+  for (const { line, text, inFence } of lines) {
+    if (inFence) continue
+    const found = DECLARED.exec(text)
+    if (!found) continue
+    claims.push({
+      kind: 'requirement',
+      document,
+      line,
+      raw: found[0].trim(),
+      subject: found[1],
+      feature: feature.id,
+      lineText: text,
+    })
+  }
+  return claims
+}
+
+/**
+ * Markdown links into this repository (FR-005).
+ *
+ * Outside a fence only. Inside one, `[a](b)` is literal text a reader cannot follow, so it promises
+ * nothing — this repository's own grammar contains such lines as examples, and a first draft of this
+ * check flagged them. A file tree inside a fence *is* a claim, because a reader takes it as a
+ * description of real files. Same delimiter, opposite meanings.
+ */
+const LINK = /\[[^\]]*\]\(([^)\s]+)\)/g
+
+export function referenceClaims({ document, lines, feature }) {
+  const claims = []
+  for (const { line, text, inFence } of lines) {
+    if (inFence) continue
+    // Inline code is literal for the same reason a fence is: `[a](b)` written inside backticks is
+    // shown, not offered. This file's own grammar writes exactly that, and the check found it.
+    const outsideCode = text.replace(/`[^`\n]*`/g, '')
+    for (const found of outsideCode.matchAll(LINK)) {
+      const target = found[1]
+      if (/^[a-z]+:/i.test(target)) continue
+      if (target.startsWith('#')) continue
+      claims.push({
+        kind: 'reference',
+        document,
+        line,
+        raw: found[0],
+        subject: target,
+        feature: feature.id,
+        lineText: text,
+      })
+    }
+  }
+  return claims
 }

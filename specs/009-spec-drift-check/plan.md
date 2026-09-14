@@ -104,9 +104,19 @@ scripts/spec-drift/
 ├── verify.mjs               # one verifier per claim kind
 ├── report.mjs               # output, per contracts/report-format.md
 ├── baseline.json            # accepted pre-existing drift, each entry with a reason
-├── claims.test.mjs          # extraction, against this repository's real documents
-├── verify.test.mjs          # each verdict, on fixtures
 ├── features.test.mjs        # the in-scope rule, including both open-task features
+├── scanner.test.mjs         # line numbers, fences, inline code
+├── exemptions.test.mjs      # the inline marker, and a marker that outlived its claim
+├── baseline.test.mjs        # matching by document and subject, and staleness
+├── status.test.mjs          # the arming switch watching itself
+├── claims.paths.test.mjs    # extraction, against this repository's real documents
+├── claims.commands.test.mjs
+├── claims.requirements.test.mjs
+├── claims.references.test.mjs
+├── verify.paths.test.mjs    # each verdict, on fixtures
+├── verify.commands.test.mjs
+├── verify.requirements.test.mjs
+├── verify.references.test.mjs
 └── report.test.mjs          # the output contract
 
 build.gradle.kts             # NEW at the root: the `base` plugin and the specDrift task

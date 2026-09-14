@@ -37,5 +37,5 @@ tasks.register<Exec>("specDrift") {
 }
 
 tasks.named("check") {
-    dependsOn(specDriftTest)
+    dependsOn(specDriftTest, "specDrift")
 }

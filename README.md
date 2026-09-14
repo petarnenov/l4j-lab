@@ -221,6 +221,31 @@ or 5432, which `make dev` and `compose.yaml` already use: all three setups are m
 Details in [`mcp-server/README.md`](mcp-server/README.md); specification and research in
 [`specs/007-mcp-billing-server/`](specs/007-mcp-billing-server/).
 
+## Holding the documents to the code (feature 009)
+
+```bash
+make check-specs        # or ./gradlew specDrift, or as part of ./gradlew check
+```
+
+Specification documents make claims about this repository: that a file exists, that a command can be
+run, that a requirement is covered by a task, that a link resolves. This check extracts those claims
+and fails when one of them has stopped being true. It reads documents and the filesystem, starts
+nothing, and needs no network.
+
+**What it does not check matters as much, and it prints the list on every run**: prose, whether a
+description is *accurate* rather than merely pointing at something real, external links, and code
+behaviour. A contract that claims tool declarations are served verbatim is a sentence, and no
+document checker can judge it — feature 008's live suite found exactly such a sentence to be false
+for months.
+
+A feature's documents are held to its code once its specification declares it implemented. Before
+that a plan is supposed to describe files that do not exist: writing one first is the point. Drift
+that predates the check is recorded in `scripts/spec-drift/baseline.json`, each entry with a reason,
+and printed on every run so that recording it cannot become forgetting it.
+
+Specification and what its first run found in
+[`specs/009-spec-drift-check/`](specs/009-spec-drift-check/).
+
 ## MCP console (feature 008)
 
 A page in the development frontend for driving that server by hand and watching the protocol while it
