@@ -8,9 +8,10 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b tsconfig.build.json && vite build",
     "preview": "vite preview",
     "test": "vitest run",
+    "typecheck": "tsc -b",
     "test:mcp": "vitest run --config vitest.mcp.config.ts",
     "test:watch": "vitest",
     "lint": "eslint .",

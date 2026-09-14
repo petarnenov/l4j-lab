@@ -104,7 +104,10 @@ describe('the bearer token', () => {
     // Principle II forbids a credential on screen; FR-010 requires the request as it travelled.
     // Everything that decides what the server did stays visible; the secret does not.
     const redacted = redactAuthorization(
-      { Authorization: 'Bearer eyJhbGciOi.realpayload.signature', 'Mcp-Method': 'tools/list' },
+      // Three dot-separated parts, as a JWT has, but deliberately not starting `eyJ`: a literal in
+      // that shape is what secret scanners look for, and this one carries nothing. The assertions
+      // below are about the payload and signature being hidden, which the prefix plays no part in.
+      { Authorization: 'Bearer aGVhZGVy.realpayload.signature', 'Mcp-Method': 'tools/list' },
       'advisor-alpha-101',
     )
 

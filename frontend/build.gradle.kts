@@ -84,6 +84,16 @@ val checkDevOnly = tasks.register<Exec>("checkDevOnly") {
     commandLine(npm, "run", "check:dev-only")
 }
 
+// `npm run build` type-checks only what ships (tsconfig.build.json), because the packaged image is
+// built from frontend/ alone and the test fixtures read the committed contracts in specs/. This
+// keeps the test code checked too, where those files do exist.
+val typecheck = tasks.register<Exec>("typecheck") {
+    description = "Runs `npm run typecheck`: type-checks the test code as well as the application."
+    group = "verification"
+    dependsOn(npmCi)
+    commandLine(npm, "run", "typecheck")
+}
+
 val checkApi = tasks.register<Exec>("checkApi") {
     description = "Runs `npm run check:api`: the committed API types must match the backend's description."
     group = "verification"
@@ -115,5 +125,5 @@ val checkVersion = tasks.register("checkVersion") {
 }
 
 tasks.named("check") {
-    dependsOn(test, checkApi, checkVersion, checkDevOnly)
+    dependsOn(test, checkApi, checkVersion, checkDevOnly, typecheck)
 }
