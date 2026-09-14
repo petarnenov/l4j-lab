@@ -149,3 +149,29 @@ and finds neither stops trusting the table, and then stops trusting the document
 correction needs someone who knows which delivered class took over which planned responsibility —
 that is a reading of feature 007, not of its documents. Recorded so that whoever next opens 007 finds
 it already written down.
+
+
+---
+
+## G-007: the check was green in CI because it never ran there
+
+Found immediately after the first push, by asking a question the green tick did not answer.
+
+All five workflows passed. None of them ran `specDrift`: every one invokes a module-scoped task —
+`:backend:check`, `:frontend:checkApi` — and the drift check hangs off the **root** project's `check`,
+which no workflow calls. Zero runs, reported as success.
+
+FR-008 asks that the check run as part of ordinary verification rather than as a command someone must
+remember. That was true locally and false where it matters, and a green tick is exactly the thing that
+would have kept it false.
+
+**Fixed** by `.github/workflows/specs.yml`, deliberately the only workflow here with no path filter.
+Every other one narrows to the module it tests; this one cannot, because a rename anywhere breaks
+claims written anywhere else. A path filter would have meant the check ran only when the thing it
+checks was not what changed.
+
+Worth recording next to G-005 for the shape they share: **a check that is not run and a check that
+finds nothing look identical from outside.** G-005 was six features silently unexamined because a
+status field said draft; this was a whole workflow silently absent because nothing invoked it. Both
+were visible only by asking what the pass actually covered — which is the question FR-012's claim
+counts exist to make askable.

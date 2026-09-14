@@ -19,6 +19,11 @@ make check-specs        # the launcher
 ./gradlew check         # runs it among everything else, which is the point
 ```
 
+In CI it is `.github/workflows/specs.yml`, and it is the only workflow with no path filter. Every
+other one narrows to the module it tests, which is right for them and wrong for this: a rename
+anywhere can break a claim written anywhere else. A filter would mean the check ran only when the
+thing it checks was not what changed.
+
 A passing run prints what it checked and what it did not:
 
 ```text

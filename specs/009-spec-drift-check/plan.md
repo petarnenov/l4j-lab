@@ -121,6 +121,7 @@ scripts/spec-drift/
 
 build.gradle.kts             # NEW at the root: the `base` plugin and the specDrift task
 Makefile                     # + check-specs
+.github/workflows/specs.yml  # NEW: the only workflow with no path filter, and why (FR-008)
 ```
 
 **Structure Decision**: a new top-level `scripts/spec-drift/` directory, because the tool is about

@@ -1,0 +1,44 @@
+# The drift check (feature 009): fails when a specification document says something about the code
+# that is no longer true.
+#
+# Deliberately the only workflow here with no path filter. Every other one narrows to the module it
+# tests, which is right for them and wrong for this: a rename anywhere can break a claim written
+# anywhere else, and that is the whole point. A filter would mean the check ran only when the thing
+# it checks was not what changed.
+#
+# It needs Node and nothing else — no JDK beyond the Gradle wrapper's, no Docker, no credential, no
+# network. It starts nothing and writes nothing.
+name: specs
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  drift:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      # The version frontend/.nvmrc pins, which is where this repository declares it once.
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: frontend/.nvmrc
+
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 25
+
+      - uses: gradle/actions/setup-gradle@v6
+
+      - name: The checker's own tests
+        run: ./gradlew specDriftTest
+
+      # Prints what it checked and what it did not, so a run that silently stopped checking is
+      # visible in the log rather than indistinguishable from a clean repository.
+      - name: Hold the documents to the code
+        run: ./gradlew specDrift
