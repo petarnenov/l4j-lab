@@ -57,6 +57,38 @@ deps-down: ## Stop the development containers (data kept)
 	@$(SCRIPTS)/require.sh docker
 	docker compose down
 
+##@ MCP billing server
+
+.PHONY: mcp-up mcp-down mcp-logs mcp-verify
+
+MCP := docker compose -f compose.mcp.yaml
+# The acceptance scenarios address individual replicas, which the base stack does not publish.
+MCP_TOPOLOGY := docker compose -f compose.mcp.yaml -f compose.mcp.topology.yaml
+MCP_PORT ?= $(or $(MCP_HTTP_PORT),8877)
+
+mcp-up: ## Start the MCP stack (3 replicas + proxy) on http://localhost:8877
+	@$(SCRIPTS)/require.sh docker
+	@$(SCRIPTS)/port-free.sh $(MCP_PORT) "The MCP proxy needs it. Stop what is listening, or choose another with MCP_HTTP_PORT=<port> make mcp-up."
+	$(MCP) up -d --build --wait
+	@printf 'MCP endpoint: http://localhost:%s/mcp\n' "$(MCP_PORT)"
+
+mcp-down: ## Stop the MCP stack (data kept)
+	@$(SCRIPTS)/require.sh docker
+	$(MCP) down
+
+mcp-logs: ## Tail all six MCP services
+	@$(SCRIPTS)/require.sh docker
+	$(MCP) logs -f
+
+# LEGACY_RUN_DURATION_MS compresses the simulated billing run. Without it a run takes its real
+# 30-90s (FR-024) and the two run-completion scenarios would each wait one out.
+mcp-verify: ## Start the MCP stack, run the acceptance scenarios, stop
+	@$(SCRIPTS)/require.sh docker java
+	@$(SCRIPTS)/port-free.sh $(MCP_PORT) "The MCP proxy needs it."
+	LEGACY_RUN_DURATION_MS=3000 $(MCP_TOPOLOGY) up -d --build --wait
+	MCP_PROXY_URL=http://localhost:$(MCP_PORT) $(GRADLEW) :mcp-server:topologyTest; \
+		status=$$?; $(MCP_TOPOLOGY) down; exit $$status
+
 ##@ Packaged system
 
 .PHONY: up up-local pull-model status logs logs-lb scale down reset

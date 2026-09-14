@@ -1,0 +1,49 @@
+{
+  "name": "get_billing_run_status",
+  "title": "Get billing run status",
+  "description": "Return the current status of one billing run: its status, the phase it is in, how many accounts it has processed out of the total, and the failure reason if it failed. When the run has failed, the result names get_run_failures as the next step.",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "run_id": {
+        "type": "string",
+        "description": "The run to look up."
+      }
+    },
+    "required": ["run_id"],
+    "additionalProperties": false
+  },
+  "outputSchema": {
+    "type": "object",
+    "properties": {
+      "run_id": { "type": "string" },
+      "status": {
+        "type": "string",
+        "enum": ["PENDING", "RUNNING", "COMPLETED", "FAILED", "CANCELED"]
+      },
+      "phase": {
+        "type": ["string", "null"],
+        "enum": ["DATA_COLLECTION", "FEE_CALC", "INVOICING", "POSTING", null],
+        "description": "Null once the run reaches a terminal status."
+      },
+      "accounts_processed": { "type": "integer", "minimum": 0 },
+      "accounts_total": { "type": "integer", "minimum": 0 },
+      "failure_reason": {
+        "type": ["string", "null"],
+        "description": "Non-null only when status is FAILED."
+      },
+      "next_step_hint": {
+        "type": ["string", "null"],
+        "description": "Present only when status is FAILED; points at get_run_failures."
+      }
+    },
+    "required": ["run_id", "status", "phase", "accounts_processed", "accounts_total", "failure_reason"],
+    "additionalProperties": false
+  },
+  "annotations": {
+    "readOnlyHint": true,
+    "destructiveHint": false,
+    "idempotentHint": true,
+    "openWorldHint": true
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "name": "post_fee_adjustment",
+  "title": "Post a fee adjustment",
+  "description": "Change the fee on one account by a signed amount in basis points, effective on a given date. This writes to the billing system of record. The first call does not execute: it returns a confirmation request describing the exact change. Repeat the call with the confirmation and the returned request state to execute. Supply a stable operation_id; repeating a call with the same operation_id returns the original result and does not adjust the fee a second time.",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "operation_id": {
+        "type": "string",
+        "minLength": 8,
+        "maxLength": 128,
+        "description": "Client-supplied idempotency key. Reuse the same value for retries of the same change; use a new value for a different change."
+      },
+      "account_id": {
+        "type": "string",
+        "description": "Account whose fee changes."
+      },
+      "delta_bps": {
+        "type": "integer",
+        "description": "Signed change in basis points. Must not be zero."
+      },
+      "effective_date": {
+        "type": "string",
+        "format": "date",
+        "description": "Date the adjustment takes effect."
+      },
+      "reason": {
+        "type": "string",
+        "maxLength": 200,
+        "description": "Optional short note recorded with the adjustment."
+      }
+    },
+    "required": ["operation_id", "account_id", "delta_bps", "effective_date"],
+    "additionalProperties": false
+  },
+  "outputSchema": {
+    "type": "object",
+    "properties": {
+      "operation_id": { "type": "string" },
+      "account_id": { "type": "string" },
+      "delta_bps": { "type": "integer" },
+      "effective_date": { "type": "string", "format": "date" },
+      "legacy_reference_id": {
+        "type": "string",
+        "description": "Identifier the billing system of record assigned to this adjustment."
+      },
+      "new_fee_bps": { "type": "integer", "minimum": 0 },
+      "confirmed_by_user_id": { "type": "string" },
+      "replayed": {
+        "type": "boolean",
+        "description": "True when this result was returned from the idempotency record rather than executed."
+      }
+    },
+    "required": ["operation_id", "account_id", "delta_bps", "effective_date", "legacy_reference_id", "new_fee_bps", "confirmed_by_user_id", "replayed"],
+    "additionalProperties": false
+  },
+  "annotations": {
+    "readOnlyHint": false,
+    "destructiveHint": true,
+    "idempotentHint": true,
+    "openWorldHint": true
+  }
+}

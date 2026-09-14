@@ -1,0 +1,11 @@
+# Development-only token issuer (FR-025). Every setting here is an environment variable with a
+# documented default, per research.md R-012.
+micronaut:
+  application:
+    name: token-issuer
+  server:
+    port: ${TOKEN_ISSUER_PORT:8080}
+endpoints:
+  health:
+    enabled: true
+    details-visible: ANONYMOUS
