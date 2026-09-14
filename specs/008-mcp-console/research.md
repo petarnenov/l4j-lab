@@ -422,3 +422,32 @@ test tabs to the menu as a single stop — antd's horizontal menu is one tab sto
 count. A third item therefore breaks none of them. The suite runs with `DEV === true`, so the item is
 present during those tests; that it does not disturb them is the point, and one added test will
 assert the item exists rather than leaving its presence incidental.
+
+---
+
+## R-015: what the production build type-checks
+
+**Added after CI rejected the first attempt.** Not a decision taken at planning time — one forced by
+a failure, which is why it is recorded here rather than folded silently into R-002.
+
+**Decision**: `npm run build` type-checks `tsconfig.build.json`, which excludes every test file. A
+separate `npm run typecheck` checks everything, wired into `:frontend:check`.
+
+**What went wrong.** The packaged frontend image is built from `frontend/` alone — that is its Docker
+context. `npm run build` ran `tsc -b` over all of `src/`, including `src/mcp/test/mcpHandlers.ts`,
+which reads the committed tool contracts from `specs/` through the `@contracts007` alias (R-004).
+That directory is not in the context, so the type-check could not resolve it and `docker build
+frontend` failed.
+
+**Why nothing local caught it.** `check:dev-only` calls Vite's build API directly and never runs
+`tsc`. A local `npm run build` passes because `specs/` is right there on disk. Only a build with a
+restricted context could see it, and the packaged stack's smoke test is the only thing that performs
+one.
+
+**Why the fix is better than a workaround.** What ships should never have depended on test
+infrastructure compiling; splitting the two says so structurally. Adding `specs/` to the Docker
+context was rejected outright — it would couple the packaged frontend image to a feature's
+specification directory.
+
+**The cost, stated**: `npm run build` alone no longer type-checks tests, so `npm run typecheck` must
+stay in `check`. It is, and a test type error fails CI as before.

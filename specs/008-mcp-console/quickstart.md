@@ -132,7 +132,12 @@ The dev-only check is the one that proves FR-001a rather than asserting it:
 
 ```bash
 cd frontend && npm run check:dev-only    # builds, and fails if the console is in the output
+cd frontend && npm run typecheck         # type-checks the test code too (R-015)
 ```
+
+`npm run build` deliberately type-checks only what ships, because the packaged image is built from
+`frontend/` alone and the test fixtures read the contracts in `specs/`. `npm run typecheck` covers
+the rest and runs inside `./gradlew check`.
 
 ## Reset
 

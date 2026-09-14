@@ -81,8 +81,14 @@ live suite added are heavier than the two predicted: a `tools/list` that drops e
 keywords it claims to serve verbatim (F-001), a confirmation retry whose documented shape the server
 reads as a refusal (F-005), and an entitlement path answering HTTP 500 with an internal message
 (F-006). All six are filed rather than acted on, which is what the spec's Out of Scope section
-requires, and each is pinned by a test so a change in either direction is noticed. See
-[findings.md](./findings.md).
+requires, and each is pinned by a test so a change in either direction is noticed.
+
+**Two more came out of CI**, and they are a different kind: F-007, the packaged backend image having
+been unbuildable since feature 007 included three projects the Docker context lacks, and F-008, a
+development database password on `main` since before that. Both went unnoticed for a whole feature
+because the checks that catch them run on pull requests and this repository had none until this one.
+F-007 is the single finding this feature **fixed** rather than recorded — it is build plumbing rather
+than 007's server, and it stood between the branch and `main`. See [findings.md](./findings.md).
 
 ## Project Structure
 
@@ -111,8 +117,9 @@ specs/008-mcp-console/
 frontend/
 ├── vite.config.ts                 # + the dev-only forwarder (R-001); the /api proxy is untouched
 ├── vitest.mcp.config.ts           # the live suite's project (R-005)
+├── tsconfig.build.json            # what the production build type-checks: no test files (R-015)
 ├── package.json                   # + "test:mcp", "check:dev-only" scripts; no new dependency
-├── build.gradle.kts               # + :frontend:mcpConsoleTest (not in check), + checkDevOnly (in check)
+├── build.gradle.kts               # + :frontend:mcpConsoleTest (not in check), + checkDevOnly and typecheck (in check)
 ├── scripts/
 │   └── check-dev-only.mjs         # builds and asserts the console is absent from dist/ (R-002)
 └── src/
@@ -153,10 +160,17 @@ frontend/
                                        # request in it is built and sent by transport.ts (R-005)
 
 Makefile                           # + mcp-up-topology, mcp-reset, test-console (R-006, R-014)
+backend/Dockerfile                 # + the three project build files settings.gradle.kts includes (F-007)
+.gitguardian.yaml                  # the two compose files' development passwords, and why (F-008)
 ```
 
 **Structure Decision**: an addition inside the existing `frontend/` module, confined to a new
-`src/mcp/` directory plus three touched files (`App.tsx`, `vite.config.ts`, `build.gradle.kts`).
+`src/mcp/` directory plus a small set of touched files: `App.tsx` (one guarded nav item),
+`vite.config.ts` (the forwarder and the alias), `build.gradle.kts` (three verification tasks),
+`tsconfig.json` (the alias' path mapping and `vite/client` types), `src/test/handlers.ts` (registers
+the MCP handlers with the existing MSW server, changing no existing handler), and `src/App.test.tsx`
+(assertions appended, none modified). Implementation added two outside the module — `backend/Dockerfile`
+and `.gitguardian.yaml` — both recorded as findings F-007 and F-008.
 No new Gradle module and no backend code, because the console needs neither: its only server-side
 requirement is forwarding, and the Vite dev server already does that for `/api`. Confining it to one
 directory is what makes SC-007 checkable by inspection — nothing under `src/components/`,

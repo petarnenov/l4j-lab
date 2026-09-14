@@ -83,7 +83,9 @@ default Vitest project.
   `outputs.upToDateWhen { false }`, **not** wired into `check` — it needs containers it will not
   start; this is the distinct Gradle task the constitution requires instead of a flag, and the second
   half of FR-003a) and `checkDevOnly` (Exec `npm run check:dev-only`, wired into `check`). Mirror the existing
-  `test`/`checkApi` task shape, including `dependsOn(npmCi)`.
+  `test`/`checkApi` task shape, including `dependsOn(npmCi)`. A third task, `typecheck`, was added
+  during implementation once CI showed why the production build must not type-check the test files
+  (research R-015); it is wired into `check` as well.
 - [X] T007 [P] Add three targets to `Makefile` under the existing "MCP billing server" and
   "Verification" groups, each with a `##` help description so it appears in `make help`:
   `mcp-up-topology` (base plus `compose.mcp.topology.yaml`, following the `mcp-up` pattern including

@@ -250,3 +250,55 @@ so that correcting the server fails them and the finding gets closed rather than
 **In the console**, this renders as what it is: a protocol failure with code `-32603` at HTTP 500,
 next to the cross-firm refusal rendered as a tool failure at HTTP 200. Putting the two on the same
 screen is precisely what this console was built to make possible.
+
+---
+
+## F-007: the packaged backend image has been unbuildable since feature 007
+
+**Severity**: high — it broke `make up` for everyone, not only this console.
+
+**Unlike the six above, this one was fixed here** rather than recorded. It is build plumbing rather
+than 007's server, so 008's out-of-scope rule does not reach it, and it stood between this branch
+and `main`.
+
+**What happened.** Feature 007 added three projects to `settings.gradle.kts`:
+
+```kotlin
+include("mcp-server", "legacy-billing-api", "token-issuer")
+```
+
+`backend/Dockerfile` copies `gradlew`, `settings.gradle.kts`, `gradle/`, the frontend's build file
+and `backend/`. Gradle refuses to configure an included project whose directory does not exist, so
+from that commit onwards `docker build -f backend/Dockerfile .` failed with:
+
+```
+Configuring project ':legacy-billing-api' without an existing directory is not allowed.
+```
+
+and with it `make up` and the stack smoke test.
+
+**The Dockerfile already documented the answer**, one line above the break, for the frontend:
+*"settings.gradle.kts includes the frontend project, so its build file must exist for Gradle to
+configure. Nothing of the frontend is built here."* Feature 007 added three more projects and did not
+extend it. The fix is the same treatment for the three.
+
+**Why it went unnoticed for a whole feature.** The stack smoke test runs on pull requests, and this
+repository had none until feature 008's. Feature 007 was pushed as a branch and never opened one, so
+its CI never ran in the context that would have caught this. The same gap explains F-008.
+
+---
+
+## F-008: a database password on `main` since before feature 007
+
+**Severity**: low in substance, worth recording in form.
+
+GitGuardian incident 37221709 flagged `compose.mcp.yaml`'s `DATASOURCE_PASSWORD` default as a
+"Generic Password". The finding is correct: it is a password, written in code.
+
+It is also not a secret — it guards a throwaway Postgres container on localhost — and the pattern
+predates feature 007. `compose.yaml` on `main` carries `POSTGRES_PASSWORD` as a bare literal with no
+environment variable to override it, and had never been scanned, for the same reason as F-007.
+
+Resolved by `.gitguardian.yaml` naming both files with the reasoning, and by closing the incident as
+development-only. Recorded here so the decision is findable from the specification rather than only
+from a SaaS console.
