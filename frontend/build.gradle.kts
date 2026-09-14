@@ -60,6 +60,30 @@ val test = tasks.register<Exec>("test") {
     commandLine(npm, "test")
 }
 
+// FR-003a and SC-008: the second suite, against a running MCP stack. Deliberately NOT wired into
+// `check` — for the same reason :mcp-server:topologyTest is not. It needs six containers it will not
+// start behind your back, and it says so rather than failing with a connection error.
+//
+// A distinct task, never a flag someone has to remember to pass: the form the constitution requires
+// for a separately selectable suite.
+val mcpConsoleTest = tasks.register<Exec>("mcpConsoleTest") {
+    description = "Runs the MCP console's live suite against a running stack. Requires `make mcp-up`."
+    group = "verification"
+    dependsOn(npmCi)
+    commandLine(npm, "run", "test:mcp")
+    // The outcome depends on a running stack, which Gradle does not track.
+    outputs.upToDateWhen { false }
+}
+
+// FR-001a: the console must not be carried in the packaged build. This runs a real production build
+// and reads its output, because an untested absence is an assumption.
+val checkDevOnly = tasks.register<Exec>("checkDevOnly") {
+    description = "Runs `npm run check:dev-only`: the MCP console must be absent from `vite build`."
+    group = "verification"
+    dependsOn(npmCi)
+    commandLine(npm, "run", "check:dev-only")
+}
+
 val checkApi = tasks.register<Exec>("checkApi") {
     description = "Runs `npm run check:api`: the committed API types must match the backend's description."
     group = "verification"
@@ -91,5 +115,5 @@ val checkVersion = tasks.register("checkVersion") {
 }
 
 tasks.named("check") {
-    dependsOn(test, checkApi, checkVersion)
+    dependsOn(test, checkApi, checkVersion, checkDevOnly)
 }

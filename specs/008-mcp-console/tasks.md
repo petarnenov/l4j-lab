@@ -55,36 +55,36 @@ default Vitest project.
 
 **Purpose**: the build and test plumbing the console needs. No console code yet.
 
-- [ ] T001 Add the four-target development forwarder to `frontend/vite.config.ts` exactly as
+- [X] T001 Add the four-target development forwarder to `frontend/vite.config.ts` exactly as
   [contracts/dev-proxy.md](./contracts/dev-proxy.md) specifies: prefix `/mcp-dev/{proxy,a,b,c}`,
   prefix stripped and the remainder passed through unchanged, targets from `MCP_HTTP_PORT` (8877),
   `MCP_REPLICA_A_PORT` (8881), `MCP_REPLICA_B_PORT` (8882), `MCP_REPLICA_C_PORT` (8883). The existing
   `/api` proxy to port 8080 must be left exactly as it is.
-- [ ] T002 In `frontend/vite.config.ts`, exclude `**/*.live.test.ts` from the default Vitest project
+- [X] T002 In `frontend/vite.config.ts`, exclude `**/*.live.test.ts` from the default Vitest project
   and add a resolve alias pointing at `specs/007-mcp-billing-server/contracts/tools` so the
   deterministic suite can read the committed tool declarations rather than a copy (research R-004).
   **Vitest's `exclude` replaces the default list rather than extending it**, so write
   `exclude: [...configDefaults.exclude, '**/*.live.test.ts']` — omitting the spread pulls
   `node_modules` and `dist` into the run. Part of FR-003a's two-suite split. Same file as T001, so
   this follows it.
-- [ ] T003 [P] Create `frontend/vitest.mcp.config.ts`: the live suite's project (FR-003a), selecting
+- [X] T003 [P] Create `frontend/vitest.mcp.config.ts`: the live suite's project (FR-003a), selecting
   `src/mcp/**/*.live.test.ts`, `environment: 'node'`, `globals: true` to match the default project so
   the two suites are written the same way, no MSW setup file, and no jsdom. `environment: 'node'` is
   correct **because** every live test drives the console's own modules rather than rendering them —
   see the rule at the head of the live tasks.
-- [ ] T004 [P] Add `test:mcp` (`vitest run --config vitest.mcp.config.ts`) and `check:dev-only`
+- [X] T004 [P] Add `test:mcp` (`vitest run --config vitest.mcp.config.ts`) and `check:dev-only`
   scripts to `frontend/package.json` — the two selectable suites FR-003a requires. **No dependency is
   added** — if one seems necessary, stop and
   re-read research R-003 before adding it.
-- [ ] T005 [P] Create `frontend/scripts/check-dev-only.mjs`: run `vite build` into a temporary
+- [X] T005 [P] Create `frontend/scripts/check-dev-only.mjs`: run `vite build` into a temporary
   directory and exit non-zero if the console's marker string appears in any emitted file, with a
   message naming FR-001a. Follow the style of the existing `frontend/scripts/api-contract.mjs`.
-- [ ] T006 [P] In `frontend/build.gradle.kts`, register `mcpConsoleTest` (Exec `npm run test:mcp`,
+- [X] T006 [P] In `frontend/build.gradle.kts`, register `mcpConsoleTest` (Exec `npm run test:mcp`,
   `outputs.upToDateWhen { false }`, **not** wired into `check` — it needs containers it will not
   start; this is the distinct Gradle task the constitution requires instead of a flag, and the second
   half of FR-003a) and `checkDevOnly` (Exec `npm run check:dev-only`, wired into `check`). Mirror the existing
   `test`/`checkApi` task shape, including `dependsOn(npmCi)`.
-- [ ] T007 [P] Add three targets to `Makefile` under the existing "MCP billing server" and
+- [X] T007 [P] Add three targets to `Makefile` under the existing "MCP billing server" and
   "Verification" groups, each with a `##` help description so it appears in `make help`:
   `mcp-up-topology` (base plus `compose.mcp.topology.yaml`, following the `mcp-up` pattern including
   the port check), `mcp-reset` (`down -v` through `scripts/make/confirm.sh`, following the existing
@@ -389,7 +389,7 @@ so it follows the stories rather than preceding them.
 
 ## Phase 8: Polish & Cross-Cutting Concerns
 
-- [ ] T064 Give `frontend/scripts/check-dev-only.mjs` a committed self-test rather than a one-time
+- [X] T064 Give `frontend/scripts/check-dev-only.mjs` a committed self-test rather than a one-time
   manual proof: a `--self-test` mode that builds a tiny fixture importing the marker unguarded and
   asserts the check rejects it, then asserts a guarded fixture passes. Wire it into the same
   `check:dev-only` npm script so both run together. A check never seen to fail is not evidence, and a
