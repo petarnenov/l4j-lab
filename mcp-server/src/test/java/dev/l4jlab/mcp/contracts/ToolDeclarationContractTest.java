@@ -37,7 +37,6 @@ class ToolDeclarationContractTest extends McpServerTestBase {
         "search_billing_runs", "get_billing_run_status", "get_run_failures",
         "post_fee_adjustment", "start_billing_run");
 
-    @Disabled("Reports 106 real differences (71 output schemas, 23 input, 10 annotations, 2 descriptions) \u2014 finding F-001, measured by this test for the first time. Disabled so the rest of the suite can run in continuous integration, which it never has; removing this line is part of feature 010 T025, which closes the differences. The number is recorded in specs/010-close-mcp-findings/findings.md H-002, so disabling it cannot lose it.")
     @Test
     void everyToolDeclaresWhatTheRepositoryCommitted() throws Exception {
         Map<String, Map<String, Object>> served = servedDeclarations();
@@ -87,6 +86,66 @@ class ToolDeclarationContractTest extends McpServerTestBase {
         if (!committed.equals(declared)) {
             differences.add("%s: committed=%s declared=%s".formatted(path, committed, declared));
         }
+    }
+
+    /**
+     * Feature 010, T025 (FR-013, SC-003). The guard against a tautology.
+     *
+     * <p>The committed contracts are now generated from the declarations, so the comparison above
+     * would stay green if the generator quietly dropped a keyword — both sides would lose it
+     * together. These assertions name the keywords outright and read only what the server serves, so
+     * they fail whether the loss happens in the declaration or on the way to the file.
+     *
+     * <p>Each one is a keyword feature 008's finding F-001 recorded as missing.
+     */
+    @Test
+    @SuppressWarnings("unchecked")
+    void theDeclarationsCarryTheKeywordsTheContractsAlwaysClaimed() {
+        Map<String, Map<String, Object>> served = servedDeclarations();
+
+        Map<String, Object> search = properties(served.get("search_billing_runs"));
+        assertThat(field(search, "status")).containsEntry("enum",
+            List.of("PENDING", "RUNNING", "COMPLETED", "FAILED", "CANCELED"));
+        assertThat(field(search, "started_from")).containsEntry("format", "date");
+        assertThat(field(search, "started_to")).containsEntry("format", "date");
+        assertThat(field(search, "page_size"))
+            .as("integer, not widened to number")
+            .containsEntry("type", "integer")
+            .containsEntry("minimum", 1)
+            .containsEntry("maximum", 20)
+            .containsEntry("default", 20);
+
+        Map<String, Object> failures = properties(served.get("get_run_failures"));
+        assertThat(field(failures, "limit"))
+            .containsEntry("type", "integer")
+            .containsEntry("minimum", 1)
+            .containsEntry("maximum", 50)
+            .containsEntry("default", 50);
+
+        Map<String, Object> adjustment = properties(served.get("post_fee_adjustment"));
+        assertThat(field(adjustment, "operation_id"))
+            .containsEntry("minLength", 8)
+            .containsEntry("maxLength", 128);
+        assertThat(field(adjustment, "effective_date")).containsEntry("format", "date");
+        assertThat(field(adjustment, "reason")).containsEntry("maxLength", 200);
+        assertThat(field(adjustment, "delta_bps")).containsEntry("type", "integer");
+
+        for (String tool : TOOLS) {
+            assertThat((Map<String, Object>) served.get(tool).get("inputSchema"))
+                .as("%s accepts a fixed set of arguments", tool)
+                .containsEntry("additionalProperties", false);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private static Map<String, Object> properties(Map<String, Object> tool) {
+        Map<String, Object> schema = (Map<String, Object>) tool.get("inputSchema");
+        return (Map<String, Object>) schema.get("properties");
+    }
+
+    @SuppressWarnings("unchecked")
+    private static Map<String, Object> field(Map<String, Object> properties, String name) {
+        return (Map<String, Object>) properties.get(name);
     }
 
     @SuppressWarnings("unchecked")

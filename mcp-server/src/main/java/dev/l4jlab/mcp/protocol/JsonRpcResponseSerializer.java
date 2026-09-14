@@ -1,5 +1,7 @@
 package dev.l4jlab.mcp.protocol;
 
+import dev.l4jlab.mcp.tools.ToolArgumentConstraints;
+
 import io.micronaut.context.annotation.Value;
 import io.micronaut.core.type.Argument;
 import io.micronaut.serde.Encoder;
@@ -68,11 +70,9 @@ public class JsonRpcResponseSerializer implements Serializer<McpSchema.JSONRPCRe
     private final Map<String, Object> serverInfo;
     private final long toolsTtlMs;
 
-    public JsonRpcResponseSerializer(
-        @Value("${micronaut.mcp.server.info.name:mcp-billing-server}") String name,
-        @Value("${micronaut.mcp.server.info.version:0.1.0}") String version,
-        @Value("${mcp.tools-ttl-ms:300000}") long toolsTtlMs) {
-        this.serverInfo = Map.of("name", name, "version", version);
+    public JsonRpcResponseSerializer(ServerInfo serverInfo,
+                                     @Value("${mcp.tools-ttl-ms:300000}") long toolsTtlMs) {
+        this.serverInfo = serverInfo.asMap();
         this.toolsTtlMs = toolsTtlMs;
     }
 
@@ -118,7 +118,7 @@ public class JsonRpcResponseSerializer implements Serializer<McpSchema.JSONRPCRe
         Map<String, Object> out = new LinkedHashMap<>(result);
         out.putIfAbsent(RESULT_TYPE, COMPLETE);
         if (out.get("tools") instanceof List<?> tools) {
-            out.put("tools", inDeclaredOrder(tools));
+            out.put("tools", inDeclaredOrder(tools).stream().map(JsonRpcResponseSerializer::withConstraints).toList());
         }
         if (out.containsKey("tools") || out.containsKey("supportedVersions")) {
             // Cacheable, and neither varies by caller: entitlements filter results, never the
@@ -148,6 +148,50 @@ public class JsonRpcResponseSerializer implements Serializer<McpSchema.JSONRPCRe
             }
             return Integer.compare(leftIndex, rightIndex);
         }).toList();
+    }
+
+    /**
+     * Merges in the argument keywords the generator cannot express (FR-011, F-001).
+     *
+     * <p>{@code @ToolArg} carries a name and a description and nothing else, and the generator maps
+     * Java types crudely — {@code Integer} becomes {@code number}, a {@code String} date carries no
+     * format, a {@code String} status carries no enumeration. The committed contracts carried all of
+     * them, which is how a declaration and a contract came to differ in 23 input-schema keywords.
+     *
+     * <p>{@link ToolArgumentConstraints} is the single source, and {@code McpRequestGate} enforces
+     * exactly what is merged here. A declared constraint is a validated constraint.
+     */
+    @SuppressWarnings("unchecked")
+    private static Object withConstraints(Object tool) {
+        if (!(tool instanceof Map<?, ?> raw)) {
+            return tool;
+        }
+        String name = nameOf(tool);
+        Map<String, ToolArgumentConstraints.Constraint> constraints =
+            ToolArgumentConstraints.forTool(name);
+
+        Map<String, Object> out = new LinkedHashMap<>((Map<String, Object>) raw);
+        if (!(out.get("inputSchema") instanceof Map<?, ?> schemaRaw)) {
+            return out;
+        }
+        Map<String, Object> schema = new LinkedHashMap<>((Map<String, Object>) schemaRaw);
+        // Every tool takes a fixed set of arguments; an unexpected one is a caller mistake worth
+        // reporting rather than ignoring, which is what the committed contracts always said.
+        schema.put("additionalProperties", false);
+
+        if (schema.get("properties") instanceof Map<?, ?> propertiesRaw) {
+            Map<String, Object> properties = new LinkedHashMap<>((Map<String, Object>) propertiesRaw);
+            constraints.forEach((field, constraint) -> {
+                if (properties.get(field) instanceof Map<?, ?> fieldRaw) {
+                    Map<String, Object> merged = new LinkedHashMap<>((Map<String, Object>) fieldRaw);
+                    merged.putAll(constraint.asSchemaKeywords());
+                    properties.put(field, merged);
+                }
+            });
+            schema.put("properties", properties);
+        }
+        out.put("inputSchema", schema);
+        return out;
     }
 
     private static String nameOf(Object tool) {

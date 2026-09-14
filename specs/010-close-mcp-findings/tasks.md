@@ -211,12 +211,12 @@ the JSON becomes generated from it (research R-002).
 
 ### Tests for User Story 3
 
-- [ ] T025 [P] [US3] Extend
+- [X] T025 [P] [US3] Extend
   `mcp-server/src/test/java/dev/l4jlab/mcp/contracts/ToolDeclarationContractTest.java` with the
   keyword-level assertions T005 recorded as failing: `enum`, `format`, `minimum`, `maximum`,
   `minLength`, `maxLength`, `default`, `integer` not widened to `number`, and required output fields not
   relaxed.
-- [ ] T026 [P] [US3] Failing test in
+- [X] T026 [P] [US3] Failing test in
   `mcp-server/src/test/java/dev/l4jlab/mcp/tools/ArgumentValidationTest.java`: an argument violating a
   declared constraint is refused with a tool error naming the field. **A declared constraint is a
   validated constraint** — restoring `enum` without enforcing it would replace a lie about what is
@@ -224,28 +224,28 @@ the JSON becomes generated from it (research R-002).
 
 ### Implementation for User Story 3
 
-- [ ] T027 [P] [US3] Enrich the argument declarations in
+- [X] T027 [P] [US3] Enrich the argument declarations in
   `mcp-server/src/main/java/dev/l4jlab/mcp/tools/BillingRunTools.java` so `@ToolArg` carries the
   enumeration, format, bounds and default each argument's contract declares.
-- [ ] T028 [P] [US3] The same for
+- [X] T028 [P] [US3] The same for
   `mcp-server/src/main/java/dev/l4jlab/mcp/tools/FeeAdjustmentTool.java`.
-- [ ] T029 [P] [US3] The same for
+- [X] T029 [P] [US3] The same for
   `mcp-server/src/main/java/dev/l4jlab/mcp/tools/StartBillingRunTool.java`.
-- [ ] T030 [US3] Correct `start_billing_run`'s declared output shape in
+- [X] T030 [US3] Correct `start_billing_run`'s declared output shape in
   `mcp-server/src/main/java/dev/l4jlab/mcp/tools/StartBillingRunTool.java` so it describes (FR-012)
   **what calling the tool returns** — the handle — rather than the completed run, which arrives later
   through `tasks/get` (F-004, research R-005).
-- [ ] T031 [US3] Enforce the restored constraints where the server does not already, to make T026 pass,
+- [X] T031 [US3] Enforce the restored constraints where the server does not already, to make T026 pass,
   and record in `specs/010-close-mcp-findings/research.md` any constraint that could not be enforced
   and why.
-- [ ] T032 [US3] Generate the committed contracts from the declarations: add a task to
+- [X] T032 [US3] Generate the committed contracts from the declarations: add a task to
   `mcp-server/build.gradle.kts` that writes `specs/007-mcp-billing-server/contracts/tools/*.json` from
   what the server declares, so a change reaches both without a second edit (FR-011). The copy step that
   feeds the test stays; it now copies a generated file.
-- [ ] T033 [US3] Correct `specs/007-mcp-billing-server/contracts/README.md`, which claims the files are
+- [X] T033 [US3] Correct `specs/007-mcp-billing-server/contracts/README.md`, which claims the files are
   *"loaded verbatim at runtime"*. They never were; say what is true — the declarations are generated
   from the Java, and these files are generated from the same source.
-- [ ] T034 [US3] Prove the generation is real (SC-004): change one keyword in a `@ToolArg` in
+- [X] T034 [US3] Prove the generation is real (SC-004): change one keyword in a `@ToolArg` in
   `mcp-server/src/main/java/dev/l4jlab/mcp/tools/BillingRunTools.java`, regenerate, confirm the file
   under `specs/007-mcp-billing-server/contracts/tools/` changes and the contract test still passes; revert. A single source that nobody
   has seen propagate is an assumption.
@@ -294,31 +294,31 @@ the build — which is what feature 007's build file has claimed all along.
 
 ### Tests for User Story 5
 
-- [ ] T039 [P] [US5] Failing test in
+- [X] T039 [P] [US5] Failing test in
   `mcp-server/src/test/java/dev/l4jlab/mcp/tools/FeeAdjustmentToolTest.java`: an applied adjustment
   reports `previous_fee_bps` (FR-017). It is known at the point the change is applied and already
   quoted in the elicitation message in prose.
-- [ ] T040 [P] [US5] Failing test in
+- [X] T040 [P] [US5] Failing test in
   `mcp-server/src/test/java/dev/l4jlab/mcp/protocol/ServerInfoTest.java`: every result's
   `_meta.serverInfo` carries an instance identifier (FR-018).
-- [ ] T041 [P] [US5] Failing test in
+- [X] T041 [P] [US5] Failing test in
   `mcp-server/src/topologyTest/java/dev/l4jlab/mcp/topology/InstanceIdentityTopologyTest.java`: two
   calls through the proxy that land on different replicas report different instances, and a call
   addressed to a named replica reports that one.
 
 ### Implementation for User Story 5
 
-- [ ] T042 [P] [US5] Add `previous_fee_bps` to the result in
+- [X] T042 [P] [US5] Add `previous_fee_bps` to the result in
   `mcp-server/src/main/java/dev/l4jlab/mcp/tools/FeeAdjustmentResult.java` and populate it in
   `FeeAdjustmentTool.java`.
-- [ ] T043 [P] [US5] Add the instance identifier to `serverInfo`, read from configuration with a
+- [X] T043 [P] [US5] Add the instance identifier to `serverInfo`, read from configuration with a
   documented default as every other setting in this repository is, in
   `mcp-server/src/main/resources/application.yml` and wherever `serverInfo` is assembled. **Not an nginx
   header**: the proxy is one deployment shape among several, and an instance is a property of the server
   (research R-006).
-- [ ] T044 [P] [US5] Set the identifier per replica in `compose.mcp.yaml`, so `mcp-a`, `mcp-b` and
+- [X] T044 [P] [US5] Set the identifier per replica in `compose.mcp.yaml`, so `mcp-a`, `mcp-b` and
   `mcp-c` are distinguishable, and document the variable in the table in `README.md`.
-- [ ] T045 [US5] Simplify feature 008's console now that the server reports what it previously could
+- [X] T045 [US5] Simplify feature 008's console now that the server reports what it previously could
   not: `frontend/src/mcp/components/ExchangeView.tsx` says the proxy "does not report which replica
   answered", and `frontend/src/mcp/components/TargetPicker.tsx` repeats it. Both become the instance the
   server names, and the tests pinning the old wording change with them.

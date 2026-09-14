@@ -180,7 +180,8 @@ public class FeeAdjustmentTool {
         LegacyAdjustmentResult applied = (LegacyAdjustmentResult) ok.value();
 
         FeeAdjustmentResult result = new FeeAdjustmentResult(operationId, accountId, deltaBps,
-            effectiveDate, applied.legacyReferenceId(), applied.newFeeBps(), user, false);
+            effectiveDate, applied.legacyReferenceId(), applied.newFeeBps() - deltaBps,
+            applied.newFeeBps(), user, false);
 
         // FR-020: the audit row must name who confirmed and what the system of record called it.
         // Left on the request so AuditFilter can pick them up without this tool knowing about audit.
@@ -208,6 +209,7 @@ public class FeeAdjustmentTool {
                 ((Number) stored.get("delta_bps")).intValue(),
                 (String) stored.get("effective_date"),
                 (String) stored.get("legacy_reference_id"),
+                previousFeeOf(stored),
                 ((Number) stored.get("new_fee_bps")).intValue(),
                 (String) stored.get("confirmed_by_user_id"),
                 true);
@@ -282,6 +284,22 @@ public class FeeAdjustmentTool {
         }
     }
 
+    /**
+     * The previous fee from a stored result, derived when the record predates the field.
+     *
+     * <p>Operations recorded before {@code previous_fee_bps} existed (FR-017) are still replayable,
+     * and a replay must answer with the same shape as the original call or the flag that says
+     * "nothing happened this time" would arrive alongside a result that looks different. The
+     * arithmetic is the same one the field is derived from, so the answer is identical either way.
+     */
+    private static int previousFeeOf(Map<String, Object> stored) {
+        if (stored.get("previous_fee_bps") instanceof Number previous) {
+            return previous.intValue();
+        }
+        return ((Number) stored.get("new_fee_bps")).intValue()
+            - ((Number) stored.get("delta_bps")).intValue();
+    }
+
     private static Map<String, Object> asMap(FeeAdjustmentResult result) {
         Map<String, Object> map = new LinkedHashMap<>();
         map.put("operation_id", result.operationId());
@@ -289,6 +307,7 @@ public class FeeAdjustmentTool {
         map.put("delta_bps", result.deltaBps());
         map.put("effective_date", result.effectiveDate());
         map.put("legacy_reference_id", result.legacyReferenceId());
+        map.put("previous_fee_bps", result.previousFeeBps());
         map.put("new_fee_bps", result.newFeeBps());
         map.put("confirmed_by_user_id", result.confirmedByUserId());
         return map;

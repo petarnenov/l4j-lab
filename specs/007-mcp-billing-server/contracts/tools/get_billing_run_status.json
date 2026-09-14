@@ -1,49 +1,59 @@
 {
-  "name": "get_billing_run_status",
-  "title": "Get billing run status",
-  "description": "Return the current status of one billing run: its status, the phase it is in, how many accounts it has processed out of the total, and the failure reason if it failed. When the run has failed, the result names get_run_failures as the next step.",
-  "inputSchema": {
-    "type": "object",
-    "properties": {
-      "run_id": {
-        "type": "string",
-        "description": "The run to look up."
+  "name" : "get_billing_run_status",
+  "title" : "Get billing run status",
+  "description" : "Return the current status of one billing run: its status, the phase it is in, how many accounts it has processed out of the total, and the failure reason if it failed. When the run has failed, the result names get_run_failures as the next step.",
+  "inputSchema" : {
+    "additionalProperties" : false,
+    "properties" : {
+      "run_id" : {
+        "description" : "The run to look up.",
+        "type" : "string"
       }
     },
-    "required": ["run_id"],
-    "additionalProperties": false
+    "required" : [ "run_id" ],
+    "type" : "object"
   },
-  "outputSchema": {
-    "type": "object",
-    "properties": {
-      "run_id": { "type": "string" },
-      "status": {
-        "type": "string",
-        "enum": ["PENDING", "RUNNING", "COMPLETED", "FAILED", "CANCELED"]
+  "outputSchema" : {
+    "title" : "BillingRunStatus",
+    "description" : "The current state of one billing run, shaped for a caller deciding what to do next.",
+    "$id" : "http://localhost:8080/schemas/billing-run-status.schema.json",
+    "$schema" : "https://json-schema.org/draft/2020-12/schema",
+    "properties" : {
+      "accounts_processed" : {
+        "type" : "integer"
       },
-      "phase": {
-        "type": ["string", "null"],
-        "enum": ["DATA_COLLECTION", "FEE_CALC", "INVOICING", "POSTING", null],
-        "description": "Null once the run reaches a terminal status."
+      "accounts_total" : {
+        "type" : "integer"
       },
-      "accounts_processed": { "type": "integer", "minimum": 0 },
-      "accounts_total": { "type": "integer", "minimum": 0 },
-      "failure_reason": {
-        "type": ["string", "null"],
-        "description": "Non-null only when status is FAILED."
+      "failure_reason" : {
+        "type" : "string"
       },
-      "next_step_hint": {
-        "type": ["string", "null"],
-        "description": "Present only when status is FAILED; points at get_run_failures."
+      "next_step_hint" : {
+        "type" : "string"
+      },
+      "phase" : {
+        "description" : "The stage a running billing run has reached. Absent once the run has finished.\n\n <p>Caller-facing for the same reason as {@link RunStatus}: this text reaches the model.",
+        "enum" : [ "DATA_COLLECTION", "FEE_CALC", "INVOICING", "POSTING" ],
+        "type" : "string"
+      },
+      "run_id" : {
+        "type" : "string"
+      },
+      "status" : {
+        "description" : "The state a billing run is in.\n\n <p>Kept caller-facing on purpose: this Javadoc becomes the enum's {@code description} in the\n generated schema, so it is read by models, not only by people.",
+        "enum" : [ "PENDING", "RUNNING", "COMPLETED", "FAILED", "CANCELED" ],
+        "type" : "string"
       }
     },
-    "required": ["run_id", "status", "phase", "accounts_processed", "accounts_total", "failure_reason"],
-    "additionalProperties": false
+    "required" : [ "accounts_processed", "accounts_total" ],
+    "type" : "object"
   },
-  "annotations": {
-    "readOnlyHint": true,
-    "destructiveHint": false,
-    "idempotentHint": true,
-    "openWorldHint": true
+  "annotations" : {
+    "title" : "",
+    "destructiveHint" : false,
+    "idempotentHint" : true,
+    "openWorldHint" : true,
+    "readOnlyHint" : true,
+    "returnDirect" : false
   }
 }

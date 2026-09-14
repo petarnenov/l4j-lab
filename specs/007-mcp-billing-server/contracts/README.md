@@ -10,9 +10,28 @@ handlers are held to them.
 | `legacy-billing-api.md` | The legacy REST API the MCP server calls |
 | `token-issuer.md` | The development token issuer |
 
-The five files under `tools/` are loaded verbatim at runtime: `tools/list` serves them and
-the tool handlers validate arguments against `inputSchema` and `structuredContent` against
-`outputSchema`. There is no second, generated copy.
+**The five files under `tools/` are generated, not loaded.** Corrected by feature 010 (finding
+F-001); this paragraph previously claimed they were *"loaded verbatim at runtime"*. They never were —
+nothing read them at runtime, and nothing read them at build time either.
+
+What is true:
+
+- The **Java annotations are the single source**. `@Tool` and `@ToolArg` on the five tool methods
+  carry the name, title, description and annotations; `dev.l4jlab.mcp.tools.ToolArgumentConstraints`
+  carries the argument keywords the Java signature cannot express — enumerations, date formats,
+  bounds, defaults, and `integer` where the generator would emit `number`.
+- **These files are written from the running server** by
+  `./gradlew :mcp-server:generateToolContracts`. Edit them and the next regeneration overwrites you;
+  edit the Java and regenerate.
+- **`ToolDeclarationContractTest` compares the two** field by field and fails the build on any
+  difference, which is what this repository's build file has promised since feature 007 and did not
+  do. It also asserts the keywords by name, so a generator that quietly dropped one could not take
+  both sides down with it.
+- Arguments **are** validated against the declared constraints, by `McpRequestGate`, before the tool
+  runs. `structuredContent` is validated against `outputSchema` by the SDK.
+
+The two were maintained by hand and drifted to **106 differences** before anything compared them. One
+source, one generator, one comparison.
 
 ## Deterministic tool order
 

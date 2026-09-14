@@ -62,13 +62,25 @@ class ReadToolsTest extends McpServerTestBase {
         assertThat(result).containsEntry("truncated", false);
     }
 
+    /**
+     * Feature 010, T031 (FR-013): this used to assert the opposite, and the change is deliberate.
+     *
+     * <p>The declaration says {@code "maximum": 20}. Accepting 100 and quietly returning 20 makes
+     * that keyword untrue — which is finding F-001 again, one level down: a contract saying one thing
+     * and the server doing another. Clamping is a reasonable thing to do with a value you have chosen
+     * to accept; it is not a reasonable thing to do with a value you have declared invalid.
+     *
+     * <p>The caller is told the bound and can ask again. The internal clamp stays as a floor under
+     * the arithmetic, but nothing now reaches it from outside.
+     */
     @Test
-    void aPageSizeAboveTheCapIsClampedRatherThanRefused() {
-        Map<String, Object> result = callStructured("search_billing_runs",
+    void aPageSizeAboveTheDeclaredMaximumIsRefusedRatherThanClampedSilently() {
+        Map<String, Object> result = call("search_billing_runs",
             Map.of("firm_id", "firm-alpha", "page_size", 100));
 
-        // A model that asked for 100 wanted as many as it could get. An error teaches it nothing.
-        assertThat((List<?>) result.get("runs")).hasSize(20);
+        assertThat(result).containsEntry("isError", true);
+        assertThat(textOf(result)).contains("page_size");
+        assertThat(textOf(result)).contains("20");
     }
 
     @Test

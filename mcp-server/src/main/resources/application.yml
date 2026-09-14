@@ -37,6 +37,10 @@ mcp:
   legacy-timeout-ms: ${MCP_LEGACY_TIMEOUT_MS:5000}
   task-ttl-ms: ${MCP_TASK_TTL_MS:900000}
   tools-ttl-ms: ${MCP_TOOLS_TTL_MS:300000}
+  # FR-018: which replica answered, carried in every result's serverInfo. Three identical replicas sit
+  # behind one proxy, and until this existed a caller could not tell one unexpected answer from two.
+  # A property of the server, not of the proxy in front of it (research R-006). Default: local.
+  instance-id: ${MCP_INSTANCE_ID:local}
 endpoints:
   health:
     enabled: true

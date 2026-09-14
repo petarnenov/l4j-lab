@@ -93,6 +93,10 @@ services:
       # The two keys every replica must share, or a cursor minted by one fails on another.
       MCP_CURSOR_HMAC_KEY: ${MCP_CURSOR_HMAC_KEY:-dev-cursor-key-not-a-secret}
       MCP_REQUEST_STATE_KEY: ${MCP_REQUEST_STATE_KEY:-dev-request-state-key-not-secret}
+      # FR-018: which replica answered. Overridden per replica below — the anchor gives mcp-a its
+      # value and mcp-b and mcp-c replace it, because three identical replicas that all call
+      # themselves the same thing are the problem this setting exists to solve (finding F-003).
+      MCP_INSTANCE_ID: mcp-a
     depends_on:
       postgres:
         condition: service_healthy
@@ -108,11 +112,15 @@ services:
 
   mcp-b:
     <<: *mcp
-    environment: *mcp-env
+    environment:
+      <<: *mcp-env
+      MCP_INSTANCE_ID: mcp-b
 
   mcp-c:
     <<: *mcp
-    environment: *mcp-env
+    environment:
+      <<: *mcp-env
+      MCP_INSTANCE_ID: mcp-c
 
   mcp-proxy:
     image: nginx:1.27-alpine

@@ -1,57 +1,69 @@
 {
-  "name": "get_run_failures",
-  "title": "Get billing run failures",
-  "description": "For a failed billing run, list the households the run could not process and why. The list is capped; total_count says how many failures exist in all.",
-  "inputSchema": {
-    "type": "object",
-    "properties": {
-      "run_id": {
-        "type": "string",
-        "description": "The failed run to inspect."
+  "name" : "get_run_failures",
+  "title" : "Get billing run failures",
+  "description" : "For a failed billing run, list the households the run could not process and why. The list is capped; total_count says how many failures exist in all.",
+  "inputSchema" : {
+    "additionalProperties" : false,
+    "properties" : {
+      "limit" : {
+        "description" : "Maximum households to return, from 1 to 50. Defaults to 50.",
+        "default" : 50,
+        "maximum" : 50,
+        "minimum" : 1,
+        "type" : "integer"
       },
-      "limit": {
-        "type": "integer",
-        "minimum": 1,
-        "maximum": 50,
-        "default": 50,
-        "description": "Maximum households to return. Values above 50 are clamped to 50."
+      "run_id" : {
+        "description" : "The failed run to inspect.",
+        "type" : "string"
       }
     },
-    "required": ["run_id"],
-    "additionalProperties": false
+    "required" : [ "run_id" ],
+    "type" : "object"
   },
-  "outputSchema": {
-    "type": "object",
-    "properties": {
-      "run_id": { "type": "string" },
-      "failures": {
-        "type": "array",
-        "maxItems": 50,
-        "items": {
-          "type": "object",
-          "properties": {
-            "household_id": { "type": "string" },
-            "household_name": { "type": "string" },
-            "cause": { "type": "string" }
+  "outputSchema" : {
+    "title" : "RunFailuresResult",
+    "description" : "Households a failed billing run could not process, with the cause of each.",
+    "$id" : "http://localhost:8080/schemas/run-failures-result.schema.json",
+    "$schema" : "https://json-schema.org/draft/2020-12/schema",
+    "properties" : {
+      "failures" : {
+        "items" : {
+          "title" : "RunFailure",
+          "description" : "One household a failed run could not process, and why (FR-019).",
+          "properties" : {
+            "cause" : {
+              "type" : "string"
+            },
+            "household_id" : {
+              "type" : "string"
+            },
+            "household_name" : {
+              "type" : "string"
+            }
           },
-          "required": ["household_id", "household_name", "cause"],
-          "additionalProperties": false
-        }
+          "type" : "object"
+        },
+        "type" : "array"
       },
-      "total_count": {
-        "type": "integer",
-        "minimum": 0,
-        "description": "Total failed households, which may exceed the length of failures."
+      "run_id" : {
+        "type" : "string"
       },
-      "truncated": { "type": "boolean" }
+      "total_count" : {
+        "type" : "integer"
+      },
+      "truncated" : {
+        "type" : "boolean"
+      }
     },
-    "required": ["run_id", "failures", "total_count", "truncated"],
-    "additionalProperties": false
+    "required" : [ "total_count", "truncated" ],
+    "type" : "object"
   },
-  "annotations": {
-    "readOnlyHint": true,
-    "destructiveHint": false,
-    "idempotentHint": true,
-    "openWorldHint": true
+  "annotations" : {
+    "title" : "",
+    "destructiveHint" : false,
+    "idempotentHint" : true,
+    "openWorldHint" : true,
+    "readOnlyHint" : true,
+    "returnDirect" : false
   }
 }

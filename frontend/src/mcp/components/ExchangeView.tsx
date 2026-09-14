@@ -137,6 +137,29 @@ function Outcome({ exchange }: { exchange: Exchange }) {
   )
 }
 
+/**
+ * Which replica answered, read from the answer itself.
+ *
+ * Feature 010 closed finding F-003: `serverInfo` now carries an `instance`, so the proxy no longer
+ * has to be a blind spot. This reads what the server said rather than inferring anything from the
+ * target that was addressed — the point of the field is that the caller does not have to know the
+ * topology. A response that predates the field, or an error with no result, still says nothing, and
+ * the console still declines to invent it.
+ */
+function answeringInstance(exchange: Exchange): string | null {
+  const body = exchange.responseBody as
+    | { result?: { _meta?: Record<string, { instance?: unknown }> } }
+    | undefined
+  const info = body?.result?._meta?.['io.modelcontextprotocol/serverInfo']
+  return typeof info?.instance === 'string' ? info.instance : null
+}
+
+function proxyLabel(instance: string | null): string {
+  return instance === null
+    ? `${TARGET_LABELS.proxy} — the answer does not name an instance`
+    : `${TARGET_LABELS.proxy} → ${instance}`
+}
+
 export function ExchangeView({ exchange }: { exchange: Exchange }) {
   const { token } = theme.useToken()
   const outcome = OUTCOMES[exchange.outcome]
@@ -155,7 +178,7 @@ export function ExchangeView({ exchange }: { exchange: Exchange }) {
             <Tag>as {exchange.principalName}</Tag>
             <Tag>
               {exchange.targetId === 'proxy'
-                ? `${TARGET_LABELS.proxy} — a replica answered; the proxy does not report which`
+                ? proxyLabel(answeringInstance(exchange))
                 : TARGET_LABELS[exchange.targetId]}
             </Tag>
             <Tag>HTTP {exchange.httpStatus || '—'}</Tag>

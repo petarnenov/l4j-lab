@@ -132,6 +132,22 @@ tasks.register<Test>("topologyTest") {
 }
 
 tasks.named<Test>("test") {
-    useJUnitPlatform()
+    // The generator rewrites committed files; it is run deliberately, never as part of the suite.
+    useJUnitPlatform { excludeTags("generator") }
     systemProperty("micronaut.environments", "test")
+}
+
+// FR-011, feature 010 T032. The Java declarations are the single source; the committed contracts are
+// derived from them. Feature 007 maintained both by hand and promised a test would compare them —
+// the test was never written, and the two drifted to 106 differences (finding F-001).
+tasks.register<Test>("generateToolContracts") {
+    description = "Rewrites specs/007-mcp-billing-server/contracts/tools/*.json from what the server declares."
+    group = "build"
+    testClassesDirs = sourceSets["test"].output.classesDirs
+    classpath = sourceSets["test"].runtimeClasspath
+    useJUnitPlatform { includeTags("generator") }
+    systemProperty("micronaut.environments", "test")
+    systemProperty("contracts.output.dir",
+        rootProject.file("specs/007-mcp-billing-server/contracts/tools").absolutePath)
+    outputs.upToDateWhen { false }
 }

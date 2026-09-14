@@ -302,6 +302,7 @@ Every setting is an environment variable with a documented default.
 | `MCP_LEGACY_TIMEOUT_MS` | `5000` | Bounds every legacy call, so an unreachable system of record becomes a tool error rather than a hang |
 | `MCP_TASK_TTL_MS` | `900000` | `ttlMs` on a task handle |
 | `MCP_TOOLS_TTL_MS` | `300000` | `ttlMs` on `tools/list` and `server/discover` |
+| `MCP_INSTANCE_ID` | `local` | Which replica answered, carried in every result's `serverInfo`. `compose.mcp.yaml` sets it to `mcp-a`, `mcp-b`, `mcp-c`. A property of the server, not of the proxy in front of it — three identical replicas that all call themselves the same thing leave a caller unable to tell one surprising answer from two |
 | `LEGACY_RUN_DURATION_MS` | unset | Unset means a random 30–90s, which is what the requirement specifies. `make mcp-verify` sets it low so the acceptance suite does not wait a run out |
 | `DATASOURCE_URL`, `DATASOURCE_USER`, `DATASOURCE_PASSWORD` | as `compose.yaml` | Reused rather than renamed |
 | `MCP_REPLICA_A_PORT`, `MCP_REPLICA_B_PORT`, `MCP_REPLICA_C_PORT` | `8881`, `8882`, `8883` | Published only by `make mcp-up-topology`. The console and the acceptance suite read the same names |

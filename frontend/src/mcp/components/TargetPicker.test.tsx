@@ -60,13 +60,13 @@ describe('choosing where a call goes', () => {
     expect(screen.queryByRole('region', { name: /topology/i })).not.toBeInTheDocument()
   })
 
-  it('explains that the proxy does not report which replica answered', () => {
+  it('explains that each answer names the replica that produced it (F-003, closed)', () => {
     renderWithQuery(
       <TargetPicker targets={targets(['proxy', 'a', 'b', 'c'])} value="proxy" onChange={vi.fn()} />,
     )
 
     expect(screen.getByRole('region', { name: /which server/i })).toHaveTextContent(
-      /does not report which/i,
+      /serverInfo\.instance/i,
     )
   })
 

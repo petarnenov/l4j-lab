@@ -183,13 +183,41 @@ describe('attribution', () => {
     )
   })
 
-  it('names the target, and says the proxy does not report which replica answered', () => {
-    // serverInfo carries {name, version} and no instance identity, and nginx adds no upstream
-    // header. Via the proxy the information does not exist, so the console must not invent it.
+  it('names the replica that answered through the proxy (F-003, closed)', () => {
+    // This used to assert the opposite: serverInfo carried {name, version} and nothing else, nginx
+    // added no upstream header, and via the proxy the information did not exist. Feature 010 added
+    // `instance`, so the console reads it from the answer rather than declining to say.
+    renderWithQuery(
+      <ExchangeView
+        exchange={exchange({
+          targetId: 'proxy',
+          responseBody: {
+            jsonrpc: '2.0',
+            id: 1,
+            result: {
+              _meta: {
+                'io.modelcontextprotocol/serverInfo': {
+                  name: 'mcp-billing-server',
+                  version: '0.1.0',
+                  instance: 'mcp-c',
+                },
+              },
+            },
+          },
+        })}
+      />,
+    )
+
+    expect(screen.getByRole('region', { name: /attribution/i })).toHaveTextContent('mcp-c')
+  })
+
+  it('still declines to invent an instance when the answer does not name one', () => {
+    // An error with no result, or a server that predates the field. Saying nothing is right here;
+    // the failure the finding described was saying nothing when there was something to say.
     renderWithQuery(<ExchangeView exchange={exchange({ targetId: 'proxy' })} />)
 
     expect(screen.getByRole('region', { name: /attribution/i })).toHaveTextContent(
-      /does not report which/i,
+      /does not name an instance/i,
     )
   })
 

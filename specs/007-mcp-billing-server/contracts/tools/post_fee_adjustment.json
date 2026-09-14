@@ -1,63 +1,81 @@
 {
-  "name": "post_fee_adjustment",
-  "title": "Post a fee adjustment",
-  "description": "Change the fee on one account by a signed amount in basis points, effective on a given date. This writes to the billing system of record. The first call does not execute: it returns a confirmation request describing the exact change. Repeat the call with the confirmation and the returned request state to execute. Supply a stable operation_id; repeating a call with the same operation_id returns the original result and does not adjust the fee a second time.",
-  "inputSchema": {
-    "type": "object",
-    "properties": {
-      "operation_id": {
-        "type": "string",
-        "minLength": 8,
-        "maxLength": 128,
-        "description": "Client-supplied idempotency key. Reuse the same value for retries of the same change; use a new value for a different change."
+  "name" : "post_fee_adjustment",
+  "title" : "Post a fee adjustment",
+  "description" : "Change the fee on one account by a signed amount in basis points, effective on a given date. This writes to the billing system of record. The first call does not execute: it returns a confirmation request describing the exact change. Repeat the call with the confirmation and the returned request state to execute. Supply a stable operation_id; repeating a call with the same operation_id returns the original result and does not adjust the fee a second time.",
+  "inputSchema" : {
+    "additionalProperties" : false,
+    "properties" : {
+      "account_id" : {
+        "description" : "Account whose fee changes.",
+        "type" : "string"
       },
-      "account_id": {
-        "type": "string",
-        "description": "Account whose fee changes."
+      "delta_bps" : {
+        "description" : "Signed change in basis points. Must not be zero.",
+        "type" : "integer"
       },
-      "delta_bps": {
-        "type": "integer",
-        "description": "Signed change in basis points. Must not be zero."
+      "effective_date" : {
+        "description" : "Date the adjustment takes effect, as YYYY-MM-DD.",
+        "format" : "date",
+        "type" : "string"
       },
-      "effective_date": {
-        "type": "string",
-        "format": "date",
-        "description": "Date the adjustment takes effect."
+      "operation_id" : {
+        "description" : "Client-supplied idempotency key. Reuse it for retries of the same change; use a new one for a different change.",
+        "maxLength" : 128,
+        "minLength" : 8,
+        "type" : "string"
       },
-      "reason": {
-        "type": "string",
-        "maxLength": 200,
-        "description": "Optional short note recorded with the adjustment."
+      "reason" : {
+        "description" : "Optional short note recorded with the adjustment.",
+        "maxLength" : 200,
+        "type" : "string"
       }
     },
-    "required": ["operation_id", "account_id", "delta_bps", "effective_date"],
-    "additionalProperties": false
+    "required" : [ "operation_id", "account_id", "delta_bps", "effective_date" ],
+    "type" : "object"
   },
-  "outputSchema": {
-    "type": "object",
-    "properties": {
-      "operation_id": { "type": "string" },
-      "account_id": { "type": "string" },
-      "delta_bps": { "type": "integer" },
-      "effective_date": { "type": "string", "format": "date" },
-      "legacy_reference_id": {
-        "type": "string",
-        "description": "Identifier the billing system of record assigned to this adjustment."
+  "outputSchema" : {
+    "title" : "FeeAdjustmentResult",
+    "description" : "A fee adjustment that has been applied to the billing system of record.",
+    "$id" : "http://localhost:8080/schemas/fee-adjustment-result.schema.json",
+    "$schema" : "https://json-schema.org/draft/2020-12/schema",
+    "properties" : {
+      "account_id" : {
+        "type" : "string"
       },
-      "new_fee_bps": { "type": "integer", "minimum": 0 },
-      "confirmed_by_user_id": { "type": "string" },
-      "replayed": {
-        "type": "boolean",
-        "description": "True when this result was returned from the idempotency record rather than executed."
+      "confirmed_by_user_id" : {
+        "type" : "string"
+      },
+      "delta_bps" : {
+        "type" : "integer"
+      },
+      "effective_date" : {
+        "type" : "string"
+      },
+      "legacy_reference_id" : {
+        "type" : "string"
+      },
+      "new_fee_bps" : {
+        "type" : "integer"
+      },
+      "operation_id" : {
+        "type" : "string"
+      },
+      "previous_fee_bps" : {
+        "type" : "integer"
+      },
+      "replayed" : {
+        "type" : "boolean"
       }
     },
-    "required": ["operation_id", "account_id", "delta_bps", "effective_date", "legacy_reference_id", "new_fee_bps", "confirmed_by_user_id", "replayed"],
-    "additionalProperties": false
+    "required" : [ "delta_bps", "previous_fee_bps", "new_fee_bps", "replayed" ],
+    "type" : "object"
   },
-  "annotations": {
-    "readOnlyHint": false,
-    "destructiveHint": true,
-    "idempotentHint": true,
-    "openWorldHint": true
+  "annotations" : {
+    "title" : "",
+    "destructiveHint" : true,
+    "idempotentHint" : true,
+    "openWorldHint" : true,
+    "readOnlyHint" : false,
+    "returnDirect" : false
   }
 }

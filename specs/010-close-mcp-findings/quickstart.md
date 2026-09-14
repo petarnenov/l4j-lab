@@ -117,3 +117,22 @@ now fails if it regresses.
   variable and was green; `make mcp-up` does not, and served a broken stack. The default is now
   written out (`:--1`). This is F-006's shape exactly — a failure that looked like the code and was
   the configuration — found only because the live suite was run against a stack brought up by hand.
+
+## F-001 closed, and how it was proved (T034, SC-003/SC-004)
+
+| | |
+|---|---|
+| Before | **106 differences**: 71 output-schema, 23 input-schema, 10 annotation, 2 description |
+| After | `ToolDeclarationContractTest` passes; the committed contracts are written by `./gradlew :mcp-server:generateToolContracts` |
+
+**The propagation was tested rather than assumed.** `get_run_failures.limit`'s maximum was changed
+from 50 to 49 in `ToolArgumentConstraints`, regenerated, and the committed file changed to 49 — a
+single source, seen to propagate.
+
+**And the test that would have missed it.** With the contracts generated from the declarations, the
+field-by-field comparison **stayed green** on that change: both sides moved together, which is exactly
+the tautology a generated oracle invites. What caught it was
+`theDeclarationsCarryTheKeywordsTheContractsAlwaysClaimed`, which names `maximum: 50` outright and
+reads only what the server serves. A generated contract needs a check that does not come from the
+generator, or it proves nothing. Both were reverted after the demonstration.
+

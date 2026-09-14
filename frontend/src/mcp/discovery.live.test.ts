@@ -70,11 +70,11 @@ describe('discovery and the tool list, against the running stack', () => {
    * server declares every property the contract declares, with the same type and the same
    * description a person reads as help text.
    *
-   * It does not assert equality, because the served schema is a **subset**: the server drops
-   * eighteen keywords on the way out — `enum`, `format`, `default`, `minimum`, `maximum`,
-   * `minLength`, `maxLength`, `additionalProperties` — recorded as finding F-001. The console
-   * therefore renders a free-text box where the contract declares a chooser, which is correct
-   * behaviour against an impoverished declaration and the reason the finding exists.
+   * It once could not assert equality, because the served schema was a **subset**: eighteen keywords
+   * were dropped on the way out and the console rendered a free-text box where the contract declared
+   * a chooser. Feature 010 closed that (F-001) by making the Java the single source and generating
+   * the committed files from what ships, so the two are now the same declaration rather than two
+   * that happen to agree. The tests below assert the absence of drift directly.
    *
    * The deterministic suite cannot see any of this: it serves the committed files itself, so both
    * sides of that comparison are the same object.
@@ -89,34 +89,29 @@ describe('discovery and the tool list, against the running stack', () => {
 
       expect(Object.keys(offered).sort()).toEqual(Object.keys(declared).sort())
       for (const [name, property] of Object.entries(declared)) {
-        // `integer` arrives as `number`: the SDK's schema model does not keep the distinction.
-        // schemaForm.tsx treats both as an integer field, so nothing is rendered wrongly — but it
-        // is one more thing the contract says and the wire does not (finding F-001).
+        // `integer` used to arrive as `number`, because the generator does not keep the distinction
+        // and nothing restored it. It is restored now, so the tolerance below is kept only for a
+        // property no constraint covers — where the generator is still the only source of the type.
         const expectedType = property.type === 'integer' ? ['integer', 'number'] : [property.type]
         expect(expectedType).toContain(offered[name].type)
-        // The console shows the description verbatim as help text, so what it needs is that there
-        // *is* one. Equality is asserted separately below, where the two that have already drifted
-        // are pinned — the server does not read these files at runtime, whatever its README says.
+        // The console shows the description verbatim as help text. Equality is asserted separately
+        // below; here it only has to exist.
         expect(String(offered[name].description ?? '')).not.toBe('')
       }
       expect(served?.inputSchema.required ?? []).toEqual(contract.inputSchema.required ?? [])
 
-      // The output shape is served as a *different document* than the committed one: it gains $id
-      // and $schema and a top-level description, and loses the per-property descriptions and
-      // additionalProperties. Same fields, different paperwork (finding F-001). The console only
-      // renders structuredContent, so the field names are what it depends on.
-      // start_billing_run is exempt, and the exemption is the finding: the committed contract's
-      // outputSchema describes the *completed* run, while the server declares the *immediate*
-      // handle. Both shapes are real in feature 007; they are just not the same shape, and the tool
-      // declares only one of them (finding F-004). Pinned in its own test below.
+      // start_billing_run was exempt, and the exemption was the finding: the committed contract
+      // described the *completed* run while the server declared the *immediate* handle. Research
+      // R-005 found the server right; the contract is generated from it now and both describe the
+      // handle. The exemption is kept because the committed file is regenerated from the wire, so
+      // asserting it here would be asserting that a file equals itself.
       if (contract.name !== 'start_billing_run') {
         const declaredOut = (contract.outputSchema?.properties ?? {}) as Record<string, unknown>
         const offeredOut = (served?.outputSchema?.properties ?? {}) as Record<string, unknown>
         expect(Object.keys(offeredOut).sort()).toEqual(Object.keys(declaredOut).sort())
       }
-      // The served `required` list is a subset of the contract's, never a superset: the server
-      // never demands a field the contract does not (finding F-001). The count of what it stops
-      // demanding is pinned in the test below.
+      // The served `required` list must never be a superset of the contract's: the server may not
+      // demand a field the contract does not. It is now exactly equal, which the test below asserts.
       if (contract.name !== 'start_billing_run') {
         const declaredRequired = (contract.outputSchema?.required ?? []) as string[]
         const offeredRequired = (served?.outputSchema?.required ?? []) as string[]
@@ -125,10 +120,11 @@ describe('discovery and the tool list, against the running stack', () => {
     }
   })
 
-  it('still drops the keywords finding F-001 records, and no others', async () => {
-    // Pinned deliberately. If this fails, the gap changed — either feature 007 fixed it, in which
-    // case the console gets choosers and date fields for free and F-001 should be closed, or it
-    // widened and F-001 needs updating. Either way somebody should look.
+  it('drops no keyword the contracts declare (F-001, closed)', async () => {
+    // This used to require exactly eighteen dropped keywords and explain why they were missing. The
+    // explanation is gone because the gap is: feature 010 made the Java declarations the single
+    // source, gave them the keywords the generator could not infer, and generates the committed
+    // contracts from what ships. The console gets its choosers and date fields for free.
     const result = resultOrThrow<ToolsListResult>(await callMcp(session, { method: 'tools/list' }))
     const keywords = ['enum', 'format', 'default', 'minimum', 'maximum', 'minLength', 'maxLength']
     const dropped: string[] = []
@@ -151,12 +147,12 @@ describe('discovery and the tool list, against the running stack', () => {
       }
     }
 
-    expect(dropped).toHaveLength(18)
+    expect(dropped).toEqual([])
   })
 
-  it('still drops the required output fields finding F-001 records, and no others', async () => {
-    // Nineteen fields the contracts declare mandatory arrive optional. Pinned for the same reason
-    // as the input keywords: a change in either direction is something somebody should look at.
+  it('relaxes no required output field the contracts declare (F-001, closed)', async () => {
+    // Twelve fields declared mandatory used to arrive optional. Both sides now come from one
+    // declaration, so "declared" and "served" are the same list rather than two that agree.
     const result = resultOrThrow<ToolsListResult>(await callMcp(session, { method: 'tools/list' }))
     const relaxed: string[] = []
 
@@ -169,13 +165,14 @@ describe('discovery and the tool list, against the running stack', () => {
       )
     }
 
-    expect(relaxed.filter((field) => !field.startsWith('start_billing_run'))).toHaveLength(12)
+    expect(relaxed).toEqual([])
   })
 
-  it('declares the immediate handle for start_billing_run, not the completed run (F-004)', async () => {
-    // The committed contract documents what a *finished* run looks like — status, phase, accounts
-    // processed. The tool declaration on the wire documents what the *call* returns: a handle. A
-    // client validating either against the other would reject a correct result.
+  it('declares the immediate handle for start_billing_run, not the completed run (F-004, closed)', async () => {
+    // The committed contract used to document what a *finished* run looks like — status, phase,
+    // accounts processed — while the wire documented what the *call* returns: a handle. Research
+    // R-005 found the server right and the contract wrong, and the contract is now generated from
+    // the server, so both describe the handle. The assertion is unchanged: it was always correct.
     const result = resultOrThrow<ToolsListResult>(await callMcp(session, { method: 'tools/list' }))
     const served = result.tools.find((tool) => tool.name === 'start_billing_run')
     const offered = Object.keys((served?.outputSchema?.properties ?? {}) as object)
@@ -184,11 +181,10 @@ describe('discovery and the tool list, against the running stack', () => {
     expect(offered).not.toContain('accounts_processed')
   })
 
-  it('still serves the two drifted descriptions finding F-001 records, and no others', async () => {
-    // These two are not a serialisation artifact: they are differently *worded*. The server holds
-    // its own copies of the tool declarations, and two of them have already drifted from the
-    // committed contract — which is the failure Principle III's single-source rule exists to
-    // prevent, caught here because this is the only test that compares the wire to the contract.
+  it('serves no description that has drifted from the contract (F-001, closed)', async () => {
+    // Two were differently *worded* — not a serialisation artifact but two hand-written texts, which
+    // is exactly what Principle III's single-source rule exists to prevent. There is now one text
+    // per description, in the Java, and the committed file is written from it.
     const result = resultOrThrow<ToolsListResult>(await callMcp(session, { method: 'tools/list' }))
     const drifted: string[] = []
 
@@ -203,10 +199,7 @@ describe('discovery and the tool list, against the running stack', () => {
       }
     }
 
-    expect(drifted).toEqual([
-      'post_fee_adjustment.operation_id',
-      'post_fee_adjustment.effective_date',
-    ])
+    expect(drifted).toEqual([])
   })
 
   it('returns the same order twice, and says the list is cacheable', async () => {

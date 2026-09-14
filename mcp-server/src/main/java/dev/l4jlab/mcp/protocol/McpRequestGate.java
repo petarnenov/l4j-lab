@@ -1,5 +1,7 @@
 package dev.l4jlab.mcp.protocol;
 
+import dev.l4jlab.mcp.tools.ToolArgumentConstraints;
+import io.micronaut.context.annotation.Value;
 import io.micronaut.http.HttpRequest;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.HttpStatus;
@@ -11,6 +13,7 @@ import jakarta.inject.Singleton;
 
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -46,6 +49,13 @@ import java.util.Optional;
 @Order(20)
 public class McpRequestGate {
 
+    /** FR-003: every result carries it, including the ones this filter answers without the module. */
+    private final Map<String, Object> serverInfo;
+
+    public McpRequestGate(ServerInfo serverInfo) {
+        this.serverInfo = serverInfo.asMap();
+    }
+
     private static final String BASE64_PREFIX = "=?base64?";
     private static final String BASE64_SUFFIX = "?=";
 
@@ -75,9 +85,55 @@ public class McpRequestGate {
         if (versionProblem.isPresent()) {
             return versionProblem;
         }
+        Optional<MutableHttpResponse<?>> argumentProblem = checkArguments(body, id, method);
+        if (argumentProblem.isPresent()) {
+            return argumentProblem;
+        }
         // The revision's own additions to tools/call params. The SDK's CallToolRequest predates
         // them, so they are carried to the tool through the transport context instead.
         return Optional.empty();
+    }
+
+    /**
+     * FR-013. A declared constraint is a validated constraint.
+     *
+     * <p>{@link ToolArgumentConstraints} is merged into what {@code tools/list} serves; enforcing it
+     * here is the other half of the same fact. Restoring {@code enum} and bounds to the declaration
+     * without checking them would swap a lie about what is declared for a lie about what is enforced,
+     * and a model that reads the declaration would be misled either way.
+     *
+     * <p>Answered as a <b>tool</b> error at HTTP 200 naming the field, which is what the error table
+     * in {@code contracts/mcp-protocol.md} says an argument failing {@code inputSchema} is. The
+     * request was well-formed; the call was not.
+     */
+    @SuppressWarnings("unchecked")
+    private Optional<MutableHttpResponse<?>> checkArguments(Map<String, Object> body, Object id,
+                                                            String method) {
+        if (!"tools/call".equals(method) || !(body.get("params") instanceof Map<?, ?> params)) {
+            return Optional.empty();
+        }
+        if (!(params.get("name") instanceof String tool)
+            || !(params.get("arguments") instanceof Map<?, ?> arguments)) {
+            return Optional.empty();
+        }
+        String violation =
+            ToolArgumentConstraints.firstViolation(tool, (Map<String, Object>) arguments);
+        return violation == null ? Optional.empty() : Optional.of(toolError(id, violation));
+    }
+
+    /** The tool-error result shape, built here because a filter answers before the serializer runs. */
+    private MutableHttpResponse<?> toolError(Object id, String message) {
+        Map<String, Object> result = new LinkedHashMap<>();
+        result.put("content", List.of(Map.of("type", "text", "text", message)));
+        result.put("isError", true);
+        result.put("resultType", "complete");
+        result.put("_meta", Map.of("io.modelcontextprotocol/serverInfo", serverInfo));
+
+        Map<String, Object> envelope = new LinkedHashMap<>();
+        envelope.put("jsonrpc", "2.0");
+        envelope.put("id", id);
+        envelope.put("result", result);
+        return HttpResponse.ok(envelope);
     }
 
     /** FR-008. A header that disagrees with the body is a security problem, not a formatting one:

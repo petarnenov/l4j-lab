@@ -53,9 +53,10 @@ export function TargetPicker({ targets, value, onChange }: TargetPickerProps) {
         {value === 'proxy' && (
           <div role="region" aria-label="Which server answered">
             <Typography.Text type="secondary" style={{ fontSize: token.fontSizeSM }}>
-              The proxy round-robins over the three replicas and does not report which one answered:
-              nothing in <code>serverInfo</code> or the response headers identifies an instance.
-              Address a replica by name to see the hop.
+              The proxy round-robins over the three replicas, and each answer names the one that
+              produced it: <code>serverInfo.instance</code>. This used to say the information did not
+              exist — feature 010 added it, because a caller that cannot tell one replica from
+              another cannot tell one surprising answer from two.
             </Typography.Text>
           </div>
         )}

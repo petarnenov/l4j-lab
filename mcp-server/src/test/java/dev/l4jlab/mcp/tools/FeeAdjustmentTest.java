@@ -201,6 +201,48 @@ class FeeAdjustmentTest extends McpServerTestBase {
         assertThat(stub().adjustments()).isEmpty();
     }
 
+    /**
+     * Feature 010, T039 (FR-017, finding F-002).
+     *
+     * <p>The result said what the fee became and not what it had been, so every caller wanting to
+     * report the change subtracted the delta itself — the same arithmetic written once per client,
+     * in places that could each get it wrong. The server knows both numbers at the moment it applies
+     * the change; withholding one of them is making work for everyone downstream.
+     */
+    @Test
+    void anAppliedAdjustmentReportsTheFeeItReplaced() {
+        String operationId = newOperationId();
+        String state = (String) call(operationId, 15, null, null).get("requestState");
+
+        Map<String, Object> result = call(operationId, 15, confirm(true), state);
+        Map<String, Object> structured = structuredOf(result);
+
+        int previous = ((Number) structured.get("previous_fee_bps")).intValue();
+        int applied = ((Number) structured.get("new_fee_bps")).intValue();
+        assertThat(applied - previous).isEqualTo(15);
+    }
+
+    /** A replay must answer with the same shape, or "nothing happened" would look like a change. */
+    @Test
+    void aReplayReportsTheSameFeeItReplaced() {
+        String operationId = newOperationId();
+        String state = (String) call(operationId, 15, null, null).get("requestState");
+        Map<String, Object> first = structuredOf(call(operationId, 15, confirm(true), state));
+
+        Map<String, Object> replay = structuredOf(call(operationId, 15, confirm(true), state));
+
+        assertThat(replay).containsEntry("replayed", true);
+        assertThat(replay.get("previous_fee_bps")).isEqualTo(first.get("previous_fee_bps"));
+    }
+
+    @SuppressWarnings("unchecked")
+    private static Map<String, Object> structuredOf(Map<String, Object> result) {
+        assertThat(result.get("isError"))
+            .as("expected an applied adjustment, got: " + result)
+            .isNotEqualTo(true);
+        return (Map<String, Object>) result.get("structuredContent");
+    }
+
     @Test
     void aZeroAdjustmentIsRefusedBeforeAnyoneIsAsked() {
         Map<String, Object> result = call(newOperationId(), 0, null, null);

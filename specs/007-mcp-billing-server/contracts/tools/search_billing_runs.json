@@ -1,95 +1,103 @@
 {
-  "name": "search_billing_runs",
-  "title": "Search billing runs",
-  "description": "Search billing runs for a firm by status, executing advisor, and start-date range. Returns one page of at most 20 runs. When more matches exist, the result carries an opaque cursor; pass it back as the 'cursor' argument to get the next page. Results are limited to what the caller is entitled to see.",
-  "inputSchema": {
-    "type": "object",
-    "properties": {
-      "firm_id": {
-        "type": "string",
-        "description": "Firm whose runs to search."
+  "name" : "search_billing_runs",
+  "title" : "Search billing runs",
+  "description" : "Search billing runs for a firm by status, executing advisor, and start-date range. Returns one page of at most 20 runs. When more matches exist, the result carries an opaque cursor; pass it back as the cursor argument to get the next page. Results are limited to what the caller is entitled to see.",
+  "inputSchema" : {
+    "additionalProperties" : false,
+    "properties" : {
+      "advisor_id" : {
+        "description" : "Optional. Only runs executed by this advisor.",
+        "type" : "string"
       },
-      "status": {
-        "type": "string",
-        "enum": ["PENDING", "RUNNING", "COMPLETED", "FAILED", "CANCELED"],
-        "description": "Optional. Only runs in this status."
+      "cursor" : {
+        "description" : "Opaque cursor from a previous result. Do not construct or modify it.",
+        "type" : "string"
       },
-      "advisor_id": {
-        "type": "string",
-        "description": "Optional. Only runs executed by this advisor."
+      "firm_id" : {
+        "description" : "Firm whose runs to search.",
+        "type" : "string"
       },
-      "started_from": {
-        "type": "string",
-        "format": "date",
-        "description": "Optional. Only runs started on or after this date."
+      "page_size" : {
+        "description" : "Runs per page, from 1 to 20. Defaults to 20.",
+        "default" : 20,
+        "maximum" : 20,
+        "minimum" : 1,
+        "type" : "integer"
       },
-      "started_to": {
-        "type": "string",
-        "format": "date",
-        "description": "Optional. Only runs started on or before this date."
+      "started_from" : {
+        "description" : "Optional. Only runs started on or after this date.",
+        "format" : "date",
+        "type" : "string"
       },
-      "page_size": {
-        "type": "integer",
-        "minimum": 1,
-        "maximum": 20,
-        "default": 20,
-        "description": "Runs per page. Values above 20 are clamped to 20."
+      "started_to" : {
+        "description" : "Optional. Only runs started on or before this date.",
+        "format" : "date",
+        "type" : "string"
       },
-      "cursor": {
-        "type": "string",
-        "description": "Opaque cursor from a previous result. Do not construct or modify it."
+      "status" : {
+        "description" : "Optional. Only runs in this status.",
+        "enum" : [ "PENDING", "RUNNING", "COMPLETED", "FAILED", "CANCELED" ],
+        "type" : "string"
       }
     },
-    "required": ["firm_id"],
-    "additionalProperties": false
+    "required" : [ "firm_id" ],
+    "type" : "object"
   },
-  "outputSchema": {
-    "type": "object",
-    "properties": {
-      "runs": {
-        "type": "array",
-        "maxItems": 20,
-        "items": {
-          "type": "object",
-          "properties": {
-            "run_id": { "type": "string" },
-            "firm_id": { "type": "string" },
-            "executed_by_advisor_id": { "type": "string" },
-            "status": {
-              "type": "string",
-              "enum": ["PENDING", "RUNNING", "COMPLETED", "FAILED", "CANCELED"]
+  "outputSchema" : {
+    "title" : "BillingRunSearchResult",
+    "description" : "One page of billing runs matching a search, with a cursor for the next.",
+    "$id" : "http://localhost:8080/schemas/billing-run-search-result.schema.json",
+    "$schema" : "https://json-schema.org/draft/2020-12/schema",
+    "properties" : {
+      "next_cursor" : {
+        "type" : "string"
+      },
+      "refine_hint" : {
+        "type" : "string"
+      },
+      "runs" : {
+        "items" : {
+          "title" : "BillingRunSummary",
+          "description" : "One run in a search result.\n\n <p>Narrower than the status result on purpose: a search is for choosing which run to open, and\n phase counts and failure reasons are noise until one has been chosen.",
+          "properties" : {
+            "executed_by_advisor_id" : {
+              "type" : "string"
             },
-            "started_at": { "type": "string", "format": "date-time" }
+            "firm_id" : {
+              "type" : "string"
+            },
+            "run_id" : {
+              "type" : "string"
+            },
+            "started_at" : {
+              "type" : "string"
+            },
+            "status" : {
+              "description" : "The state a billing run is in.\n\n <p>Kept caller-facing on purpose: this Javadoc becomes the enum's {@code description} in the\n generated schema, so it is read by models, not only by people.",
+              "enum" : [ "PENDING", "RUNNING", "COMPLETED", "FAILED", "CANCELED" ],
+              "type" : "string"
+            }
           },
-          "required": ["run_id", "firm_id", "executed_by_advisor_id", "status", "started_at"],
-          "additionalProperties": false
-        }
+          "type" : "object"
+        },
+        "type" : "array"
       },
-      "total_match_count": {
-        "type": "integer",
-        "minimum": 0,
-        "description": "Total runs matching the search, not just this page."
+      "total_match_count" : {
+        "type" : "integer"
       },
-      "truncated": {
-        "type": "boolean",
-        "description": "True when more matches exist than this page carries."
-      },
-      "next_cursor": {
-        "type": "string",
-        "description": "Present only when truncated is true."
-      },
-      "refine_hint": {
-        "type": "string",
-        "description": "Present only when truncated is true. Says how to narrow the search."
+      "truncated" : {
+        "type" : "boolean"
       }
     },
-    "required": ["runs", "total_match_count", "truncated"],
-    "additionalProperties": false
+    "required" : [ "total_match_count", "truncated" ],
+    "type" : "object"
   },
-  "annotations": {
-    "readOnlyHint": true,
-    "destructiveHint": false,
-    "idempotentHint": true,
-    "openWorldHint": true
+  "annotations" : {
+    "title" : "",
+    "destructiveHint" : false,
+    "idempotentHint" : true,
+    "openWorldHint" : true,
+    "readOnlyHint" : true,
+    "returnDirect" : false
   }
 }

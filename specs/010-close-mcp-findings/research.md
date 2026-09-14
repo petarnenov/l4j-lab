@@ -110,6 +110,50 @@ validated.
 
 ---
 
+### R-002 addendum, written during implementation: where the constraints ended up
+
+R-002 said *"the annotations gain the constraints they are missing"*. They cannot. In
+micronaut-mcp 2.0.0, `@ToolArg` declares exactly two members:
+
+```java
+public interface ToolArg extends Annotation {
+    String name();
+    String description();
+}
+```
+
+There is nowhere to put an enumeration, a format, a bound or a default.
+
+**Java types were tried first, because that is the library-first answer** and it is what R-002's own
+reasoning points at: a `String` carries no enumeration *because a Java `String` has none*, so the
+repair looks like it should be `RunStatus status` and `LocalDate startedFrom`. It was measured, and
+the input-schema generator in this version is too crude for it:
+
+| declared as | served as |
+|---|---|
+| `RunStatus` (a Java enum) | `"type": "string"` — no `enum` |
+| `LocalDate` | `"type": "object"` — **worse than the `String` it replaced** |
+| `Integer` | `"type": "number"` |
+
+So the types were reverted and the keywords live in `ToolArgumentConstraints`: one Java class, read
+in exactly two places — `JsonRpcResponseSerializer` merges it into what `tools/list` serves, and
+`McpRequestGate` enforces it on `tools/call`. R-002's **decision** stands unchanged — the Java is the
+source and the committed JSON is generated from it — and no dependency was added to get there. Only
+the mechanism differs from what R-002 predicted, and it is recorded here rather than left as a
+surprise for whoever reads the annotation and wonders why it is bare.
+
+**Nothing was left unenforced** (T031). Every keyword that is declared is checked: enumeration
+membership, `YYYY-MM-DD` dates, integrality, numeric bounds, and string lengths. One is worth naming
+because it changes behaviour: `page_size` above 20 used to be **clamped silently**, and is now
+refused. Clamping is a reasonable thing to do with a value you have chosen to accept — but the
+declaration says `maximum: 20`, and accepting 100 anyway is the declaration being untrue again, one
+level down.
+
+**What the generated contracts cannot capture, and why it does not matter**: `outputSchema` carries
+`$id` and `$schema` from micronaut-json-schema, which the hand-written contracts never had. They are
+now in the committed files because the files are generated from what ships. A contract that omits
+what the server actually sends is the problem this feature exists to close.
+
 ## R-003: the guard that was supposed to prevent F-001 was never written
 
 `mcp-server/build.gradle.kts`:
