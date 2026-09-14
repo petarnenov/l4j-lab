@@ -1,0 +1,26 @@
+# GitGuardian configuration.
+#
+# Two Compose files carry a default database password for the local development stacks, and the
+# scanner is right to see them: they are passwords, written in code. They are ignored here rather
+# than removed, and the reason is worth stating so nobody has to reconstruct it.
+#
+# Both defaults exist so a fresh clone reaches a running system with no setup — `make dev` for the
+# application stack, `make mcp-up` for the MCP one, neither needing a credential the reader has to
+# be told about first. Feature 007 makes that explicit as FR-025: the whole MCP system runs offline.
+# Removing the defaults would trade a scanner warning for a broken first run, which is the worse
+# deal: the password protects a throwaway container on localhost and guards nothing that outlives
+# `docker compose down`.
+#
+# What this is NOT: a licence for real credentials in these files. Everything that matters —
+# provider endpoints, model identifiers, API keys — is read from the environment and documented in
+# README.md as such, and none of it has a committed default. If a value ever appears in these two
+# files that would still be a secret outside a developer's laptop, this exclusion will hide it.
+# That is the cost of the path-level form, and it is why the list is two files rather than a glob.
+#
+# Recorded incident: GitGuardian 37221709, "Generic Password", compose.mcp.yaml.
+version: 2
+
+secret:
+  ignored-paths:
+    - "compose.yaml"
+    - "compose.mcp.yaml"
