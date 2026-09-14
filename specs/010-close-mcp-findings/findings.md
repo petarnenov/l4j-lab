@@ -152,6 +152,12 @@ verified rather than a correction of a claim.
 
 **Run `make mcp-reset` before `make mcp-verify` if the two rows above are the failures you see.**
 
+**Confirmed at T049.** The 120 accumulated runs were deleted — only rows created by test runs, dated
+after the seeded fixtures, leaving 13/13/4 exactly as seeded — and the whole topology suite passed:
+**43 of 43**. So the two failures were the accumulated data and nothing this feature changed, which is
+what SC-008 asks. The suite is green the first time it is run against a clean volume, and drifts from
+there. That is the defect, and it is feature 007's to fix.
+
 ---
 
 ## H-006: what this feature found that the seven findings did not name

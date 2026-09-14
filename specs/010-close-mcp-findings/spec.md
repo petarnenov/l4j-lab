@@ -4,7 +4,7 @@
 
 **Created**: 2026-09-14
 
-**Status**: Draft
+**Status**: Implemented
 
 **Input**: User description: "Close the seven findings recorded against the MCP billing server: the cross-advisor search that answers HTTP 500 with an internal message, the confirmation retry whose documented shape the server reads as a refusal, the tool declarations that are not served as the contracts claim, and the reading guide that points at classes never written."
 

@@ -81,7 +81,7 @@ reading guide is a document, and nothing in it depends on the boundary or the co
 ### The boundary every failure passes through
 
 - [X] T006 [P] Write a failing test in
-  `mcp-server/src/test/java/dev/l4jlab/mcp/protocol/ToolErrorStatusFilterTest.java`: an unexpected
+  `mcp-server/src/test/java/dev/l4jlab/mcp/protocol/UnexpectedFailureBoundaryTest.java`: an unexpected
   exception escaping a tool becomes a JSON-RPC error whose message is non-empty, whose code is one the
   error table in `specs/007-mcp-billing-server/contracts/mcp-protocol.md` lists, and whose text carries
   no exception message, no stack frame and no hostname.
@@ -89,7 +89,7 @@ reading guide is a document, and nothing in it depends on the boundary or the co
   to make T006 pass. Today an unexpected exception becomes an error with an **empty** message, which the
   SDK then rejects — so the caller learns that the server's validator complained and nothing else. A
   boundary that loses the message is one bad exception away from leaking one instead (FR-002).
-- [X] T008 [P] Add a test in `mcp-server/src/test/java/dev/l4jlab/mcp/protocol/ToolErrorStatusFilterTest.java`
+- [X] T008 [P] Add a test in `mcp-server/src/test/java/dev/l4jlab/mcp/protocol/UnexpectedFailureBoundaryTest.java`
   that what actually happened is still logged server-side,
   structured, so making the caller's view safe does not make the operator's view empty.
 
@@ -115,10 +115,10 @@ scenarios 4 to 6 keep the behaviour that already works written down, as regressi
 
 - [X] T009 [P] [US1] Failing test (FR-004: each finding gets a test that fails on today's behaviour
   before anything changes) in
-  `legacy-billing-api/src/test/java/dev/l4jlab/legacy/api/BillingRunControllerTest.java`: a search
+  `legacy-billing-api/src/test/java/dev/l4jlab/legacy/api/BillingRunSearchTest.java`: a search
   matching nothing serialises `items` as an empty array rather than omitting it.
 - [X] T010 [P] [US1] Failing test in
-  `mcp-server/src/test/java/dev/l4jlab/mcp/tools/BillingRunToolsTest.java`: a legacy page whose `items`
+  `mcp-server/src/test/java/dev/l4jlab/mcp/tools/ReadToolsTest.java`: a legacy page whose `items`
   is absent is read as an empty page, not dereferenced. Every one of these tools declares
   `openWorldHint: true`; a client of a system it does not control does not assume a field is present.
 - [X] T011 [P] [US1] Failing test in
@@ -162,14 +162,14 @@ asked for.
 ### Tests for User Story 2 (write first, confirm they fail)
 
 - [X] T017 [P] [US2] Failing test in
-  `mcp-server/src/test/java/dev/l4jlab/mcp/tools/FeeAdjustmentToolTest.java`: an answer that is
+  `mcp-server/src/test/java/dev/l4jlab/mcp/tools/FeeAdjustmentTest.java`: an answer that is
   **present but uninterpretable** produces an error saying so, rather than being read as a refusal
   (FR-007, US2-2). Today `confirmed()` returns false for anything it cannot parse, and its comment says
   so outright.
 - [X] T018 [P] [US2] Failing test in the same file: a **declined** confirmation produces a result
   reporting that nothing was applied, without `isError` (FR-008, US2-3) — which is what
   `specs/007-mcp-billing-server/contracts/mcp-protocol.md` already says a decline is.
-- [X] T019 [P] [US2] Test in `mcp-server/src/test/java/dev/l4jlab/mcp/tools/FeeAdjustmentToolTest.java`
+- [X] T019 [P] [US2] Test in `mcp-server/src/test/java/dev/l4jlab/mcp/tools/FeeAdjustmentTest.java`
   that an **absent** answer is still a refusal. Absent and
   uninterpretable are different: one is a decision, the other is a failure to communicate.
 - [X] T020 [P] [US2] Failing test in
@@ -295,7 +295,7 @@ the build — which is what feature 007's build file has claimed all along.
 ### Tests for User Story 5
 
 - [X] T039 [P] [US5] Failing test in
-  `mcp-server/src/test/java/dev/l4jlab/mcp/tools/FeeAdjustmentToolTest.java`: an applied adjustment
+  `mcp-server/src/test/java/dev/l4jlab/mcp/tools/FeeAdjustmentTest.java`: an applied adjustment
   reports `previous_fee_bps` (FR-017). It is known at the point the change is applied and already
   quoted in the elicitation message in prose.
 - [X] T040 [P] [US5] Failing test in
@@ -340,9 +340,9 @@ the build — which is what feature 007's build file has claimed all along.
 - [X] T048 [P] Record in `specs/010-close-mcp-findings/findings.md` what this feature found that the
   seven did not name: that every empty search crashed rather than only a cross-advisor one, and that the
   contract test feature 007's build file describes was never written.
-- [ ] T049 Run `make mcp-verify` and confirm every one of feature 007's acceptance scenarios in
+- [X] T049 Run `make mcp-verify` and confirm every one of feature 007's acceptance scenarios in
   `mcp-server/src/topologyTest/java/dev/l4jlab/mcp/topology/` still passes (SC-008). This feature repairs; nothing it did not set out to change may move.
-- [ ] T050 [P] Run `make test-console` and confirm feature 008's live suite in
+- [X] T050 [P] Run `make test-console` and confirm feature 008's live suite in
   `frontend/src/mcp/*.live.test.ts` passes with the assertions
   T002 identified updated — each change there is evidence a finding closed, not a regression.
 - [X] T051 [P] Run `make check-specs` and `./gradlew check` and confirm both pass with
@@ -432,3 +432,19 @@ Task: "cross-firm search unchanged, same file"
   fix is evidence, not a regression — T002 identifies which ones in advance so the two are never
   confused.
 - Commit after each task or logical group; stop at any checkpoint to demonstrate the story.
+
+---
+
+## A note on the file names above
+
+Several tasks named test files that did not exist when they were written — `FeeAdjustmentToolTest`,
+`BillingRunToolsTest`, `BillingRunControllerTest`, `ToolErrorStatusFilterTest` — because the task list
+was drafted from what a reader would expect the files to be called, not from the repository. The work
+went into the files that do exist (`FeeAdjustmentTest`, `ReadToolsTest`, `BillingRunSearchTest`,
+`UnexpectedFailureBoundaryTest`) and the names here have been corrected to match.
+
+It is a small thing and it is the feature's own subject matter: this document made four structural
+claims about the code that were not true, and the repository's drift check caught all four the moment
+this feature's status changed from `Draft` to `Implemented` — which is exactly what feature 009's
+G-005 said a status field decides.
+

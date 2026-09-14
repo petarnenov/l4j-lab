@@ -60,7 +60,7 @@ under-read once.
 ## R-002: F-001 is a Principle III violation, not a serialiser losing keywords
 
 **What the finding said**: `tools/list` does not serve the committed tool declarations verbatim,
-though `007/contracts/README.md` says *"The five files under `tools/` are loaded verbatim at runtime:
+though `specs/007-mcp-billing-server/contracts/README.md` says *"The five files under `tools/` are loaded verbatim at runtime:
 `tools/list` serves them."*
 
 **What is actually true**: those files are **never read at runtime**. The declarations are generated

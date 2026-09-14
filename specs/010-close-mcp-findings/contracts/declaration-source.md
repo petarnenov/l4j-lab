@@ -18,7 +18,7 @@ it.
 ```
 
 Today both sides are hand-written and neither knows about the other. That is the arrangement
-`007/contracts/README.md` describes as *"loaded verbatim at runtime"*, which was never true.
+`specs/007-mcp-billing-server/contracts/README.md` describes as *"loaded verbatim at runtime"*, which was never true.
 
 ## What a declaration must carry
 
